@@ -48,6 +48,7 @@ namespace ServiceVehicleSelector2
       VehiclePrefabs.Init();
       if (!ServiceVehicleSelectorMod.TryLoadData(out ServiceVehicleSelectorMod.BuildingData))
         Utils.Log((object) "Loading default building data.");
+      Redirector<CableCarStationAIDetour>.Deploy();
       Redirector<CargoTruckAIDetour>.Deploy();
       Redirector<DepotAIDetour>.Deploy();
       ServiceBuildingAIMod.Init();
@@ -61,6 +62,7 @@ namespace ServiceVehicleSelector2
         return;
       ServiceVehicleSelectorMod.BuildingData.Clear();
       ServiceVehicleSelectorMod.BuildingData = (Dictionary<ushort, HashSet<string>>) null;
+      Redirector<CableCarStationAIDetour>.Revert();
       Redirector<CargoTruckAIDetour>.Revert();
       Redirector<DepotAIDetour>.Revert();
       ServiceBuildingAIMod.Deinit();
