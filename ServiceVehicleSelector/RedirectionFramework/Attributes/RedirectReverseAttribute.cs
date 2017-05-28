@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ServiceVehicleSelector.RedirectionFramework.Attributes
+namespace ServiceVehicleSelector2.RedirectionFramework.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
     internal class RedirectReverseAttribute : RedirectAttribute

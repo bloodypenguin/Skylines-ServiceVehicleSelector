@@ -1,4 +1,4 @@
-﻿namespace ServiceVehicleSelector.RedirectionFramework
+﻿namespace ServiceVehicleSelector2.RedirectionFramework
 {
     public class Tuple<T1, T2>
     {

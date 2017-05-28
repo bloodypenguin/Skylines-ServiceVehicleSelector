@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using ServiceVehicleSelector.RedirectionFramework.Extensions;
-using ServiceVehicleSelector.RedirectionFramework.Attributes;
+using ServiceVehicleSelector2.RedirectionFramework.Extensions;
+using ServiceVehicleSelector2.RedirectionFramework.Attributes;
 
-namespace ServiceVehicleSelector.RedirectionFramework
+namespace ServiceVehicleSelector2.RedirectionFramework
 {
 
     public class AssemblyRedirector

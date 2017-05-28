@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ServiceVehicleSelector.RedirectionFramework.Attributes;
+using ServiceVehicleSelector2.RedirectionFramework.Attributes;
 
-namespace ServiceVehicleSelector.RedirectionFramework
+namespace ServiceVehicleSelector2.RedirectionFramework
 {
     public static class RedirectionUtil
     {

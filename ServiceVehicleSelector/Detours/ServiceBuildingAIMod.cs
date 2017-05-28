@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Reflection;
 using ColossalFramework;
-using ServiceVehicleSelector.RedirectionFramework;
+using ServiceVehicleSelector2.RedirectionFramework;
 using UnityEngine;
 
-namespace ServiceVehicleSelector.Detours
+namespace ServiceVehicleSelector2.Detours
 {
   public class ServiceBuildingAIMod
   {

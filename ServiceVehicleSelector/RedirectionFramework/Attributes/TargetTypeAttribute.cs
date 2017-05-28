@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ServiceVehicleSelector.RedirectionFramework.Attributes
+namespace ServiceVehicleSelector2.RedirectionFramework.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class TargetTypeAttribute : Attribute

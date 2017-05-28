@@ -2,10 +2,10 @@
 using System.Linq;
 using ColossalFramework;
 using ColossalFramework.Math;
-using ServiceVehicleSelector.RedirectionFramework.Attributes;
+using ServiceVehicleSelector2.RedirectionFramework.Attributes;
 using UnityEngine;
 
-namespace ServiceVehicleSelector.Detours
+namespace ServiceVehicleSelector2.Detours
 {
     [TargetType(typeof(CargoTruckAI))]
   public class CargoTruckAIDetour : CargoTruckAI

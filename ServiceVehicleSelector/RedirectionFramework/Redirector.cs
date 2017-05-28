@@ -1,6 +1,6 @@
-﻿using ServiceVehicleSelector.RedirectionFramework.Extensions;
+﻿using ServiceVehicleSelector2.RedirectionFramework.Extensions;
 
-namespace ServiceVehicleSelector.RedirectionFramework
+namespace ServiceVehicleSelector2.RedirectionFramework
 {
     public class Redirector<T>
     {

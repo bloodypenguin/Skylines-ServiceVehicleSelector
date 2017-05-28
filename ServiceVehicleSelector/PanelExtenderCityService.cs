@@ -9,7 +9,7 @@ using ColossalFramework.UI;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ServiceVehicleSelector
+namespace ServiceVehicleSelector2
 {
   public class PanelExtenderCityService : MonoBehaviour
   {

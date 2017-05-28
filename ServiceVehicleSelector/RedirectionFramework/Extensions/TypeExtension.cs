@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace ServiceVehicleSelector.RedirectionFramework.Extensions
+namespace ServiceVehicleSelector2.RedirectionFramework.Extensions
 {
     public static class TypeExtension
     {

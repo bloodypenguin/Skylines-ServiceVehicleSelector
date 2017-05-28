@@ -21,7 +21,7 @@ THE SOFTWARE.
 using System;
 using System.Reflection;
 
-namespace ServiceVehicleSelector.RedirectionFramework
+namespace ServiceVehicleSelector2.RedirectionFramework
 {
 
     public class RedirectCallsState

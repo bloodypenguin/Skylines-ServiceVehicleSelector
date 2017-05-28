@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ColossalFramework;
-using ServiceVehicleSelector.RedirectionFramework;
-using ServiceVehicleSelector.RedirectionFramework.Attributes;
+using ServiceVehicleSelector2.RedirectionFramework;
+using ServiceVehicleSelector2.RedirectionFramework.Attributes;
 using UnityEngine;
 
-namespace ServiceVehicleSelector.Detours
+namespace ServiceVehicleSelector2.Detours
 {
     [TargetType(typeof(DepotAI))]
     public class DepotAIDetour : DepotAI

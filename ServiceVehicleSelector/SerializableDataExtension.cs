@@ -7,7 +7,7 @@
 using ICities;
 using System;
 
-namespace ServiceVehicleSelector
+namespace ServiceVehicleSelector2
 {
   public class SerializableDataExtension : ISerializableDataExtension
   {

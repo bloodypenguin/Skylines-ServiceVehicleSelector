@@ -13,7 +13,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace ServiceVehicleSelector
+namespace ServiceVehicleSelector2
 {
   public static class Utils
   {

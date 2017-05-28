@@ -2,7 +2,7 @@
 using ColossalFramework;
 using ColossalFramework.Math;
 
-namespace ServiceVehicleSelector.Detours
+namespace ServiceVehicleSelector2.Detours
 {
   public static class VehicleManagerMod
   {

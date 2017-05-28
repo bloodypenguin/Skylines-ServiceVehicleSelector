@@ -10,11 +10,11 @@ using ICities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ServiceVehicleSelector.Detours;
-using ServiceVehicleSelector.RedirectionFramework;
+using ServiceVehicleSelector2.Detours;
+using ServiceVehicleSelector2.RedirectionFramework;
 using UnityEngine;
 
-namespace ServiceVehicleSelector
+namespace ServiceVehicleSelector2
 {
   public class ServiceVehicleSelectorMod : IUserMod, ILoadingExtension
   {
@@ -25,7 +25,7 @@ namespace ServiceVehicleSelector
     private LoadMode _loadMode;
     private GameObject _gameObject;
 
-    public string Name => "Service Vehicle Selector " + ServiceVehicleSelectorMod._version;
+    public string Name => "Service Vehicle Selector 2 (r" + ServiceVehicleSelectorMod._version + ")";
 
     public string Description => "Control the vehicle types a service building can spawn. ";
 

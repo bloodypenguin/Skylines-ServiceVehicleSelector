@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace ServiceVehicleSelector.RedirectionFramework.Attributes.IgnoreConditions
+namespace ServiceVehicleSelector2.RedirectionFramework.Attributes.IgnoreConditions
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Property)]
     public class DisableAttribute : IgnoreConditionAttribute

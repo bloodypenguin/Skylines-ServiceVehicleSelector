@@ -7,7 +7,7 @@
 using ColossalFramework.UI;
 using UnityEngine;
 
-namespace ServiceVehicleSelector
+namespace ServiceVehicleSelector2
 {
   public static class UIHelper
   {

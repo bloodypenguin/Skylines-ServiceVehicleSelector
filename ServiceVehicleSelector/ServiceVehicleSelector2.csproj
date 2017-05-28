@@ -6,11 +6,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{8F783308-99B1-4D86-AF21-3A10188CF178}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>ServiceVehicleSelector</AssemblyName>
+    <AssemblyName>ServiceVehicleSelector2</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <ApplicationVersion>1.0.0.0</ApplicationVersion>
     <FileAlignment>512</FileAlignment>
-    <RootNamespace>ServiceVehicleSelector</RootNamespace>
+    <RootNamespace>ServiceVehicleSelector2</RootNamespace>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
