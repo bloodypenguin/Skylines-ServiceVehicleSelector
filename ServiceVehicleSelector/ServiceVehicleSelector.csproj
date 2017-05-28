@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\Games\Steam\steamapps\workshop\content\255710\519691655\ServiceVehicleSelector.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8F783308-99B1-4D86-AF21-3A10188CF178}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>ServiceVehicleSelector</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>ServiceVehicleSelector</RootNamespace>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ICities" />
+    <Reference Include="System.Core" />
+    <Reference Include="UnityEngine" />
+    <Reference Include="ColossalManaged" />
+    <Reference Include="Assembly-CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ServiceVehicleSelectorMod.cs" />
+    <Compile Include="CargoTruckAIMod.cs" />
+    <Compile Include="DepotAIMod.cs" />
+    <Compile Include="PrefabData.cs" />
+    <Compile Include="SerializableDataExtension.cs" />
+    <Compile Include="ServiceBuildingAIMod.cs" />
+    <Compile Include="UIHelper.cs" />
+    <Compile Include="PanelExtenderCityService.cs" />
+    <Compile Include="RedirectCallsState.cs" />
+    <Compile Include="RedirectionHelper.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="VehicleListBox.cs" />
+    <Compile Include="VehicleListBoxRow.cs" />
+    <Compile Include="VehicleManagerMod.cs" />
+    <Compile Include="VehiclePrefabs.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
