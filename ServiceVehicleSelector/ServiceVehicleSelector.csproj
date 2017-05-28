@@ -39,29 +39,56 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ICities" />
-    <Reference Include="System.Core" />
-    <Reference Include="UnityEngine" />
-    <Reference Include="ColossalManaged" />
-    <Reference Include="Assembly-CSharp" />
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="RedirectionFramework\AssemblyRedirector.cs" />
+    <Compile Include="RedirectionFramework\Attributes\IgnoreConditionAttribute.cs" />
+    <Compile Include="RedirectionFramework\Attributes\IgnoreConditions\DisableAttribute.cs" />
+    <Compile Include="RedirectionFramework\Attributes\RedirectAttribute.cs" />
+    <Compile Include="RedirectionFramework\Attributes\RedirectMethodAttribute.cs" />
+    <Compile Include="RedirectionFramework\Attributes\RedirectReverseAttribute.cs" />
+    <Compile Include="RedirectionFramework\Attributes\TargetTypeAttribute.cs" />
+    <Compile Include="RedirectionFramework\Extensions\TypeExtension.cs" />
+    <Compile Include="RedirectionFramework\RedirectionHelper.cs" />
+    <Compile Include="RedirectionFramework\RedirectionUtil.cs" />
+    <Compile Include="RedirectionFramework\Redirector.cs" />
+    <Compile Include="RedirectionFramework\Tuple.cs" />
     <Compile Include="ServiceVehicleSelectorMod.cs" />
-    <Compile Include="CargoTruckAIMod.cs" />
-    <Compile Include="DepotAIMod.cs" />
+    <Compile Include="Detours\CargoTruckAIMod.cs" />
+    <Compile Include="Detours\DepotAIMod.cs" />
     <Compile Include="PrefabData.cs" />
     <Compile Include="SerializableDataExtension.cs" />
-    <Compile Include="ServiceBuildingAIMod.cs" />
+    <Compile Include="Detours\ServiceBuildingAIMod.cs" />
     <Compile Include="UIHelper.cs" />
     <Compile Include="PanelExtenderCityService.cs" />
-    <Compile Include="RedirectCallsState.cs" />
-    <Compile Include="RedirectionHelper.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="VehicleListBox.cs" />
     <Compile Include="VehicleListBoxRow.cs" />
-    <Compile Include="VehicleManagerMod.cs" />
+    <Compile Include="Detours\VehicleManagerMod.cs" />
     <Compile Include="VehiclePrefabs.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Games\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="ColossalManaged, Version=0.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Games\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\ColossalManaged.dll</HintPath>
+    </Reference>
+    <Reference Include="ICities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Games\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\ICities.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Games\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(TargetName)"
+del "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\$(TargetFileName)"
+xcopy /y "$(TargetPath)" "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(TargetName)" /s /e
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>

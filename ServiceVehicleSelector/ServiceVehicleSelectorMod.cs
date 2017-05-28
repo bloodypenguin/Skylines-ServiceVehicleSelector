@@ -10,6 +10,7 @@ using ICities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ServiceVehicleSelector.Detours;
 using UnityEngine;
 
 namespace ServiceVehicleSelector

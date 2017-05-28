@@ -1,15 +1,10 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: ServiceVehicleSelector.DepotAIMod
-// Assembly: ServiceVehicleSelector, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: D0EBD243-0D3C-4ED4-95A5-A73C88972683
-// Assembly location: C:\Games\Steam\steamapps\workshop\content\255710\519691655\ServiceVehicleSelector.dll
-
-using ColossalFramework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using ColossalFramework;
+using ServiceVehicleSelector.RedirectionFramework;
 using UnityEngine;
 
-namespace ServiceVehicleSelector
+namespace ServiceVehicleSelector.Detours
 {
   public class DepotAIMod : DepotAI
   {
