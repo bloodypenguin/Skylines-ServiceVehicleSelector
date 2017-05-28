@@ -47,7 +47,9 @@ namespace ServiceVehicleSelector
             this._cachedItemClass = itemClass;
           }
         }
-        else if (itemClass.m_service == ItemClass.Service.HealthCare || itemClass.m_service == ItemClass.Service.FireDepartment || (itemClass.m_service == ItemClass.Service.Garbage || itemClass.m_service == ItemClass.Service.PoliceDepartment) || (itemClass.m_service == ItemClass.Service.Road || itemClass.m_subService == ItemClass.SubService.PublicTransportTaxi && buffer[(int) building].Info.m_buildingAI is DepotAI))
+        else if (itemClass.m_service == ItemClass.Service.HealthCare || itemClass.m_service == ItemClass.Service.FireDepartment || (itemClass.m_service == ItemClass.Service.Garbage || itemClass.m_service == ItemClass.Service.PoliceDepartment) || (itemClass.m_service == ItemClass.Service.Road || 
+                    (itemClass.m_subService == ItemClass.SubService.PublicTransportTaxi && buffer[(int) building].Info.m_buildingAI is DepotAI) ||
+                    (itemClass.m_subService == ItemClass.SubService.PublicTransportCableCar && buffer[(int)building].Info.m_buildingAI is CableCarStationAI)))
         {
           flag = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)

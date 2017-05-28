@@ -13,12 +13,10 @@ namespace ServiceVehicleSelector.Detours
         [RedirectMethod]
         public override void StartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason reason, TransferManager.TransferOffer offer)
         {
-            //begin mod(+): handle taxi case
-            var forceInfo = GetForcedVehicle(buildingID, data, reason);
-            //end mod
             if (reason == this.m_transportInfo.m_vehicleReason)
             {
                 //begin mod(*): if some vehicle was forced, use the forced one
+                var forceInfo = GetForcedVehicle(buildingID, data, reason);
                 VehicleInfo randomVehicleInfo = forceInfo != null ? forceInfo : Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, this.m_transportInfo.m_class.m_service, this.m_transportInfo.m_class.m_subService, this.m_transportInfo.m_class.m_level);
                 //end mod
                 if (randomVehicleInfo == null)
@@ -36,6 +34,7 @@ namespace ServiceVehicleSelector.Detours
             else if (this.m_secondaryTransportInfo != null && reason == this.m_secondaryTransportInfo.m_vehicleReason)
             {
                 //begin mod(*): if some vehicle was forced, use the forced one
+                var forceInfo = GetForcedVehicle(buildingID, data, reason);
                 VehicleInfo randomVehicleInfo = forceInfo != null ? forceInfo : Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, this.m_secondaryTransportInfo.m_class.m_service, this.m_secondaryTransportInfo.m_class.m_subService, this.m_secondaryTransportInfo.m_class.m_level);
                 //end mod
                 if (randomVehicleInfo == null)

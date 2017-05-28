@@ -22,6 +22,7 @@ namespace ServiceVehicleSelector
     private PrefabData[] _trainPrefabData;
     private PrefabData[] _roadPrefabData;
     private PrefabData[] _roadSnowPrefabData;
+    private PrefabData[] _cableCarPrefabData;
 
     public static void Init()
     {
@@ -36,6 +37,8 @@ namespace ServiceVehicleSelector
 
     public PrefabData[] GetPrefab(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level)
     {
+      if (subService == ItemClass.SubService.PublicTransportCableCar)
+        return this._cableCarPrefabData;
       if (subService == ItemClass.SubService.PublicTransportTrain)
         return this._trainPrefabData;
       if (subService == ItemClass.SubService.PublicTransportTaxi)
@@ -75,7 +78,8 @@ namespace ServiceVehicleSelector
       List<PrefabData> prefabDataList8 = new List<PrefabData>();
       List<PrefabData> prefabDataList9 = new List<PrefabData>();
       List<PrefabData> prefabDataList10 = new List<PrefabData>();
-      for (int index = 0; index < PrefabCollection<VehicleInfo>.PrefabCount(); ++index)
+      List<PrefabData> prefabDataList11 = new List<PrefabData>();
+    for (int index = 0; index < PrefabCollection<VehicleInfo>.PrefabCount(); ++index)
       {
         VehicleInfo prefab = PrefabCollection<VehicleInfo>.GetPrefab((uint) index);
         if ((Object) prefab != (Object) null && !VehiclePrefabs.IsTrailer(prefab))
@@ -86,6 +90,8 @@ namespace ServiceVehicleSelector
               prefabDataList2.Add(new PrefabData(prefab));
             else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportTaxi)
               prefabDataList1.Add(new PrefabData(prefab));
+            else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportCableCar)
+                prefabDataList11.Add(new PrefabData(prefab));
           }
           else if (prefab.m_class.m_service == ItemClass.Service.FireDepartment)
             prefabDataList5.Add(new PrefabData(prefab));
@@ -124,6 +130,7 @@ namespace ServiceVehicleSelector
       this._prisonPrefabData = prefabDataList8.ToArray();
       this._roadPrefabData = prefabDataList9.ToArray();
       this._roadSnowPrefabData = prefabDataList10.ToArray();
+        this._cableCarPrefabData = prefabDataList11.ToArray();
     }
 
     private static bool IsTrailer(VehicleInfo prefab)
