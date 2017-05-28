@@ -16,7 +16,7 @@ namespace ServiceVehicleSelector.Detours
             if (reason == this.m_transportInfo.m_vehicleReason)
             {
                 //begin mod(*): if some vehicle was forced, use the forced one
-                var forceInfo = GetForcedVehicle(buildingID, data, reason);
+                var forceInfo = GetForcedVehicle(buildingID, data, reason, true);
                 VehicleInfo randomVehicleInfo = forceInfo != null ? forceInfo : Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, this.m_transportInfo.m_class.m_service, this.m_transportInfo.m_class.m_subService, this.m_transportInfo.m_class.m_level);
                 //end mod
                 if (randomVehicleInfo == null)
@@ -34,7 +34,7 @@ namespace ServiceVehicleSelector.Detours
             else if (this.m_secondaryTransportInfo != null && reason == this.m_secondaryTransportInfo.m_vehicleReason)
             {
                 //begin mod(*): if some vehicle was forced, use the forced one
-                var forceInfo = GetForcedVehicle(buildingID, data, reason);
+                var forceInfo = GetForcedVehicle(buildingID, data, reason, false);
                 VehicleInfo randomVehicleInfo = forceInfo != null ? forceInfo : Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, this.m_secondaryTransportInfo.m_class.m_service, this.m_secondaryTransportInfo.m_class.m_subService, this.m_secondaryTransportInfo.m_class.m_level);
                 //end mod
                 if (randomVehicleInfo == null)
@@ -53,15 +53,15 @@ namespace ServiceVehicleSelector.Detours
             //end mod
         }
 
-        private static VehicleInfo GetForcedVehicle(ushort buildingID, Building data, TransferManager.TransferReason reason)
+        private static VehicleInfo GetForcedVehicle(ushort buildingID, Building data, TransferManager.TransferReason reason, bool primary)
         {
             VehicleInfo forceInfo = null;
-            if (reason == TransferManager.TransferReason.Taxi &&
+            if ((reason == TransferManager.TransferReason.Taxi || reason == TransferManager.TransferReason.CableCar) &&
                 ServiceVehicleSelectorMod.BuildingData.TryGetValue(buildingID, out HashSet<string> source) &&
                 source.Count > 0)
             {
-                if (reason == ((DepotAI)data.Info.m_buildingAI).m_transportInfo.m_vehicleReason ||
-                    reason == ((DepotAI)data.Info.m_buildingAI).m_secondaryTransportInfo.m_vehicleReason)
+                if ((primary && reason == ((DepotAI)data.Info.m_buildingAI).m_transportInfo.m_vehicleReason) ||
+                    (!primary && reason == ((DepotAI)data.Info.m_buildingAI).m_secondaryTransportInfo.m_vehicleReason))
                 {
                     string[] array = source.ToArray<string>();
                     int index = Singleton<SimulationManager>.instance.m_randomizer.Int32((uint) array.Length);
