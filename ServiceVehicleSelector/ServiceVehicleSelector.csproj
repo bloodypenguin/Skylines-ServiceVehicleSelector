@@ -53,7 +53,7 @@
     <Compile Include="RedirectionFramework\Tuple.cs" />
     <Compile Include="ServiceVehicleSelectorMod.cs" />
     <Compile Include="Detours\CargoTruckAIMod.cs" />
-    <Compile Include="Detours\DepotAIMod.cs" />
+    <Compile Include="Detours\DepotAIDetour.cs" />
     <Compile Include="PrefabData.cs" />
     <Compile Include="SerializableDataExtension.cs" />
     <Compile Include="Detours\ServiceBuildingAIMod.cs" />

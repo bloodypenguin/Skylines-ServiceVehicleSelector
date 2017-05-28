@@ -11,43 +11,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ServiceVehicleSelector.Detours;
+using ServiceVehicleSelector.RedirectionFramework;
 using UnityEngine;
 
 namespace ServiceVehicleSelector
 {
   public class ServiceVehicleSelectorMod : IUserMod, ILoadingExtension
   {
-    private static readonly string _version = "2.2.1";
+    private static readonly string _version = "3.0.0";
     private static readonly string _dataID = "CTS_BuildingData";
     private static readonly string _dataVersion = "v001";
     public static Dictionary<ushort, HashSet<string>> BuildingData;
     private LoadMode _loadMode;
     private GameObject _gameObject;
 
-    public string Name
-    {
-      get
-      {
-        return "Service Vehicle Selector " + ServiceVehicleSelectorMod._version;
-      }
-    }
+    public string Name => "Service Vehicle Selector " + ServiceVehicleSelectorMod._version;
 
-    public string Description
-    {
-      get
-      {
-        return "Control the vehicle types a service building can spawn. ";
-      }
-    }
+    public string Description => "Control the vehicle types a service building can spawn. ";
 
-    public void OnCreated(ILoading loading)
+      public void OnCreated(ILoading loading)
     {
     }
 
     public void OnLevelLoaded(LoadMode mode)
     {
       this._loadMode = mode;
-      if (mode != LoadMode.LoadGame && mode != LoadMode.NewGame)
+      if (mode != LoadMode.LoadGame && mode != LoadMode.NewGame && this._loadMode != LoadMode.NewGameFromScenario)
         return;
       UIView objectOfType = UnityEngine.Object.FindObjectOfType<UIView>();
       if ((UnityEngine.Object) objectOfType != (UnityEngine.Object) null)
@@ -60,7 +49,7 @@ namespace ServiceVehicleSelector
       if (!ServiceVehicleSelectorMod.TryLoadData(out ServiceVehicleSelectorMod.BuildingData))
         Utils.Log((object) "Loading default building data.");
       CargoTruckAIMod.Init();
-      DepotAIMod.Init();
+      Redirector<DepotAIDetour>.Deploy();
       ServiceBuildingAIMod.Init();
       SerializableDataExtension.instance.EventSaveData += new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);
       SerializableDataExtension.instance.Loaded = true;
@@ -68,12 +57,12 @@ namespace ServiceVehicleSelector
 
     public void OnLevelUnloading()
     {
-      if (this._loadMode != LoadMode.LoadGame && this._loadMode != LoadMode.NewGame)
+      if (this._loadMode != LoadMode.LoadGame && this._loadMode != LoadMode.NewGame && this._loadMode != LoadMode.NewGameFromScenario)
         return;
       ServiceVehicleSelectorMod.BuildingData.Clear();
       ServiceVehicleSelectorMod.BuildingData = (Dictionary<ushort, HashSet<string>>) null;
       CargoTruckAIMod.Deinit();
-      DepotAIMod.Deinit();
+      Redirector<DepotAIDetour>.Revert();
       ServiceBuildingAIMod.Deinit();
       VehiclePrefabs.Deinit();
       SerializableDataExtension.instance.EventSaveData -= new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);
