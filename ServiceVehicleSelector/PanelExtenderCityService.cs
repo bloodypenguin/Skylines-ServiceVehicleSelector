@@ -38,12 +38,19 @@ namespace ServiceVehicleSelector2
         ushort building = Utils.GetPrivate<InstanceID>((object) this._cityServiceWorldInfoPanel, "m_InstanceID").Building;
         Building[] buffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
         ItemClass itemClass = buffer[(int) building].Info.m_class;
-        if (itemClass.m_service == ItemClass.Service.PublicTransport && itemClass.m_level == ItemClass.Level.Level4 && (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain || buffer[(int) building].Info.name.Equals("Cargo Hub")))
+        if (itemClass.m_service == ItemClass.Service.PublicTransport && (itemClass.m_level == ItemClass.Level.Level4 || itemClass.m_level == ItemClass.Level.Level1) && (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain || buffer[(int) building].Info.name.Equals("Cargo Hub"))) //TODO(earalov): generalize
         {
           flag = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
           {
-            this.PopulateVehicleListBox(ItemClass.Service.PublicTransport, ItemClass.SubService.PublicTransportTrain, ItemClass.Level.Level4);
+              if (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain && itemClass.m_level == ItemClass.Level.Level1)
+              {
+                  this.PopulateVehicleListBox(ItemClass.Service.PublicTransport, ItemClass.SubService.PublicTransportTrain, ItemClass.Level.Level1);
+              }
+              else
+              {
+                  this.PopulateVehicleListBox(ItemClass.Service.PublicTransport, ItemClass.SubService.PublicTransportTrain, ItemClass.Level.Level4);  
+              }
             this._cachedItemClass = itemClass;
           }
         }

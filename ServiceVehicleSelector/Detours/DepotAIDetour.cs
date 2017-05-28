@@ -63,14 +63,26 @@ namespace ServiceVehicleSelector2.Detours
                 if ((primary && reason == ((DepotAI)data.Info.m_buildingAI).m_transportInfo.m_vehicleReason) ||
                     (!primary && reason == ((DepotAI)data.Info.m_buildingAI).m_secondaryTransportInfo.m_vehicleReason))
                 {
-                    string[] array = source.ToArray<string>();
-                    int index = Singleton<SimulationManager>.instance.m_randomizer.Int32((uint) array.Length);
-                    string prefabName = array[index];
-                    forceInfo = VehicleManagerMod.GetVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer,
-                        data.Info.m_class.m_service, data.Info.m_class.m_subService, data.Info.m_class.m_level,
-                        buildingID,
-                        prefabName);
+                    forceInfo = GetVehicleInfo(buildingID, data);
                 }
+            }
+            return forceInfo;
+        }
+
+        public static VehicleInfo GetVehicleInfo(ushort buildingID, Building buildingData)
+        {
+            VehicleInfo forceInfo = null;
+            if (ServiceVehicleSelectorMod.BuildingData.TryGetValue(buildingID, out HashSet<string> source) &&
+                source.Count > 0)
+            {
+                string[] array = source.ToArray<string>();
+                int index = Singleton<SimulationManager>.instance.m_randomizer.Int32((uint)array.Length);
+                string prefabName = array[index];
+                forceInfo = VehicleManagerMod.GetVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer,
+                    buildingData.Info.m_class.m_service, buildingData.Info.m_class.m_subService,
+                    buildingData.Info.m_class.m_level,
+                    buildingID,
+                    prefabName);
             }
             return forceInfo;
         }

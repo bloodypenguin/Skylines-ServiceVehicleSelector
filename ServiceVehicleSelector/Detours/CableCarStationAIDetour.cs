@@ -14,19 +14,7 @@ namespace ServiceVehicleSelector2.Detours
         {
             //begin mod
             VehicleManager instance = Singleton<VehicleManager>.instance;
-            VehicleInfo forceInfo = null;
-            if (ServiceVehicleSelectorMod.BuildingData.TryGetValue(buildingID, out HashSet<string> source) &&
-                source.Count > 0)
-            {
-                string[] array = source.ToArray<string>();
-                int index = Singleton<SimulationManager>.instance.m_randomizer.Int32((uint) array.Length);
-                string prefabName = array[index];
-                forceInfo = VehicleManagerMod.GetVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer,
-                    buildingData.Info.m_class.m_service, buildingData.Info.m_class.m_subService,
-                    buildingData.Info.m_class.m_level,
-                    buildingID,
-                    prefabName);
-            }
+            var forceInfo = DepotAIDetour.GetVehicleInfo(buildingID, buildingData);
             VehicleInfo randomVehicleInfo = forceInfo != null ? forceInfo : instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, this.m_info.m_class.m_service, this.m_info.m_class.m_subService, this.m_info.m_class.m_level);
             //end mod
             if (randomVehicleInfo != null)
