@@ -64,7 +64,7 @@
     <Compile Include="VehicleListBoxRow.cs" />
     <Compile Include="Detours\VehicleManagerMod.cs" />
     <Compile Include="VehiclePrefabs.cs" />
-    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
