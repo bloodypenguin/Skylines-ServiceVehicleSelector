@@ -48,7 +48,7 @@ namespace ServiceVehicleSelector
       VehiclePrefabs.Init();
       if (!ServiceVehicleSelectorMod.TryLoadData(out ServiceVehicleSelectorMod.BuildingData))
         Utils.Log((object) "Loading default building data.");
-      CargoTruckAIMod.Init();
+      Redirector<CargoTruckAIDetour>.Deploy();
       Redirector<DepotAIDetour>.Deploy();
       ServiceBuildingAIMod.Init();
       SerializableDataExtension.instance.EventSaveData += new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);
@@ -61,7 +61,7 @@ namespace ServiceVehicleSelector
         return;
       ServiceVehicleSelectorMod.BuildingData.Clear();
       ServiceVehicleSelectorMod.BuildingData = (Dictionary<ushort, HashSet<string>>) null;
-      CargoTruckAIMod.Deinit();
+      Redirector<CargoTruckAIDetour>.Revert();
       Redirector<DepotAIDetour>.Revert();
       ServiceBuildingAIMod.Deinit();
       VehiclePrefabs.Deinit();

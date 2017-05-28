@@ -1,46 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using ColossalFramework;
 using ColossalFramework.Math;
-using ServiceVehicleSelector.RedirectionFramework;
+using ServiceVehicleSelector.RedirectionFramework.Attributes;
 using UnityEngine;
 
 namespace ServiceVehicleSelector.Detours
 {
-  public class CargoTruckAIMod
+    [TargetType(typeof(CargoTruckAI))]
+  public class CargoTruckAIDetour : CargoTruckAI
   {
-    private static bool _isDeployed;
-    private static CargoTruckAIMod.SkipNonCarPathsCallback SkipNonCarPaths;
-    private static CargoTruckAIMod.FindCargoParentCallback FindCargoParent;
-    private static CargoTruckAIMod.RemoveTargetCallback RemoveTarget;
-    private static RedirectCallsState _redirectCallsState;
 
-    public static void Init()
-    {
-      if (CargoTruckAIMod._isDeployed)
-        return;
-      CargoTruckAIMod.SkipNonCarPaths = (CargoTruckAIMod.SkipNonCarPathsCallback) Delegate.CreateDelegate(typeof (CargoTruckAIMod.SkipNonCarPathsCallback), (object) null, typeof (CargoTruckAI).GetMethod("SkipNonCarPaths", BindingFlags.Static | BindingFlags.NonPublic));
-      CargoTruckAIMod.FindCargoParent = (CargoTruckAIMod.FindCargoParentCallback) Delegate.CreateDelegate(typeof (CargoTruckAIMod.FindCargoParentCallback), (object) null, typeof (CargoTruckAI).GetMethod("FindCargoParent", BindingFlags.Static | BindingFlags.NonPublic));
-      CargoTruckAIMod.RemoveTarget = (CargoTruckAIMod.RemoveTargetCallback) Delegate.CreateDelegate(typeof (CargoTruckAIMod.RemoveTargetCallback), (object) null, typeof (CargoTruckAI).GetMethod("RemoveTarget", BindingFlags.Instance | BindingFlags.NonPublic));
-      Utils.Log((object) "Detouring CargoTruckAI.ChangeVehicleType to CargoTruckAIMod.ChangeVehicleType");
-      CargoTruckAIMod._redirectCallsState = RedirectionHelper.RedirectCalls(typeof (CargoTruckAI).GetMethod("ChangeVehicleType", BindingFlags.Instance | BindingFlags.NonPublic), typeof (CargoTruckAIMod).GetMethod("ChangeVehicleType", BindingFlags.Instance | BindingFlags.NonPublic));
-      CargoTruckAIMod._isDeployed = true;
-    }
-
-    public static void Deinit()
-    {
-      if (!CargoTruckAIMod._isDeployed)
-        return;
-      CargoTruckAIMod.SkipNonCarPaths = (CargoTruckAIMod.SkipNonCarPathsCallback) null;
-      CargoTruckAIMod.FindCargoParent = (CargoTruckAIMod.FindCargoParentCallback) null;
-      CargoTruckAIMod.RemoveTarget = (CargoTruckAIMod.RemoveTargetCallback) null;
-      Utils.Log((object) "Reverting detour for ChangeVehicleType");
-      RedirectionHelper.RevertRedirect(typeof (CargoTruckAI).GetMethod("ChangeVehicleType", BindingFlags.Instance | BindingFlags.NonPublic), CargoTruckAIMod._redirectCallsState);
-      CargoTruckAIMod._isDeployed = false;
-    }
-
+    [RedirectMethod]
     private bool ChangeVehicleType(ushort vehicleID, ref Vehicle vehicleData, PathUnit.Position pathPos, uint laneID)
     {
       if ((vehicleData.m_flags & (Vehicle.Flags.TransferToSource | Vehicle.Flags.GoingBack)) != ~(Vehicle.Flags.Created | Vehicle.Flags.Deleted | Vehicle.Flags.Spawned | Vehicle.Flags.Inverted | Vehicle.Flags.TransferToTarget | Vehicle.Flags.TransferToSource | Vehicle.Flags.Emergency1 | Vehicle.Flags.Emergency2 | Vehicle.Flags.WaitingPath | Vehicle.Flags.Stopped | Vehicle.Flags.Leaving | Vehicle.Flags.Arriving | Vehicle.Flags.Reversed | Vehicle.Flags.TakingOff | Vehicle.Flags.Flying | Vehicle.Flags.Landing | Vehicle.Flags.WaitingSpace | Vehicle.Flags.WaitingCargo | Vehicle.Flags.GoingBack | Vehicle.Flags.WaitingTarget | Vehicle.Flags.Importing | Vehicle.Flags.Exporting | Vehicle.Flags.Parking | Vehicle.Flags.CustomName | Vehicle.Flags.OnGravel | Vehicle.Flags.WaitingLoading | Vehicle.Flags.Congestion | Vehicle.Flags.DummyTraffic | Vehicle.Flags.Underground | Vehicle.Flags.Transition | Vehicle.Flags.InsideBuilding | Vehicle.Flags.LeftHandDrive))
@@ -52,7 +23,7 @@ namespace ServiceVehicleSelector.Detours
       NetInfo info1 = instance2.m_segments.m_buffer[(int) pathPos.m_segment].Info;
       Vector3 position1 = instance2.m_lanes.m_buffer[(int) laneID].CalculatePosition(0.5f);
       Vector3 lastPos = position1;
-      if (!CargoTruckAIMod.SkipNonCarPaths(ref vehicleData.m_path, ref vehicleData.m_pathPositionIndex, ref vehicleData.m_lastPathOffset, ref lastPos))
+      if (!CargoTruckAIDetour.SkipNonCarPaths(ref vehicleData.m_path, ref vehicleData.m_pathPositionIndex, ref vehicleData.m_lastPathOffset, ref lastPos))
         return false;
       ushort building1 = instance3.FindBuilding(position1, 100f, info1.m_class.m_service, ItemClass.SubService.None, Building.Flags.None, Building.Flags.None);
       ushort building2 = instance3.FindBuilding(lastPos, 100f, info1.m_class.m_service, ItemClass.SubService.None, Building.Flags.None, Building.Flags.None);
@@ -79,7 +50,7 @@ namespace ServiceVehicleSelector.Detours
         instance1.m_vehicles.m_buffer[(int) vehicle1].m_lastPathOffset = vehicleData.m_lastPathOffset;
         instance1.m_vehicles.m_buffer[(int) vehicle1].m_flags = instance1.m_vehicles.m_buffer[(int) vehicle1].m_flags | vehicleData.m_flags & (Vehicle.Flags.Importing | Vehicle.Flags.Exporting);
         vehicleData.m_path = 0U;
-        ushort vehicle2 = CargoTruckAIMod.FindCargoParent(building1, building2, info1.m_class.m_service, info1.m_class.m_subService);
+        ushort vehicle2 = CargoTruckAIDetour.FindCargoParent(building1, building2, info1.m_class.m_service, info1.m_class.m_subService);
         VehicleInfo info2;
         if ((int) vehicle2 != 0)
         {
@@ -146,7 +117,7 @@ namespace ServiceVehicleSelector.Detours
         vehicleData.m_targetPos3 = vehicleData.m_targetPos1;
         if ((int) building1 == (int) vehicleData.m_sourceBuilding)
         {
-          CargoTruckAIMod.RemoveTarget(vehicleAi, vehicleID, ref vehicleData);
+          CargoTruckAIDetour.RemoveTarget(vehicleAi, vehicleID, ref vehicleData);
           vehicleData.m_flags &= Vehicle.Flags.Created | Vehicle.Flags.Deleted | Vehicle.Flags.Spawned | Vehicle.Flags.Inverted | Vehicle.Flags.TransferToTarget | Vehicle.Flags.TransferToSource | Vehicle.Flags.Emergency1 | Vehicle.Flags.Emergency2 | Vehicle.Flags.WaitingPath | Vehicle.Flags.Stopped | Vehicle.Flags.Leaving | Vehicle.Flags.Arriving | Vehicle.Flags.Reversed | Vehicle.Flags.TakingOff | Vehicle.Flags.Flying | Vehicle.Flags.Landing | Vehicle.Flags.WaitingSpace | Vehicle.Flags.WaitingCargo | Vehicle.Flags.GoingBack | Vehicle.Flags.Importing | Vehicle.Flags.Exporting | Vehicle.Flags.Parking | Vehicle.Flags.CustomName | Vehicle.Flags.OnGravel | Vehicle.Flags.WaitingLoading | Vehicle.Flags.Congestion | Vehicle.Flags.DummyTraffic | Vehicle.Flags.Underground | Vehicle.Flags.Transition | Vehicle.Flags.InsideBuilding | Vehicle.Flags.LeftHandDrive;
           vehicleData.m_flags |= Vehicle.Flags.GoingBack;
           vehicleData.m_waitCounter = (byte) 0;
@@ -163,10 +134,26 @@ namespace ServiceVehicleSelector.Detours
       return true;
     }
 
-    private delegate bool SkipNonCarPathsCallback(ref uint path, ref byte pathPositionIndex, ref byte lastPathOffset, ref Vector3 lastPos);
+      [RedirectReverse]
+      private static bool SkipNonCarPaths(ref uint path, ref byte pathPositionIndex, ref byte lastPathOffset,
+          ref Vector3 lastPos)
+      {
+            UnityEngine.Debug.Log("SkipNonCarPaths");
+          return false;
+      }
 
-    private delegate ushort FindCargoParentCallback(ushort sourceBuilding, ushort targetBuilding, ItemClass.Service service, ItemClass.SubService subService);
+      [RedirectReverse]
+        private static ushort FindCargoParent(ushort sourceBuilding, ushort targetBuilding, ItemClass.Service service,
+          ItemClass.SubService subService)
+      {
+          UnityEngine.Debug.Log("FindCargoParent");
+            return 0;
+      }
 
-    private delegate void RemoveTargetCallback(CargoTruckAI ai, ushort vehicleID, ref Vehicle data);
-  }
+      [RedirectReverse]
+        private static void RemoveTarget(CargoTruckAI ai, ushort vehicleID, ref Vehicle data)
+      {
+          UnityEngine.Debug.Log("RemoveTarget");
+        }
+    }
 }
