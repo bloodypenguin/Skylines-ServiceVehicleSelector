@@ -18,7 +18,7 @@ namespace ServiceVehicleSelector2
 {
   public class ServiceVehicleSelectorMod : IUserMod, ILoadingExtension
   {
-    private static readonly string _version = "3.0.1";
+    private static readonly string _version = "3.1.0";
     private static readonly string _dataID = "CTS_BuildingData";
     private static readonly string _dataVersion = "v001";
     public static Dictionary<ushort, HashSet<string>> BuildingData;
@@ -52,6 +52,7 @@ namespace ServiceVehicleSelector2
       Redirector<CargoTruckAIDetour>.Deploy();
       Redirector<DepotAIDetour>.Deploy();
       Redirector<TransportStationAIDetour>.Deploy();
+      Redirector<LandfillSiteAIDetour>.Deploy();
       ServiceBuildingAIMod.Init();
       SerializableDataExtension.instance.EventSaveData += new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);
       SerializableDataExtension.instance.Loaded = true;
@@ -67,6 +68,7 @@ namespace ServiceVehicleSelector2
       Redirector<CargoTruckAIDetour>.Revert();
       Redirector<DepotAIDetour>.Revert();
       Redirector<TransportStationAIDetour>.Revert();
+      Redirector<LandfillSiteAIDetour>.Revert();
       ServiceBuildingAIMod.Deinit();
       VehiclePrefabs.Deinit();
       SerializableDataExtension.instance.EventSaveData -= new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);

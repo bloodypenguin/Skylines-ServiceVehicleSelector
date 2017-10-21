@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using ColossalFramework;
 using ServiceVehicleSelector2.RedirectionFramework;
+using ServiceVehicleSelector2.RedirectionFramework.Attributes;
 using UnityEngine;
 
 namespace ServiceVehicleSelector2.Detours
@@ -13,7 +14,6 @@ namespace ServiceVehicleSelector2.Detours
     private static RedirectCallsState _redirectCallsStateCemeteryAI;
     private static RedirectCallsState _redirectCallsStateFireStationAI;
     private static RedirectCallsState _redirectCallsStateHospitalAI;
-    private static RedirectCallsState _redirectCallsStateLandfillSiteAI;
     private static RedirectCallsState _redirectCallsStatePoliceStationAI;
     private static RedirectCallsState _redirectCallsStateMaintenanceDepotAI;
     private static RedirectCallsState _redirectCallsStateSnowDumpAI;
@@ -29,7 +29,6 @@ namespace ServiceVehicleSelector2.Detours
       ServiceBuildingAIMod._redirectCallsStateCemeteryAI = RedirectionHelper.RedirectCalls(method1, to);
       ServiceBuildingAIMod._redirectCallsStateFireStationAI = RedirectionHelper.RedirectCalls(typeof (FireStationAI).GetMethod("StartTransfer"), method2);
       ServiceBuildingAIMod._redirectCallsStateHospitalAI = RedirectionHelper.RedirectCalls(typeof (HospitalAI).GetMethod("StartTransfer"), method2);
-      ServiceBuildingAIMod._redirectCallsStateLandfillSiteAI = RedirectionHelper.RedirectCalls(typeof (LandfillSiteAI).GetMethod("StartTransfer"), method2);
       ServiceBuildingAIMod._redirectCallsStatePoliceStationAI = RedirectionHelper.RedirectCalls(typeof (PoliceStationAI).GetMethod("StartTransfer"), method2);
       ServiceBuildingAIMod._redirectCallsStateMaintenanceDepotAI = RedirectionHelper.RedirectCalls(typeof (MaintenanceDepotAI).GetMethod("StartTransfer"), method2);
       ServiceBuildingAIMod._redirectCallsStateSnowDumpAI = RedirectionHelper.RedirectCalls(typeof (SnowDumpAI).GetMethod("StartTransfer"), method2);
@@ -44,7 +43,6 @@ namespace ServiceVehicleSelector2.Detours
       RedirectionHelper.RevertRedirect(typeof (CemeteryAI).GetMethod("StartTransfer"), ServiceBuildingAIMod._redirectCallsStateCemeteryAI);
       RedirectionHelper.RevertRedirect(typeof (FireStationAI).GetMethod("StartTransfer"), ServiceBuildingAIMod._redirectCallsStateFireStationAI);
       RedirectionHelper.RevertRedirect(typeof (HospitalAI).GetMethod("StartTransfer"), ServiceBuildingAIMod._redirectCallsStateHospitalAI);
-      RedirectionHelper.RevertRedirect(typeof (LandfillSiteAI).GetMethod("StartTransfer"), ServiceBuildingAIMod._redirectCallsStateLandfillSiteAI);
       RedirectionHelper.RevertRedirect(typeof (PoliceStationAI).GetMethod("StartTransfer"), ServiceBuildingAIMod._redirectCallsStatePoliceStationAI);
       RedirectionHelper.RevertRedirect(typeof (MaintenanceDepotAI).GetMethod("StartTransfer"), ServiceBuildingAIMod._redirectCallsStateMaintenanceDepotAI);
       RedirectionHelper.RevertRedirect(typeof (SnowDumpAI).GetMethod("StartTransfer"), ServiceBuildingAIMod._redirectCallsStateSnowDumpAI);

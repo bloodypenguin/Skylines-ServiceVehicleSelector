@@ -37,8 +37,9 @@ namespace ServiceVehicleSelector2
         bool flag = false;
         ushort building = Utils.GetPrivate<InstanceID>((object) this._cityServiceWorldInfoPanel, "m_InstanceID").Building;
         Building[] buffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
-        ItemClass itemClass = buffer[(int) building].Info.m_class;
-        if (itemClass.m_service == ItemClass.Service.PublicTransport && (itemClass.m_level == ItemClass.Level.Level4 || itemClass.m_level == ItemClass.Level.Level1) && (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain || buffer[(int) building].Info.name.Equals("Cargo Hub"))) //TODO(earalov): generalize
+          var buildingInfo = buffer[(int) building].Info;
+          ItemClass itemClass = buildingInfo.m_class;
+        if (itemClass.m_service == ItemClass.Service.PublicTransport && (itemClass.m_level == ItemClass.Level.Level4 || itemClass.m_level == ItemClass.Level.Level1) && (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain || buildingInfo.name.Equals("Cargo Hub"))) //TODO(earalov): generalize
         {
           flag = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
@@ -54,9 +55,9 @@ namespace ServiceVehicleSelector2
             this._cachedItemClass = itemClass;
           }
         }
-        else if (itemClass.m_service == ItemClass.Service.HealthCare || itemClass.m_service == ItemClass.Service.FireDepartment || (itemClass.m_service == ItemClass.Service.Garbage || itemClass.m_service == ItemClass.Service.PoliceDepartment) || (itemClass.m_service == ItemClass.Service.Road || 
-                    (itemClass.m_subService == ItemClass.SubService.PublicTransportTaxi && buffer[(int) building].Info.m_buildingAI is DepotAI) ||
-                    (itemClass.m_subService == ItemClass.SubService.PublicTransportCableCar && buffer[(int)building].Info.m_buildingAI is CableCarStationAI)))
+        else if (itemClass.m_service == ItemClass.Service.HealthCare || itemClass.m_service == ItemClass.Service.FireDepartment || ((itemClass.m_service == ItemClass.Service.Garbage && !buildingInfo.m_isFloating) || itemClass.m_service == ItemClass.Service.PoliceDepartment) || (itemClass.m_service == ItemClass.Service.Road || 
+                    (itemClass.m_subService == ItemClass.SubService.PublicTransportTaxi && buildingInfo.m_buildingAI is DepotAI) ||
+                    (itemClass.m_subService == ItemClass.SubService.PublicTransportCableCar && buildingInfo.m_buildingAI is CableCarStationAI)))
         {
           flag = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
