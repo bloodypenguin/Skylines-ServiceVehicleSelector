@@ -16,6 +16,7 @@ namespace ServiceVehicleSelector2
     private bool _initialized;
     private ushort _cachedBuildingID;
     private ItemClass _cachedItemClass;
+    private bool _cachedIsCargoHub;
     private CityServiceWorldInfoPanel _cityServiceWorldInfoPanel;
     private UIPanel _prefabPanel;
     private VehicleListBox _vehicleListBox;
@@ -34,29 +35,30 @@ namespace ServiceVehicleSelector2
       {
         if (!this._initialized || !this._cityServiceWorldInfoPanel.component.isVisible)
           return;
-        bool flag = false;
+        bool canSelectVehicle = false;
         ushort building = Utils.GetPrivate<InstanceID>((object) this._cityServiceWorldInfoPanel, "m_InstanceID").Building;
         Building[] buffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
-          var buildingInfo = buffer[(int) building].Info;
-          ItemClass itemClass = buildingInfo.m_class;
-        if (itemClass.m_service == ItemClass.Service.PublicTransport && (itemClass.m_level == ItemClass.Level.Level4 || itemClass.m_level == ItemClass.Level.Level1) && (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain || itemClass.m_subService == ItemClass.SubService.PublicTransportPlane || buildingInfo.name.Equals("Cargo Hub"))) //TODO(earalov): generalize
+        var buildingInfo = buffer[(int) building].Info;
+        ItemClass itemClass = buildingInfo.m_class;
+        
+        if (itemClass.m_service == ItemClass.Service.PublicTransport && 
+            itemClass.m_level == ItemClass.Level.Level4 &&
+            (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain || itemClass.m_subService == ItemClass.SubService.PublicTransportPlane || itemClass.m_subService == ItemClass.SubService.PublicTransportShip))
         {
-          flag = true;
-          if ((Object) this._cachedItemClass != (Object) itemClass)
+          canSelectVehicle = true;
+          var isCargoHub = IsCargoHub(buildingInfo);
+          if ((Object) this._cachedItemClass != (Object) itemClass || this._cachedIsCargoHub != isCargoHub)
           {
-              if (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain && itemClass.m_level == ItemClass.Level.Level1)
-              {
-                  this.PopulateVehicleListBox(ItemClass.Service.PublicTransport, ItemClass.SubService.PublicTransportTrain, ItemClass.Level.Level1, VehicleInfo.VehicleType.None);
-              }
-              else if (itemClass.m_subService == ItemClass.SubService.PublicTransportPlane && itemClass.m_level == ItemClass.Level.Level4)
-              {
-                this.PopulateVehicleListBox(ItemClass.Service.PublicTransport, ItemClass.SubService.PublicTransportPlane, ItemClass.Level.Level4, VehicleInfo.VehicleType.None);  
-              }
-              else
-              {
-                  this.PopulateVehicleListBox(ItemClass.Service.PublicTransport, ItemClass.SubService.PublicTransportTrain, ItemClass.Level.Level4, VehicleInfo.VehicleType.None);  
-              }
+            if (isCargoHub)
+            {
+              this.PopulateVehicleListBox(ItemClass.Service.PublicTransport, ItemClass.SubService.PublicTransportTrain, ItemClass.Level.Level4, VehicleInfo.VehicleType.None);  
+            }
+            else
+            {
+              this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
+            }
             this._cachedItemClass = itemClass;
+            this._cachedIsCargoHub = isCargoHub;
           }
         }
         else if (itemClass.m_service == ItemClass.Service.HealthCare && !(buildingInfo.m_buildingAI is SaunaAI) ||
@@ -67,7 +69,7 @@ namespace ServiceVehicleSelector2
                  itemClass.m_subService == ItemClass.SubService.PublicTransportTaxi && buildingInfo.m_buildingAI is DepotAI ||
                  itemClass.m_subService == ItemClass.SubService.PublicTransportCableCar && buildingInfo.m_buildingAI is CableCarStationAI)
         {
-          flag = true;
+          canSelectVehicle = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
           {
             this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
@@ -76,7 +78,7 @@ namespace ServiceVehicleSelector2
         }
         else if (itemClass.m_service == ItemClass.Service.FireDepartment && buildingInfo.m_buildingAI is HelicopterDepotAI || itemClass.m_service == ItemClass.Service.Disaster && buildingInfo.m_buildingAI is DisasterResponseBuildingAI)
         {
-          flag = true;
+          canSelectVehicle = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
           {
             this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.Helicopter);
@@ -85,7 +87,7 @@ namespace ServiceVehicleSelector2
         }
         
         
-        if (flag)
+        if (canSelectVehicle)
         {
           if ((int) this._cachedBuildingID != (int) building)
           {
@@ -101,6 +103,16 @@ namespace ServiceVehicleSelector2
           this._prefabPanel.Hide();
         this._cachedBuildingID = building;
       }
+    }
+
+    private static bool IsCargoHub(BuildingInfo buildingInfo)
+    {
+      var cargoStationAi = buildingInfo == null ? null : buildingInfo.m_buildingAI as CargoStationAI;
+      if (cargoStationAi == null)
+      {
+        return false;
+      }
+      return cargoStationAi.m_transportInfo != null && cargoStationAi.m_transportInfo2 != null;
     }
 
     private void OnDestroy()
