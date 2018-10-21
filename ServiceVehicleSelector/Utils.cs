@@ -20,7 +20,6 @@ namespace ServiceVehicleSelector2
   {
     private static readonly string _fileName = "ServiceVehicleSelector.log";
     private static readonly string _logPrefix = "ServiceVehicleSelector: ";
-    private static readonly bool _inGameDebug = System.Environment.OSVersion.Platform != PlatformID.Unix;
 
     public static void ClearLogFile()
     {
@@ -76,9 +75,6 @@ namespace ServiceVehicleSelector2
           Debug.Log((object) message);
           break;
       }
-      if (!Utils._inGameDebug)
-        return;
-      DebugOutputPanel.AddMessage(type, message);
     }
 
     public static Q GetPrivate<Q>(object o, string fieldName)

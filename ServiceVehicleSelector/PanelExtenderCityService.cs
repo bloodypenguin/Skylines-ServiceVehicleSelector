@@ -16,7 +16,6 @@ namespace ServiceVehicleSelector2
     private bool _initialized;
     private ushort _cachedBuildingID;
     private ItemClass _cachedItemClass;
-    private bool _cachedIsCargoHub;
     private CityServiceWorldInfoPanel _cityServiceWorldInfoPanel;
     private UIPanel _prefabPanel;
     private UILabel _headerLabel;
@@ -46,22 +45,12 @@ namespace ServiceVehicleSelector2
         if (itemClass.m_service == ItemClass.Service.PublicTransport && itemClass.m_level == ItemClass.Level.Level4 && (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain || itemClass.m_subService == ItemClass.SubService.PublicTransportPlane || itemClass.m_subService == ItemClass.SubService.PublicTransportShip))
         {
           canSelectVehicle = true;
-          var isCargoHub = IsCargoHub(buildingInfo);
-          if ((Object) this._cachedItemClass != (Object) itemClass || this._cachedIsCargoHub != isCargoHub)
+          if ((Object) this._cachedItemClass != (Object) itemClass)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, 0.0f);
-            if (isCargoHub)
-            {
-              _headerLabel.text = "Secondary types";
-              this.PopulateVehicleListBox(ItemClass.Service.PublicTransport, ItemClass.SubService.PublicTransportTrain, ItemClass.Level.Level4, VehicleInfo.VehicleType.None);  
-            }
-            else
-            {
-              _headerLabel.text = "Vehicle types";
-              this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
-            }
+            _headerLabel.text = "Vehicle types";
+            this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
             this._cachedItemClass = itemClass;
-            this._cachedIsCargoHub = isCargoHub;
           }
         }
         else if (itemClass.m_service == ItemClass.Service.HealthCare && !(buildingInfo.m_buildingAI is SaunaAI) ||
@@ -135,16 +124,6 @@ namespace ServiceVehicleSelector2
           this._prefabPanel.Hide();
         this._cachedBuildingID = buildingId;
       }
-    }
-
-    private static bool IsCargoHub(BuildingInfo buildingInfo)
-    {
-      var cargoStationAi = buildingInfo == null ? null : buildingInfo.m_buildingAI as CargoStationAI;
-      if (cargoStationAi == null)
-      {
-        return false;
-      }
-      return cargoStationAi.m_transportInfo != null && cargoStationAi.m_transportInfo2 != null;
     }
 
     private void OnDestroy()

@@ -59,7 +59,11 @@ namespace ServiceVehicleSelector2.Detours
       else
       {
         //begin mod
-        if (ServiceVehicleSelectorMod.BuildingData.TryGetValue(cargoStation1, out var source) && source.Count > 0)
+        var infoFrom = instance3.m_buildings.m_buffer[(int) cargoStation1].Info;
+        var infoTo = instance3.m_buildings.m_buffer[(int) cargoStation2].Info;
+
+        var cargoStationId = (infoFrom?.m_buildingAI is OutsideConnectionAI && infoFrom?.m_class?.m_subService == infoTo?.m_class?.m_subService) ? cargoStation2 : cargoStation1;
+        if (ServiceVehicleSelectorMod.BuildingData.TryGetValue(cargoStationId, out var source) && source.Count > 0)
         {
           string[] array = source.ToArray<string>();
           int index = Singleton<SimulationManager>.instance.m_randomizer.Int32((uint) array.Length);
@@ -70,6 +74,7 @@ namespace ServiceVehicleSelector2.Detours
         {
           info2 = null;
         }
+//        UnityEngine.Debug.LogWarning($"Change vehicle type. Station 1: {infoFrom?.name}. Station2: {infoTo?.name}. Info: {info2?.name}");
         if(info2 == null)
         //end mod
         info2 = instance1.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, info1.m_class.m_service, info1.m_class.m_subService, ItemClass.Level.Level4);
