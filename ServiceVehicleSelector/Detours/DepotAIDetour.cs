@@ -81,7 +81,6 @@ namespace ServiceVehicleSelector2.Detours
                 forceInfo = VehicleManagerMod.GetVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer,
                     buildingData.Info.m_class.m_service, buildingData.Info.m_class.m_subService,
                     buildingData.Info.m_class.m_level,
-                    buildingID,
                     prefabName);
             }
             return forceInfo;

@@ -53,6 +53,8 @@ namespace ServiceVehicleSelector2
       Redirector<DepotAIDetour>.Deploy();
       Redirector<TransportStationAIDetour>.Deploy();
       Redirector<LandfillSiteAIDetour>.Deploy();
+      Redirector<HelicopterDepotAIDetour>.Deploy();
+      Redirector<DisasterResponseBuildingAI>.Deploy();
       ServiceBuildingAIMod.Init();
       SerializableDataExtension.instance.EventSaveData += new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);
       SerializableDataExtension.instance.Loaded = true;
@@ -69,6 +71,8 @@ namespace ServiceVehicleSelector2
       Redirector<DepotAIDetour>.Revert();
       Redirector<TransportStationAIDetour>.Revert();
       Redirector<LandfillSiteAIDetour>.Revert();
+      Redirector<HelicopterDepotAIDetour>.Revert();
+      Redirector<DisasterResponseBuildingAI>.Revert();
       ServiceBuildingAIMod.Deinit();
       VehiclePrefabs.Deinit();
       SerializableDataExtension.instance.EventSaveData -= new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);

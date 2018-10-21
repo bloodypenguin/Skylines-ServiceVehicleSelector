@@ -40,6 +40,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Detours\CableCarStationAIDetour.cs" />
+    <Compile Include="Detours\DisasterResponseBuildingAIDetour.cs" />
+    <Compile Include="Detours\HelicopterDepotAIDetour.cs" />
     <Compile Include="Detours\LandfillSiteAIDetour.cs" />
     <Compile Include="Detours\TransportStationAIDetour.cs" />
     <Compile Include="RedirectionFramework\AssemblyRedirector.cs" />

@@ -39,33 +39,52 @@ namespace ServiceVehicleSelector2
         Building[] buffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
           var buildingInfo = buffer[(int) building].Info;
           ItemClass itemClass = buildingInfo.m_class;
-        if (itemClass.m_service == ItemClass.Service.PublicTransport && (itemClass.m_level == ItemClass.Level.Level4 || itemClass.m_level == ItemClass.Level.Level1) && (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain || buildingInfo.name.Equals("Cargo Hub"))) //TODO(earalov): generalize
+        if (itemClass.m_service == ItemClass.Service.PublicTransport && (itemClass.m_level == ItemClass.Level.Level4 || itemClass.m_level == ItemClass.Level.Level1) && (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain || itemClass.m_subService == ItemClass.SubService.PublicTransportPlane || buildingInfo.name.Equals("Cargo Hub"))) //TODO(earalov): generalize
         {
           flag = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
           {
               if (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain && itemClass.m_level == ItemClass.Level.Level1)
               {
-                  this.PopulateVehicleListBox(ItemClass.Service.PublicTransport, ItemClass.SubService.PublicTransportTrain, ItemClass.Level.Level1);
+                  this.PopulateVehicleListBox(ItemClass.Service.PublicTransport, ItemClass.SubService.PublicTransportTrain, ItemClass.Level.Level1, VehicleInfo.VehicleType.None);
+              }
+              else if (itemClass.m_subService == ItemClass.SubService.PublicTransportPlane && itemClass.m_level == ItemClass.Level.Level4)
+              {
+                this.PopulateVehicleListBox(ItemClass.Service.PublicTransport, ItemClass.SubService.PublicTransportPlane, ItemClass.Level.Level4, VehicleInfo.VehicleType.None);  
               }
               else
               {
-                  this.PopulateVehicleListBox(ItemClass.Service.PublicTransport, ItemClass.SubService.PublicTransportTrain, ItemClass.Level.Level4);  
+                  this.PopulateVehicleListBox(ItemClass.Service.PublicTransport, ItemClass.SubService.PublicTransportTrain, ItemClass.Level.Level4, VehicleInfo.VehicleType.None);  
               }
             this._cachedItemClass = itemClass;
           }
         }
-        else if (itemClass.m_service == ItemClass.Service.HealthCare || itemClass.m_service == ItemClass.Service.FireDepartment || ((itemClass.m_service == ItemClass.Service.Garbage && !buildingInfo.m_isFloating) || itemClass.m_service == ItemClass.Service.PoliceDepartment) || (itemClass.m_service == ItemClass.Service.Road || 
-                    (itemClass.m_subService == ItemClass.SubService.PublicTransportTaxi && buildingInfo.m_buildingAI is DepotAI) ||
-                    (itemClass.m_subService == ItemClass.SubService.PublicTransportCableCar && buildingInfo.m_buildingAI is CableCarStationAI)))
+        else if (itemClass.m_service == ItemClass.Service.HealthCare && !(buildingInfo.m_buildingAI is SaunaAI) ||
+                 itemClass.m_service == ItemClass.Service.FireDepartment && !(buildingInfo.m_buildingAI is FirewatchTowerAI || buildingInfo.m_buildingAI is HelicopterDepotAI) ||
+                 itemClass.m_service == ItemClass.Service.Garbage && !buildingInfo.m_isFloating ||
+                 itemClass.m_service == ItemClass.Service.PoliceDepartment ||
+                 itemClass.m_service == ItemClass.Service.Road && !(buildingInfo.m_buildingAI is TollBoothAI)|| 
+                 itemClass.m_subService == ItemClass.SubService.PublicTransportTaxi && buildingInfo.m_buildingAI is DepotAI ||
+                 itemClass.m_subService == ItemClass.SubService.PublicTransportCableCar && buildingInfo.m_buildingAI is CableCarStationAI)
         {
           flag = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
           {
-            this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level);
+            this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
             this._cachedItemClass = itemClass;
           }
         }
+        else if (itemClass.m_service == ItemClass.Service.FireDepartment && buildingInfo.m_buildingAI is HelicopterDepotAI || itemClass.m_service == ItemClass.Service.Disaster && buildingInfo.m_buildingAI is DisasterResponseBuildingAI)
+        {
+          flag = true;
+          if ((Object) this._cachedItemClass != (Object) itemClass)
+          {
+            this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.Helicopter);
+            this._cachedItemClass = itemClass;
+          }
+        }
+        
+        
         if (flag)
         {
           if ((int) this._cachedBuildingID != (int) building)
@@ -130,10 +149,10 @@ namespace ServiceVehicleSelector2
         ServiceVehicleSelectorMod.BuildingData[building] = selectedItems;
     }
 
-    private void PopulateVehicleListBox(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level)
+    private void PopulateVehicleListBox(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)
     {
       this._vehicleListBox.ClearItems();
-      PrefabData[] prefab = VehiclePrefabs.instance.GetPrefab(service, subService, level);
+      PrefabData[] prefab = VehiclePrefabs.instance.GetPrefab(service, subService, level, vehicleType);
       int length = prefab.Length;
       for (int index = 0; index < length; ++index)
         this._vehicleListBox.AddItem(prefab[index]);
