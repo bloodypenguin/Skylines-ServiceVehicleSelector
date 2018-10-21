@@ -24,6 +24,7 @@ namespace ServiceVehicleSelector2
     public static Dictionary<ushort, HashSet<string>> BuildingData;
     private LoadMode _loadMode;
     private GameObject _gameObject;
+    private static bool _isImprovedPublicTransportPresent;
 
     public string Name => "Service Vehicle Selector 2 (r" + ServiceVehicleSelectorMod._version + ")";
 
@@ -38,6 +39,15 @@ namespace ServiceVehicleSelector2
       this._loadMode = mode;
       if (mode != LoadMode.LoadGame && mode != LoadMode.NewGame && this._loadMode != LoadMode.NewGameFromScenario)
         return;
+      try
+      {
+        _isImprovedPublicTransportPresent = Utils.IsModActive("Improved Public Transport");
+      }
+      catch
+      {
+        _isImprovedPublicTransportPresent = false;
+      }
+
       UIView objectOfType = UnityEngine.Object.FindObjectOfType<UIView>();
       if ((UnityEngine.Object) objectOfType != (UnityEngine.Object) null)
       {
@@ -62,6 +72,7 @@ namespace ServiceVehicleSelector2
 
     public void OnLevelUnloading()
     {
+      _isImprovedPublicTransportPresent = false;
       if (this._loadMode != LoadMode.LoadGame && this._loadMode != LoadMode.NewGame && this._loadMode != LoadMode.NewGameFromScenario)
         return;
       ServiceVehicleSelectorMod.BuildingData.Clear();

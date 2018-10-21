@@ -78,14 +78,22 @@ namespace ServiceVehicleSelector2
                 if (level == ItemClass.Level.Level4)
                 {
                     return this._cargoPlanePrefabData;
-                }            
+                }
+                if (level == ItemClass.Level.Level1)
+                {
+                    return this._passengerPlanePrefabData;
+                }
             }
             if (subService == ItemClass.SubService.PublicTransportShip)
             {
                 if (level == ItemClass.Level.Level4)
                 {
                     return this._shipPrefabData;
-                }            
+                }        
+                if (level == ItemClass.Level.Level1)
+                {
+                    return this._passengerShipPrefabData;
+                }
             }
             
             if (subService == ItemClass.SubService.PublicTransportTaxi)
@@ -173,8 +181,8 @@ namespace ServiceVehicleSelector2
             List<PrefabData> prefabDataList11 = new List<PrefabData>();
             List<PrefabData> prefabDataList12 = new List<PrefabData>();
             List<PrefabData> prefabDataList13 = new List<PrefabData>();           
-            List<PrefabData> prefabDataList14 = new List<PrefabData>(); //unused
-            List<PrefabData> prefabDataList15 = new List<PrefabData>(); //unused
+            List<PrefabData> prefabDataList14 = new List<PrefabData>();
+            List<PrefabData> prefabDataList15 = new List<PrefabData>();
             
             List<PrefabData> prefabDataList16 = new List<PrefabData>(); //Natural Disasters DLC
             List<PrefabData> prefabDataList17 = new List<PrefabData>();
@@ -182,8 +190,11 @@ namespace ServiceVehicleSelector2
             List<PrefabData> prefabDataList19 = new List<PrefabData>();
             List<PrefabData> prefabDataList20 = new List<PrefabData>();
             List<PrefabData> prefabDataList21 = new List<PrefabData>(); //unused: pumping truck
-
-            List<PrefabData> prefabDataList22 = new List<PrefabData>(); //Industry DLC
+            List<PrefabData> prefabDataList22 = new List<PrefabData>(); //unused: evac bus
+            
+            List<PrefabData> prefabDataList23 = new List<PrefabData>(); //unused: parklife truck
+            
+            List<PrefabData> prefabDataList24 = new List<PrefabData>(); //Industry DLC
             //TODO more Industry DLC + parklife truck
             
             for (int index = 0; index < PrefabCollection<VehicleInfo>.PrefabCount(); ++index)
@@ -211,7 +222,10 @@ namespace ServiceVehicleSelector2
                         {
                             if (prefab.m_class.m_level == ItemClass.Level.Level4)
                             {
-                                prefabDataList22.Add(new PrefabData(prefab));
+                                prefabDataList24.Add(new PrefabData(prefab));
+                            } else if (prefab.m_class.m_level == ItemClass.Level.Level1)
+                            {
+                                prefabDataList14.Add(new PrefabData(prefab));
                             }
                         } 
                         else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportShip)
@@ -219,6 +233,9 @@ namespace ServiceVehicleSelector2
                             if (prefab.m_class.m_level == ItemClass.Level.Level4)
                             {
                                 prefabDataList13.Add(new PrefabData(prefab));
+                            } else if (prefab.m_class.m_level == ItemClass.Level.Level1)
+                            {
+                                prefabDataList15.Add(new PrefabData(prefab));
                             }
                         }
                     }
@@ -289,7 +306,9 @@ namespace ServiceVehicleSelector2
             this._cableCarPrefabData = prefabDataList11.ToArray();
             this._passengerTrainPrefabData = prefabDataList12.ToArray();
             this._shipPrefabData = prefabDataList13.ToArray();
-            this._cargoPlanePrefabData = prefabDataList22.ToArray();
+            this._passengerPlanePrefabData = prefabDataList14.ToArray();
+            this._passengerShipPrefabData = prefabDataList15.ToArray();
+            this._cargoPlanePrefabData = prefabDataList24.ToArray();
             this._medicalHelicopterPrefabData = prefabDataList16.ToArray();
             this._policeHelicopterPrefabData = prefabDataList17.ToArray();
             this._fireHelicopterPrefabData = prefabDataList18.ToArray();

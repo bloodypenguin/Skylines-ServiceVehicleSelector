@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using ICities;
 using UnityEngine;
 
 namespace ServiceVehicleSelector2
@@ -158,6 +159,17 @@ namespace ServiceVehicleSelector2
     public static string RemoveInvalidFileNameChars(string fileName)
     {
       return ((IEnumerable<char>) System.IO.Path.GetInvalidFileNameChars()).Aggregate<char, string>(fileName, (Func<string, char, string>) ((current, c) => current.Replace(c.ToString(), string.Empty)));
+    }
+    
+    public static bool IsModActive(string modNamePrefix)
+    {
+      var plugins = PluginManager.instance.GetPluginsInfo();
+      return (from plugin in plugins.Where(p => p != null && p.isEnabled)
+        select plugin.GetInstances<IUserMod>() into instances
+        where instances.Any()
+        select instances[0].Name into name
+        where (name != null && name.StartsWith(modNamePrefix))
+        select name).Any();
     }
   }
 }
