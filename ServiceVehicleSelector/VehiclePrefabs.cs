@@ -95,6 +95,17 @@ namespace ServiceVehicleSelector2
                     return this._passengerShipPrefabData;
                 }
             }
+            if (subService == ItemClass.SubService.PublicTransportPost)
+            {
+                if (level == ItemClass.Level.Level2)
+                {
+                    return this._postVanPrefabData;
+                }        
+                if (level == ItemClass.Level.Level5)
+                {
+                    return this._postTruckPrefabData;
+                }
+            }
             
             if (subService == ItemClass.SubService.PublicTransportTaxi)
                 return this._taxiPrefabData;
@@ -195,6 +206,8 @@ namespace ServiceVehicleSelector2
             List<PrefabData> prefabDataList23 = new List<PrefabData>(); //unused: parklife truck
             
             List<PrefabData> prefabDataList24 = new List<PrefabData>(); //Industry DLC
+            List<PrefabData> prefabDataList25 = new List<PrefabData>();
+            List<PrefabData> prefabDataList26 = new List<PrefabData>();
             //TODO more Industry DLC + parklife truck
             
             for (int index = 0; index < PrefabCollection<VehicleInfo>.PrefabCount(); ++index)
@@ -236,6 +249,16 @@ namespace ServiceVehicleSelector2
                             } else if (prefab.m_class.m_level == ItemClass.Level.Level1)
                             {
                                 prefabDataList15.Add(new PrefabData(prefab));
+                            }
+                        }
+                        else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportPost)
+                        {
+                            if (prefab.m_class.m_level == ItemClass.Level.Level2)
+                            {
+                                prefabDataList25.Add(new PrefabData(prefab));
+                            } else if (prefab.m_class.m_level == ItemClass.Level.Level5)
+                            {
+                                prefabDataList26.Add(new PrefabData(prefab));
                             }
                         }
                     }
@@ -308,12 +331,15 @@ namespace ServiceVehicleSelector2
             this._shipPrefabData = prefabDataList13.ToArray();
             this._passengerPlanePrefabData = prefabDataList14.ToArray();
             this._passengerShipPrefabData = prefabDataList15.ToArray();
-            this._cargoPlanePrefabData = prefabDataList24.ToArray();
             this._medicalHelicopterPrefabData = prefabDataList16.ToArray();
             this._policeHelicopterPrefabData = prefabDataList17.ToArray();
             this._fireHelicopterPrefabData = prefabDataList18.ToArray();
             this._disasterResponseHelicopterPrefabData = prefabDataList19.ToArray();
             this._disasterResponseTruckPrefabData = prefabDataList20.ToArray();
+            
+            this._cargoPlanePrefabData = prefabDataList24.ToArray();
+            this._postVanPrefabData = prefabDataList25.ToArray();
+            this._postTruckPrefabData = prefabDataList26.ToArray();
         }
 
         private static bool IsTrailer(VehicleInfo prefab)

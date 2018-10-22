@@ -43,6 +43,7 @@
     <Compile Include="Detours\DisasterResponseBuildingAIDetour.cs" />
     <Compile Include="Detours\HelicopterDepotAIDetour.cs" />
     <Compile Include="Detours\LandfillSiteAIDetour.cs" />
+    <Compile Include="Detours\PostOfficeAIDetour.cs" />
     <Compile Include="Detours\TransportStationAIDetour.cs" />
     <Compile Include="RedirectionFramework\AssemblyRedirector.cs" />
     <Compile Include="RedirectionFramework\Attributes\IgnoreConditionAttribute.cs" />

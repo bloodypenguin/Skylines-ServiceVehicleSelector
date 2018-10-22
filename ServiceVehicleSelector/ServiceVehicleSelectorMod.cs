@@ -62,6 +62,7 @@ namespace ServiceVehicleSelector2
       Redirector<CargoTruckAIDetour>.Deploy();
       Redirector<DepotAIDetour>.Deploy();
       Redirector<TransportStationAIDetour>.Deploy();
+      Redirector<PostOfficeAIDetour>.Deploy();
       Redirector<LandfillSiteAIDetour>.Deploy();
       Redirector<HelicopterDepotAIDetour>.Deploy();
       Redirector<DisasterResponseBuildingAIDetour>.Deploy();
@@ -81,6 +82,7 @@ namespace ServiceVehicleSelector2
       Redirector<CargoTruckAIDetour>.Revert();
       Redirector<DepotAIDetour>.Revert();
       Redirector<TransportStationAIDetour>.Revert();
+      Redirector<PostOfficeAIDetour>.Revert();
       Redirector<LandfillSiteAIDetour>.Revert();
       Redirector<HelicopterDepotAIDetour>.Revert();
       Redirector<DisasterResponseBuildingAIDetour>.Revert();
