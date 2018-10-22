@@ -7,6 +7,7 @@
 using ColossalFramework;
 using ColossalFramework.UI;
 using System.Collections.Generic;
+using ServiceVehicleSelector2.Detours;
 using UnityEngine;
 
 namespace ServiceVehicleSelector2
@@ -171,6 +172,17 @@ namespace ServiceVehicleSelector2
         ServiceVehicleSelectorMod.BuildingData.Add(building, selectedItems);
       else
         ServiceVehicleSelectorMod.BuildingData[building] = selectedItems;
+      BuildingInfo info = BuildingManager.instance.m_buildings.m_buffer[building].Info;
+      if (info == null)
+      {
+        return;
+      }
+      TransportStationAI transportStationAi = info.m_buildingAI as TransportStationAI;
+      if (transportStationAi == null)
+      {
+        return;
+      }
+      TransportStationAIDetour.ReleaseVehicles(transportStationAi, building, ref BuildingManager.instance.m_buildings.m_buffer[building]);
     }
 
     private void PopulateVehicleListBox(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)

@@ -126,5 +126,11 @@ namespace ServiceVehicleSelector2.Detours
             UnityEngine.Debug.Log("FindConnectionBuilding");
             return 0;
         }
+
+        [RedirectReverse]
+        public static void ReleaseVehicles(TransportStationAI ai,ushort buildingID, ref Building data)
+        {
+            UnityEngine.Debug.Log("ReleaseVehicles");  
+        }
     }
 }
