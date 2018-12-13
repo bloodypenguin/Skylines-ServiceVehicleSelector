@@ -25,8 +25,8 @@ namespace ServiceVehicleSelector2.Detours
     Vector3 lastPos = position1;
     if (!CargoTruckAIDetour.SkipNonCarPaths(ref vehicleData.m_path, ref vehicleData.m_pathPositionIndex, ref vehicleData.m_lastPathOffset, ref lastPos))
       return false;
-    ushort cargoStation1 = CargoTruckAIDetour.FindCargoStation(position1, info1.m_class.m_service);
-    ushort cargoStation2 = CargoTruckAIDetour.FindCargoStation(lastPos, info1.m_class.m_service);
+    ushort cargoStation1 = CargoTruckAIDetour.FindCargoStation(position1, info1.m_class.m_service, info1.m_class.m_subService);
+    ushort cargoStation2 = CargoTruckAIDetour.FindCargoStation(lastPos, info1.m_class.m_service, info1.m_class.m_subService);
     if ((int) cargoStation2 == (int) cargoStation1)
       return true;
     bool flag1 = false;
@@ -102,6 +102,8 @@ namespace ServiceVehicleSelector2.Detours
       }
       else
         instance1.ReleaseVehicle(vehicle1);
+      if (vehicleData.m_sourceBuilding != (ushort) 0)
+        IndustryBuildingAI.ExchangeResource((TransferManager.TransferReason) vehicleData.m_transferType, (int) vehicleData.m_transferSize, vehicleData.m_sourceBuilding, cargoStation1);
     }
     vehicleData.m_transferSize = (ushort) 0;
     if (cargoStation1 != (ushort) 0)
@@ -175,7 +177,7 @@ namespace ServiceVehicleSelector2.Detours
         }
     
     [RedirectReverse]
-      private static ushort FindCargoStation(Vector3 position, ItemClass.Service service)
+      private static ushort FindCargoStation(Vector3 position, ItemClass.Service service, ItemClass.SubService subservice = ItemClass.SubService.None)
       {
         UnityEngine.Debug.Log("FindCargoStation");
         return 0;
