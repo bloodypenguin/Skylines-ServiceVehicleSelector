@@ -18,7 +18,7 @@ namespace ServiceVehicleSelector2
 {
   public class ServiceVehicleSelectorMod : IUserMod, ILoadingExtension
   {
-    private static readonly string _version = "4.0.1";
+    private static readonly string _version = "4.0.2";
     private static readonly string _dataID = "CTS_BuildingData";
     private static readonly string _dataVersion = "v001";
     public static Dictionary<ushort, HashSet<string>> BuildingData;

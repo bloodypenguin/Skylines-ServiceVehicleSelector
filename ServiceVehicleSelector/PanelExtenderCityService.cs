@@ -138,11 +138,14 @@ namespace ServiceVehicleSelector2
     private void CreatePrefabPanel()
     {
       UIPanel uiPanel = this._cityServiceWorldInfoPanel.component.AddUIComponent<UIPanel>();
+      var parentHeight = 285f; //uiPanel.parent.height; broken due to autoformat
+      
       uiPanel.name = "SvsVehicleTypes";
       uiPanel.AlignTo(uiPanel.parent, UIAlignAnchor.TopRight);
       uiPanel.relativePosition = new Vector3(uiPanel.parent.width + 1f, 0.0f);
       uiPanel.width = 180f;
-      uiPanel.height = uiPanel.parent.height - 16f;
+      uiPanel.height = parentHeight - 16f;
+      
       uiPanel.backgroundSprite = "UnlockingPanel2";
       uiPanel.opacity = 0.95f;
       this._prefabPanel = uiPanel;
@@ -157,7 +160,7 @@ namespace ServiceVehicleSelector2
       vehicleListBox.AlignTo((UIComponent) uiPanel, UIAlignAnchor.TopLeft);
       vehicleListBox.relativePosition = new Vector3(3f, 40f);
       vehicleListBox.width = uiPanel.width - 6f;
-      vehicleListBox.height = uiPanel.parent.height - 61f;
+      vehicleListBox.height = parentHeight - 61f;
       vehicleListBox.Font = UIHelper.Font;
       vehicleListBox.eventSelectedItemsChanged += new PropertyChangedEventHandler<HashSet<string>>(this.OnSelectedPrefabsChanged);
       this._vehicleListBox = vehicleListBox;
