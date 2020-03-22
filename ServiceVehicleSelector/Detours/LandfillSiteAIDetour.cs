@@ -16,7 +16,7 @@ namespace ServiceVehicleSelector2.Detours
             {
                 if (material != TransferManager.TransferReason.GarbageMove)
                 {
-                    if (material != TransferManager.TransferReason.Garbage)
+                    if (material != TransferManager.TransferReason.Garbage && material != TransferManager.TransferReason.GarbageTransfer)
                     {
                         if (material != TransferManager.TransferReason.Coal)
                         {

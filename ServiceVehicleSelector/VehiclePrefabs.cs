@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using Object = UnityEngine.Object;
 
 namespace ServiceVehicleSelector2
 {
@@ -31,6 +32,8 @@ namespace ServiceVehicleSelector2
         private PrefabData[] _fireHelicopterPrefabData;
         private PrefabData[] _disasterResponseHelicopterPrefabData;
         private PrefabData[] _disasterResponseTruckPrefabData;
+
+        private PrefabData[] _intercityBusData;
         
         //TODO: pumping trucks, park trucks, evacuation buses
         
@@ -70,6 +73,14 @@ namespace ServiceVehicleSelector2
                 else
                 {
                     return this._trainPrefabData;
+                }
+            }
+            
+            if (subService == ItemClass.SubService.PublicTransportBus)
+            {
+                if (level == ItemClass.Level.Level3)
+                {
+                    return this._intercityBusData;
                 }
             }
 
@@ -122,7 +133,17 @@ namespace ServiceVehicleSelector2
             }
 
             if (service == ItemClass.Service.Garbage)
-                return this._garbagePrefabData;
+            {
+                switch (level)
+                {
+                    case ItemClass.Level.Level1:
+                    case ItemClass.Level.Level2:
+                    case ItemClass.Level.Level3:
+                    case ItemClass.Level.Level4:
+                        return this._garbagePrefabData;
+                }
+            }
+
             if (service == ItemClass.Service.HealthCare)
             {
                 if (level == ItemClass.Level.Level1)
@@ -208,6 +229,9 @@ namespace ServiceVehicleSelector2
             List<PrefabData> prefabDataList24 = new List<PrefabData>(); //Industry DLC
             List<PrefabData> prefabDataList25 = new List<PrefabData>();
             List<PrefabData> prefabDataList26 = new List<PrefabData>();
+            
+            List<PrefabData> prefabDataList27 = new List<PrefabData>(); //Sunset Harbor DLC
+            
             //TODO more Industry DLC + parklife truck
             
             for (int index = 0; index < PrefabCollection<VehicleInfo>.PrefabCount(); ++index)
@@ -225,6 +249,13 @@ namespace ServiceVehicleSelector2
                             } else if (prefab.m_class.m_level == ItemClass.Level.Level1)
                             {
                                 prefabDataList12.Add(new PrefabData(prefab));
+                            }
+                        }
+                        else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportBus)
+                        {
+                            if (prefab.m_class.m_level == ItemClass.Level.Level3)
+                            {
+                                prefabDataList27.Add(new PrefabData(prefab));
                             }
                         }
                         else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportTaxi)
@@ -274,7 +305,17 @@ namespace ServiceVehicleSelector2
                         }
                     }
                     else if (prefab.m_class.m_service == ItemClass.Service.Garbage)
-                        prefabDataList4.Add(new PrefabData(prefab));
+                    {
+                        switch (prefab.m_class.m_level)
+                        {
+                            case ItemClass.Level.Level1:
+                            case ItemClass.Level.Level2:
+                            case ItemClass.Level.Level3:
+                            case ItemClass.Level.Level4:
+                                prefabDataList4.Add(new PrefabData(prefab));
+                                break;
+                        }                        
+                    }
                     else if (prefab.m_class.m_service == ItemClass.Service.HealthCare)
                     {
                         if (prefab.m_class.m_level == ItemClass.Level.Level1)
@@ -340,6 +381,8 @@ namespace ServiceVehicleSelector2
             this._cargoPlanePrefabData = prefabDataList24.ToArray();
             this._postVanPrefabData = prefabDataList25.ToArray();
             this._postTruckPrefabData = prefabDataList26.ToArray();
+
+            this._intercityBusData = prefabDataList27.ToArray();
         }
 
         private static bool IsTrailer(VehicleInfo prefab)

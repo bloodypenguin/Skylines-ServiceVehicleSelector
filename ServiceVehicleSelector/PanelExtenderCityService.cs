@@ -73,10 +73,10 @@ namespace ServiceVehicleSelector2
           }
         }
         else if (itemClass.m_service == ItemClass.Service.PublicTransport &&
-                 itemClass.m_level == ItemClass.Level.Level1 &&
+                 ((itemClass.m_level == ItemClass.Level.Level1 &&
                  (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain ||
                   itemClass.m_subService == ItemClass.SubService.PublicTransportPlane ||
-                  itemClass.m_subService == ItemClass.SubService.PublicTransportShip))
+                  itemClass.m_subService == ItemClass.SubService.PublicTransportShip)) || (itemClass.m_level == ItemClass.Level.Level3 && itemClass.m_subService == ItemClass.SubService.PublicTransportBus)))
         {
           canSelectVehicle = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
