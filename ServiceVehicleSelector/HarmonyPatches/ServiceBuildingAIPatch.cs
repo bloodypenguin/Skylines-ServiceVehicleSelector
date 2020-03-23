@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -40,7 +41,9 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     declaringType == typeof(PoliceStationAI) ||
                     declaringType == typeof(HospitalAI) ||
                     declaringType == typeof(SnowDumpAI) ||
-                    declaringType == typeof(MaintenanceDepotAI))
+                    declaringType == typeof(MaintenanceDepotAI) ||
+                    declaringType == typeof(TransportStationAI)
+                )
                 {
                     if (occurrences > 1)
                     {
@@ -67,6 +70,11 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     }
 
                     vehicleTypeUsed = true;
+                }
+                else
+                {
+                    throw new NotImplementedException("Service Vehicle Selector 2: unsupported patched type: " +
+                                                      declaringType);
                 }
 
                 ChangeInstructions(newCodes, vehicleTypeUsed);

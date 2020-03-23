@@ -66,7 +66,11 @@ namespace ServiceVehicleSelector2
                 Utils.Log((object) "Loading default building data.");
             Redirector<CargoTruckAIDetour>.Deploy();
             Redirector<DepotAIDetour>.Deploy();
-            Redirector<TransportStationAIDetour>.Deploy();
+            Transpile(typeof(TransportStationAI), "CreateOutgoingVehicle",
+                ServiceBuildingAIPatch.getTranspiler());
+            Transpile(typeof(TransportStationAI), "CreateIncomingVehicle",
+                ServiceBuildingAIPatch.getTranspiler());
+            Redirector<TransportStationAIDetour>.Deploy(); //needed for reverse redirect
             Redirector<PostOfficeAIDetour>.Deploy();
             Transpile(typeof(CableCarStationAI), "CreateVehicle",
                 ServiceBuildingAIPatch.getTranspiler());
@@ -101,7 +105,7 @@ namespace ServiceVehicleSelector2
             ServiceVehicleSelectorMod.BuildingData = (Dictionary<ushort, HashSet<string>>) null;
             Redirector<CargoTruckAIDetour>.Revert();
             Redirector<DepotAIDetour>.Revert();
-            Redirector<TransportStationAIDetour>.Revert();
+            Redirector<TransportStationAIDetour>.Revert();  //needed for reverse redirect
             Redirector<PostOfficeAIDetour>.Revert();
             HarmonyInstance?.UnpatchAll();
             VehiclePrefabs.Deinit();
