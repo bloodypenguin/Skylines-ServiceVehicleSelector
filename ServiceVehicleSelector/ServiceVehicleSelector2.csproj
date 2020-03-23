@@ -40,7 +40,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Detours\DisasterResponseBuildingAIDetour.cs" />
-    <Compile Include="Detours\HelicopterDepotAIDetour.cs" />
     <Compile Include="Detours\PostOfficeAIDetour.cs" />
     <Compile Include="Detours\TransportStationAIDetour.cs" />
     <Compile Include="HarmonyPatches\ServiceBuildingAIPatch.cs" />
