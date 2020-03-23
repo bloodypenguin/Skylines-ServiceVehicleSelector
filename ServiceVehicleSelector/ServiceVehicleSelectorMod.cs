@@ -12,9 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Harmony;
-using ServiceVehicleSelector2.Detours;
 using ServiceVehicleSelector2.HarmonyPatches;
-using ServiceVehicleSelector2.RedirectionFramework;
 using UnityEngine;
 
 namespace ServiceVehicleSelector2
@@ -64,34 +62,35 @@ namespace ServiceVehicleSelector2
             VehiclePrefabs.Init();
             if (!ServiceVehicleSelectorMod.TryLoadData(out ServiceVehicleSelectorMod.BuildingData))
                 Utils.Log((object) "Loading default building data.");
-            Redirector<CargoTruckAIDetour>.Deploy();
+            Transpile(typeof(CargoTruckAI), nameof(CargoTruckAI.ChangeVehicleType),
+                CargoTruckAIPatch.GetTranspiler(), true);
             Transpile(typeof(DepotAI), nameof(DepotAI.StartTransfer),
-                ServiceBuildingAIPatch.getTranspiler());
+                ServiceBuildingAIPatch.GetTranspiler());
             Transpile(typeof(TransportStationAI), "CreateOutgoingVehicle",
-                ServiceBuildingAIPatch.getTranspiler());
+                ServiceBuildingAIPatch.GetTranspiler());
             Transpile(typeof(TransportStationAI), "CreateIncomingVehicle",
-                ServiceBuildingAIPatch.getTranspiler());
+                ServiceBuildingAIPatch.GetTranspiler());
             Transpile(typeof(PanelExtenderCityService), "OnSelectedPrefabsChanged",
-                PanelExtenderCityServicePatch.getTranspiler()); //needed for reverse redirect
+                PanelExtenderCityServicePatch.GetTranspiler()); //needed for reverse redirect
             Transpile(typeof(PostOfficeAI), nameof(PostOfficeAI.StartTransfer),
-                ServiceBuildingAIPatch.getTranspiler());
+                ServiceBuildingAIPatch.GetTranspiler());
             Transpile(typeof(CableCarStationAI), "CreateVehicle",
-                ServiceBuildingAIPatch.getTranspiler());
+                ServiceBuildingAIPatch.GetTranspiler());
             Transpile(typeof(LandfillSiteAI), nameof(LandfillSiteAI.StartTransfer),
-                ServiceBuildingAIPatch.getTranspiler());
-            Transpile(typeof(CemeteryAI), nameof(CemeteryAI.StartTransfer), ServiceBuildingAIPatch.getTranspiler());
+                ServiceBuildingAIPatch.GetTranspiler());
+            Transpile(typeof(CemeteryAI), nameof(CemeteryAI.StartTransfer), ServiceBuildingAIPatch.GetTranspiler());
             Transpile(typeof(PoliceStationAI), nameof(PoliceStationAI.StartTransfer),
-                ServiceBuildingAIPatch.getTranspiler());
-            Transpile(typeof(HospitalAI), nameof(HospitalAI.StartTransfer), ServiceBuildingAIPatch.getTranspiler());
-            Transpile(typeof(SnowDumpAI), nameof(SnowDumpAI.StartTransfer), ServiceBuildingAIPatch.getTranspiler());
+                ServiceBuildingAIPatch.GetTranspiler());
+            Transpile(typeof(HospitalAI), nameof(HospitalAI.StartTransfer), ServiceBuildingAIPatch.GetTranspiler());
+            Transpile(typeof(SnowDumpAI), nameof(SnowDumpAI.StartTransfer), ServiceBuildingAIPatch.GetTranspiler());
             Transpile(typeof(MaintenanceDepotAI), nameof(MaintenanceDepotAI.StartTransfer),
-                ServiceBuildingAIPatch.getTranspiler());
+                ServiceBuildingAIPatch.GetTranspiler());
             Transpile(typeof(FireStationAI), nameof(FireStationAI.StartTransfer),
-                ServiceBuildingAIPatch.getTranspiler());
+                ServiceBuildingAIPatch.GetTranspiler());
             Transpile(typeof(HelicopterDepotAI), nameof(HelicopterDepotAI.StartTransfer),
-                ServiceBuildingAIPatch.getTranspiler());
+                ServiceBuildingAIPatch.GetTranspiler());
             Transpile(typeof(DisasterResponseBuildingAI), nameof(DisasterResponseBuildingAI.StartTransfer),
-                ServiceBuildingAIPatch.getTranspiler());
+                ServiceBuildingAIPatch.GetTranspiler());
 
             SerializableDataExtension.instance.EventSaveData +=
                 new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);
@@ -106,7 +105,6 @@ namespace ServiceVehicleSelector2
                 return;
             ServiceVehicleSelectorMod.BuildingData.Clear();
             ServiceVehicleSelectorMod.BuildingData = (Dictionary<ushort, HashSet<string>>) null;
-            Redirector<CargoTruckAIDetour>.Revert();
             HarmonyInstance?.UnpatchAll();
             VehiclePrefabs.Deinit();
             SerializableDataExtension.instance.EventSaveData -=
@@ -117,12 +115,22 @@ namespace ServiceVehicleSelector2
             UnityEngine.Object.Destroy((UnityEngine.Object) this._gameObject);
         }
 
-        private void Transpile(Type type, string methodName, MethodInfo transpiler)
+        private void Transpile(Type type, string methodName, MethodInfo transpiler, bool staticMethod = false)
         {
             try
             {
+                var bindingFlags = BindingFlags.NonPublic | BindingFlags.Public;
+                if (staticMethod)
+                {
+                    bindingFlags |= BindingFlags.Static;
+                }
+                else
+                {
+                    bindingFlags |= BindingFlags.Instance;
+                }
+
                 HarmonyInstance.Patch(type.GetMethod(methodName,
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic),
+                        bindingFlags),
                     transpiler: new HarmonyMethod(transpiler));
             }
             catch (Exception e)

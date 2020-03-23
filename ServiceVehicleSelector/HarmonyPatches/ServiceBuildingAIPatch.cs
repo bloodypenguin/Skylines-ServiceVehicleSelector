@@ -11,7 +11,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
 {
     public class ServiceBuildingAIPatch
     {
-        public static MethodInfo getTranspiler()
+        public static MethodInfo GetTranspiler()
         {
             return typeof(ServiceBuildingAIPatch).GetMethod(nameof(Transpile),
                 BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);

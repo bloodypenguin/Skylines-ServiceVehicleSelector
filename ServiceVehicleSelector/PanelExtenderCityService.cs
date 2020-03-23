@@ -7,7 +7,6 @@
 using ColossalFramework;
 using ColossalFramework.UI;
 using System.Collections.Generic;
-using ServiceVehicleSelector2.Detours;
 using UnityEngine;
 
 namespace ServiceVehicleSelector2

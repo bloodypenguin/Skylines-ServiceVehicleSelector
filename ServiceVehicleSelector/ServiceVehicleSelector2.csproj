@@ -39,22 +39,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="HarmonyPatches\CargoTruckAIPatch.cs" />
     <Compile Include="HarmonyPatches\ServiceBuildingAIPatch.cs" />
     <Compile Include="HarmonyPatches\PanelExtenderCityServicePatch.cs" />
-    <Compile Include="RedirectionFramework\AssemblyRedirector.cs" />
-    <Compile Include="RedirectionFramework\Attributes\IgnoreConditionAttribute.cs" />
-    <Compile Include="RedirectionFramework\Attributes\IgnoreConditions\DisableAttribute.cs" />
-    <Compile Include="RedirectionFramework\Attributes\RedirectAttribute.cs" />
-    <Compile Include="RedirectionFramework\Attributes\RedirectMethodAttribute.cs" />
-    <Compile Include="RedirectionFramework\Attributes\RedirectReverseAttribute.cs" />
-    <Compile Include="RedirectionFramework\Attributes\TargetTypeAttribute.cs" />
-    <Compile Include="RedirectionFramework\Extensions\TypeExtension.cs" />
-    <Compile Include="RedirectionFramework\RedirectionHelper.cs" />
-    <Compile Include="RedirectionFramework\RedirectionUtil.cs" />
-    <Compile Include="RedirectionFramework\Redirector.cs" />
-    <Compile Include="RedirectionFramework\Tuple.cs" />
     <Compile Include="ServiceVehicleSelectorMod.cs" />
-    <Compile Include="Detours\CargoTruckAIDetour.cs" />
     <Compile Include="PrefabData.cs" />
     <Compile Include="SerializableDataExtension.cs" />
     <Compile Include="UIHelper.cs" />

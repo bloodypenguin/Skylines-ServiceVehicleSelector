@@ -9,7 +9,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
 {
     public class PanelExtenderCityServicePatch
     {
-        public static MethodInfo getTranspiler()
+        public static MethodInfo GetTranspiler()
         {
             return typeof(PanelExtenderCityServicePatch).GetMethod(nameof(Transpile),
                 BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
