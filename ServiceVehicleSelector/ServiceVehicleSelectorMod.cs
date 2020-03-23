@@ -65,7 +65,8 @@ namespace ServiceVehicleSelector2
             if (!ServiceVehicleSelectorMod.TryLoadData(out ServiceVehicleSelectorMod.BuildingData))
                 Utils.Log((object) "Loading default building data.");
             Redirector<CargoTruckAIDetour>.Deploy();
-            Redirector<DepotAIDetour>.Deploy();
+            Transpile(typeof(DepotAI), nameof(DepotAI.StartTransfer),
+                ServiceBuildingAIPatch.getTranspiler());
             Transpile(typeof(TransportStationAI), "CreateOutgoingVehicle",
                 ServiceBuildingAIPatch.getTranspiler());
             Transpile(typeof(TransportStationAI), "CreateIncomingVehicle",
@@ -106,7 +107,6 @@ namespace ServiceVehicleSelector2
             ServiceVehicleSelectorMod.BuildingData.Clear();
             ServiceVehicleSelectorMod.BuildingData = (Dictionary<ushort, HashSet<string>>) null;
             Redirector<CargoTruckAIDetour>.Revert();
-            Redirector<DepotAIDetour>.Revert();
             HarmonyInstance?.UnpatchAll();
             VehiclePrefabs.Deinit();
             SerializableDataExtension.instance.EventSaveData -=

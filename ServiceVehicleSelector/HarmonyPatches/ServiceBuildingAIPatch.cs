@@ -22,6 +22,12 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             IEnumerable<CodeInstruction> instructions)
         {
             Debug.Log("Service Vehicle Selector 2: Transpiling method: " + original.DeclaringType + "." + original);
+            if (original.GetParameters()[0].ParameterType != typeof(ushort))
+            {
+                throw new Exception("Service Vehicle Selector 2: parameter 0 type is not ushort: " +
+                                    original.GetParameters()[0].ParameterType);
+            }
+
             var declaringType = original.DeclaringType;
             var codes = new List<CodeInstruction>(instructions);
             var newCodes = new List<CodeInstruction>();
@@ -35,7 +41,8 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     continue;
                 }
 
-                var vehicleTypeUsed = false;
+                var methodToCall =
+                    AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
                 if (declaringType == typeof(CableCarStationAI) ||
                     declaringType == typeof(LandfillSiteAI) ||
                     declaringType == typeof(CemeteryAI) ||
@@ -51,6 +58,16 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                         newCodes.Add(codeInstruction);
                         continue;
                     }
+                }
+                else if (declaringType == typeof(DepotAI))
+                {
+                    if (occurrences != 1)
+                    {
+                        newCodes.Add(codeInstruction);
+                        continue;
+                    }
+
+                    methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoForDepot));
                 }
                 else if (declaringType == typeof(PostOfficeAI))
                 {
@@ -71,7 +88,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     }
 
                     patchIndexOffset = 15;
-                    vehicleTypeUsed = true;
+                    methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
                 }
                 else if (declaringType == typeof(DisasterResponseBuildingAI))
                 {
@@ -82,7 +99,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     }
 
                     patchIndexOffset = 15;
-                    vehicleTypeUsed = true;
+                    methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
                 }
                 else
                 {
@@ -90,7 +107,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                                                       declaringType);
                 }
 
-                ChangeInstructions(newCodes, vehicleTypeUsed, patchIndexOffset);
+                ChangeInstructions(newCodes, methodToCall, patchIndexOffset);
                 occurrences++;
             }
 
@@ -103,22 +120,19 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                    !codeInstruction.operand.ToString().Contains(nameof(VehicleManager.GetRandomVehicleInfo));
         }
 
-        private static void ChangeInstructions(List<CodeInstruction> newCodes, bool vehicleTypeUsed,
+        private static void ChangeInstructions(List<CodeInstruction> newCodes, MethodInfo methodToCall,
             int patchIndexOffset)
         {
-            var methodToCall = vehicleTypeUsed
-                ? AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType))
-                : AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
             var patchIndex = newCodes.Count - patchIndexOffset;
             newCodes.RemoveRange(patchIndex, 2); //remove randomizer
             newCodes.Insert(patchIndex, new CodeInstruction(OpCodes.Ldarg_1));
-            newCodes.Insert(patchIndex + 1, new CodeInstruction(OpCodes.Ldarg_2));
+            newCodes.Insert(patchIndex + 1, new CodeInstruction(OpCodes.Nop)); //pad
             newCodes.Add(new CodeInstruction(OpCodes.Call, methodToCall));
         }
 
         private static VehicleInfo GetVehicleInfoWithoutType(
             VehicleManager instance,
-            ushort buildingID, ref Building data,
+            ushort buildingID,
             ItemClass.Service service,
             ItemClass.SubService subService,
             ItemClass.Level level)
@@ -129,13 +143,13 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     level);
             }
 
-            return GetRandomVehicleInfo(ref SimulationManager.instance.m_randomizer, service, subService, level,
+            return GetRandomVehicleInfoOverride(ref SimulationManager.instance.m_randomizer, service, subService, level,
                 source.ToArray());
         }
 
         private static VehicleInfo GetVehicleInfoWithType(
             VehicleManager instance,
-            ushort buildingID, ref Building data,
+            ushort buildingID,
             ItemClass.Service service,
             ItemClass.SubService subService,
             ItemClass.Level level,
@@ -147,13 +161,34 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     level, vehicleType);
             }
 
-            return GetRandomVehicleInfo(ref SimulationManager.instance.m_randomizer, service, subService, level,
+            return GetRandomVehicleInfoOverride(ref SimulationManager.instance.m_randomizer, service, subService, level,
                 vehicleType,
                 source.ToArray());
         }
 
+        private static VehicleInfo GetVehicleInfoForDepot( //only for taxi and cable cars - and only for 1 of 4 cases
+            VehicleManager instance,
+            ushort buildingID,
+            ItemClass.Service service,
+            ItemClass.SubService subService,
+            ItemClass.Level level)
+        {
+            if (
+                service != ItemClass.Service.PublicTransport ||
+                subService != ItemClass.SubService.PublicTransportTaxi &&
+                subService != ItemClass.SubService.PublicTransportCableCar ||
+                !ServiceVehicleSelectorMod.BuildingData.TryGetValue(buildingID, out var source) || source.Count <= 0)
+            {
+                return instance.GetRandomVehicleInfo(ref SimulationManager.instance.m_randomizer, service, subService,
+                    level);
+            }
 
-        private static VehicleInfo GetRandomVehicleInfo(ref Randomizer r,
+            return GetRandomVehicleInfoOverride(ref SimulationManager.instance.m_randomizer, service, subService, level,
+                source.ToArray());
+        }
+
+
+        private static VehicleInfo GetRandomVehicleInfoOverride(ref Randomizer r,
             ItemClass.Service service,
             ItemClass.SubService subService,
             ItemClass.Level level,
@@ -163,7 +198,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 array[r.Int32((uint) array.Count)]);
         }
 
-        private static VehicleInfo GetRandomVehicleInfo(ref Randomizer r,
+        private static VehicleInfo GetRandomVehicleInfoOverride(ref Randomizer r,
             ItemClass.Service service,
             ItemClass.SubService subService,
             ItemClass.Level level,

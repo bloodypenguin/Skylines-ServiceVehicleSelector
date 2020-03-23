@@ -55,7 +55,6 @@
     <Compile Include="RedirectionFramework\Tuple.cs" />
     <Compile Include="ServiceVehicleSelectorMod.cs" />
     <Compile Include="Detours\CargoTruckAIDetour.cs" />
-    <Compile Include="Detours\DepotAIDetour.cs" />
     <Compile Include="PrefabData.cs" />
     <Compile Include="SerializableDataExtension.cs" />
     <Compile Include="UIHelper.cs" />
