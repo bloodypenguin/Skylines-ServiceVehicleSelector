@@ -21,11 +21,12 @@ namespace ServiceVehicleSelector2.HarmonyPatches
         private static IEnumerable<CodeInstruction> Transpile(MethodBase original,
             IEnumerable<CodeInstruction> instructions)
         {
-            Debug.Log("Service Vehicle Selector 2: Transpling method: " + original);
+            Debug.Log("Service Vehicle Selector 2: Transpiling method: " + original.DeclaringType + "." + original);
             var declaringType = original.DeclaringType;
             var codes = new List<CodeInstruction>(instructions);
             var newCodes = new List<CodeInstruction>();
             var occurrences = 0;
+            var patchIndexOffset = 14;
             foreach (var codeInstruction in codes)
             {
                 if (SkipInstruction(codeInstruction))
@@ -51,6 +52,16 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                         continue;
                     }
                 }
+                else if (declaringType == typeof(PostOfficeAI))
+                {
+                    if (occurrences > 1)
+                    {
+                        newCodes.Add(codeInstruction);
+                        continue;
+                    }
+
+                    patchIndexOffset = 11;
+                }
                 else if (declaringType == typeof(FireStationAI) || declaringType == typeof(HelicopterDepotAI))
                 {
                     if (occurrences > 2)
@@ -59,6 +70,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                         continue;
                     }
 
+                    patchIndexOffset = 15;
                     vehicleTypeUsed = true;
                 }
                 else if (declaringType == typeof(DisasterResponseBuildingAI))
@@ -69,6 +81,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                         continue;
                     }
 
+                    patchIndexOffset = 15;
                     vehicleTypeUsed = true;
                 }
                 else
@@ -77,7 +90,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                                                       declaringType);
                 }
 
-                ChangeInstructions(newCodes, vehicleTypeUsed);
+                ChangeInstructions(newCodes, vehicleTypeUsed, patchIndexOffset);
                 occurrences++;
             }
 
@@ -90,12 +103,12 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                    !codeInstruction.operand.ToString().Contains(nameof(VehicleManager.GetRandomVehicleInfo));
         }
 
-        private static void ChangeInstructions(List<CodeInstruction> newCodes, bool vehicleTypeUsed)
+        private static void ChangeInstructions(List<CodeInstruction> newCodes, bool vehicleTypeUsed,
+            int patchIndexOffset)
         {
             var methodToCall = vehicleTypeUsed
                 ? AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType))
                 : AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
-            var patchIndexOffset = vehicleTypeUsed ? 15 : 14;
             var patchIndex = newCodes.Count - patchIndexOffset;
             newCodes.RemoveRange(patchIndex, 2); //remove randomizer
             newCodes.Insert(patchIndex, new CodeInstruction(OpCodes.Ldarg_1));

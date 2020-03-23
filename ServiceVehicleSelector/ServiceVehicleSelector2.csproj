@@ -39,7 +39,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Detours\PostOfficeAIDetour.cs" />
     <Compile Include="HarmonyPatches\ServiceBuildingAIPatch.cs" />
     <Compile Include="HarmonyPatches\PanelExtenderCityServicePatch.cs" />
     <Compile Include="RedirectionFramework\AssemblyRedirector.cs" />
