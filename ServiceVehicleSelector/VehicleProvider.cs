@@ -2,9 +2,9 @@
 using ColossalFramework;
 using ColossalFramework.Math;
 
-namespace ServiceVehicleSelector2.Detours
+namespace ServiceVehicleSelector2
 {
-  public static class VehicleManagerMod
+  public static class VehicleProvider
   {
     public static VehicleInfo GetVehicleInfo(ref Randomizer randomizer, ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, string prefabName)
     {

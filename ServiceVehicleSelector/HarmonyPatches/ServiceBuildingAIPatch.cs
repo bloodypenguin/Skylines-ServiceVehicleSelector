@@ -77,7 +77,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             }
 
             var array = source.ToArray();
-            return VehicleManagerMod.GetVehicleInfo(ref r, data.Info.m_class.m_service,
+            return VehicleProvider.GetVehicleInfo(ref r, data.Info.m_class.m_service,
                 data.Info.m_class.m_subService, data.Info.m_class.m_level, array[r.Int32((uint) array.Length)]);
         }
 
@@ -96,7 +96,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             }
 
             var array = source.ToArray();
-            return VehicleManagerMod.GetVehicleInfo(ref r, data.Info.m_class.m_service,
+            return VehicleProvider.GetVehicleInfo(ref r, data.Info.m_class.m_service,
                 data.Info.m_class.m_subService, data.Info.m_class.m_level, array[r.Int32((uint) array.Length)],
                 vehicleType);
         }

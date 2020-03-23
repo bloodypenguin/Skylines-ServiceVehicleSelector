@@ -78,7 +78,7 @@ namespace ServiceVehicleSelector2.Detours
                 string[] array = source.ToArray<string>();
                 int index = Singleton<SimulationManager>.instance.m_randomizer.Int32((uint)array.Length);
                 string prefabName = array[index];
-                forceInfo = VehicleManagerMod.GetVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer,
+                forceInfo = VehicleProvider.GetVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer,
                     buildingData.Info.m_class.m_service, buildingData.Info.m_class.m_subService,
                     buildingData.Info.m_class.m_level,
                     prefabName);
