@@ -126,7 +126,8 @@ namespace ServiceVehicleSelector2
                 {
                     return this._fireHelicopterPrefabData;  
                 }
-                else
+
+                if (vehicleType == VehicleInfo.VehicleType.Car)
                 {
                     return this._fireDepartmentPrefabData;
                 }
@@ -184,7 +185,7 @@ namespace ServiceVehicleSelector2
                     {
                         return this._disasterResponseHelicopterPrefabData;
                     }
-                    else
+                    if (vehicleType == VehicleInfo.VehicleType.Car)
                     {
                         return this._disasterResponseTruckPrefabData;
                     }
