@@ -186,7 +186,13 @@ namespace ServiceVehicleSelector2
       {
         return;
       }
-      TransportStationAIDetour.ReleaseVehicles(transportStationAi, building, ref BuildingManager.instance.m_buildings.m_buffer[building]);
+      ReleaseVehicles(transportStationAi, building, ref BuildingManager.instance.m_buildings.m_buffer[building]);
+    }
+
+    private static void ReleaseVehicles(TransportStationAI ai, ushort buildingID, ref Building data)
+    {
+      //this should be replaced by the patch to call TransportStationAI.ReleaseVehicles
+      Debug.Log("ReleaseVehicles");
     }
 
     private void PopulateVehicleListBox(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)

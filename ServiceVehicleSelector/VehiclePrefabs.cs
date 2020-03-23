@@ -226,7 +226,7 @@ namespace ServiceVehicleSelector2
             for (int index = 0; index < PrefabCollection<VehicleInfo>.PrefabCount(); ++index)
             {
                 VehicleInfo prefab = PrefabCollection<VehicleInfo>.GetPrefab((uint) index);
-                if ((Object) prefab != (Object) null && !VehiclePrefabs.IsTrailer(prefab))
+                if ((Object) prefab != (Object) null && !VehiclePrefabs.IsTrailer(prefab) && prefab.m_placementStyle != ItemClass.Placement.Procedural)
                 {
                     if (prefab.m_class.m_service == ItemClass.Service.PublicTransport)
                     {

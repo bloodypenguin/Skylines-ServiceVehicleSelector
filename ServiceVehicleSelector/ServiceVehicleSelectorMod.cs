@@ -70,7 +70,8 @@ namespace ServiceVehicleSelector2
                 ServiceBuildingAIPatch.getTranspiler());
             Transpile(typeof(TransportStationAI), "CreateIncomingVehicle",
                 ServiceBuildingAIPatch.getTranspiler());
-            Redirector<TransportStationAIDetour>.Deploy(); //needed for reverse redirect
+            Transpile(typeof(PanelExtenderCityService), "OnSelectedPrefabsChanged",
+                PanelExtenderCityServicePatch.getTranspiler()); //needed for reverse redirect
             Redirector<PostOfficeAIDetour>.Deploy();
             Transpile(typeof(CableCarStationAI), "CreateVehicle",
                 ServiceBuildingAIPatch.getTranspiler());
@@ -105,7 +106,6 @@ namespace ServiceVehicleSelector2
             ServiceVehicleSelectorMod.BuildingData = (Dictionary<ushort, HashSet<string>>) null;
             Redirector<CargoTruckAIDetour>.Revert();
             Redirector<DepotAIDetour>.Revert();
-            Redirector<TransportStationAIDetour>.Revert();  //needed for reverse redirect
             Redirector<PostOfficeAIDetour>.Revert();
             HarmonyInstance?.UnpatchAll();
             VehiclePrefabs.Deinit();
