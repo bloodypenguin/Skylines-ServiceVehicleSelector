@@ -64,11 +64,12 @@ namespace ServiceVehicleSelector2
             VehiclePrefabs.Init();
             if (!ServiceVehicleSelectorMod.TryLoadData(out ServiceVehicleSelectorMod.BuildingData))
                 Utils.Log((object) "Loading default building data.");
-            Redirector<CableCarStationAIDetour>.Deploy();
             Redirector<CargoTruckAIDetour>.Deploy();
             Redirector<DepotAIDetour>.Deploy();
             Redirector<TransportStationAIDetour>.Deploy();
             Redirector<PostOfficeAIDetour>.Deploy();
+            Transpile(typeof(CableCarStationAI), "CreateVehicle",
+                ServiceBuildingAIPatch.getTranspiler());
             Transpile(typeof(LandfillSiteAI), nameof(LandfillSiteAI.StartTransfer),
                 ServiceBuildingAIPatch.getTranspiler());
             Transpile(typeof(CemeteryAI), nameof(CemeteryAI.StartTransfer), ServiceBuildingAIPatch.getTranspiler());
@@ -98,7 +99,6 @@ namespace ServiceVehicleSelector2
                 return;
             ServiceVehicleSelectorMod.BuildingData.Clear();
             ServiceVehicleSelectorMod.BuildingData = (Dictionary<ushort, HashSet<string>>) null;
-            Redirector<CableCarStationAIDetour>.Revert();
             Redirector<CargoTruckAIDetour>.Revert();
             Redirector<DepotAIDetour>.Revert();
             Redirector<TransportStationAIDetour>.Revert();
