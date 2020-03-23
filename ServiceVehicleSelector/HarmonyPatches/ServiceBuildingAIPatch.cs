@@ -21,27 +21,33 @@ namespace ServiceVehicleSelector2.HarmonyPatches
 
         private static IEnumerable<CodeInstruction> TranspileNoVehicleType(IEnumerable<CodeInstruction> instructions)
         {
-            return Transpile(instructions, false);
+            return Transpile(instructions, false, 1, 2);
         }
 
         private static IEnumerable<CodeInstruction> TranspileWithVehicleType(IEnumerable<CodeInstruction> instructions)
         {
-            return Transpile(instructions, true);
+            return Transpile(instructions, true, 1, 2);
         }
 
-        private static IEnumerable<CodeInstruction> Transpile(IEnumerable<CodeInstruction> instructions,
-            bool vehicleTypeUsed)
+        public static IEnumerable<CodeInstruction> Transpile(IEnumerable<CodeInstruction> instructions,
+            bool vehicleTypeUsed, int minOccurrence, int maxOccurrence)
         {
             var codes = new List<CodeInstruction>(instructions);
             var newCodes = new List<CodeInstruction>();
-            var timesReplaced = 0;
+            var occurrences = 0;
             foreach (var codeInstruction in codes)
             {
-                if (timesReplaced == 2 || //we only need to replace 2 or 1 occurrences
+                if (occurrences >= maxOccurrence ||
                     codeInstruction.opcode != OpCodes.Callvirt || codeInstruction.operand == null ||
                     !codeInstruction.operand.ToString().Contains(nameof(VehicleManager.GetRandomVehicleInfo)))
                 {
                     newCodes.Add(codeInstruction);
+                    continue;
+                }
+
+                occurrences++;
+                if (occurrences < minOccurrence)
+                {
                     continue;
                 }
 
@@ -54,10 +60,10 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 {
                     newCodes.Add(new CodeInstruction(OpCodes.Ldc_I4_1));
                 }
+
                 newCodes.Add(new CodeInstruction(OpCodes.Ldarg_1));
                 newCodes.Add(new CodeInstruction(OpCodes.Ldarg_2));
                 newCodes.Add(new CodeInstruction(OpCodes.Call, methodToCall));
-                timesReplaced++;
             }
 
             return newCodes.AsEnumerable();

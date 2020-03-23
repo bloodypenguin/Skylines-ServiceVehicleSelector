@@ -83,8 +83,8 @@ namespace ServiceVehicleSelector2
                 ServiceBuildingAIPatch.getTranspiler(true));
             Transpile(typeof(HelicopterDepotAI), nameof(HelicopterDepotAI.StartTransfer),
                 ServiceBuildingAIPatch.getTranspiler(true));
-
-            Redirector<DisasterResponseBuildingAIDetour>.Deploy();
+            Transpile(typeof(DisasterResponseBuildingAI), nameof(DisasterResponseBuildingAI.StartTransfer),
+                DisasterResponseBuildingAIPatch.getTranspiler());
 
             SerializableDataExtension.instance.EventSaveData +=
                 new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);
@@ -103,7 +103,6 @@ namespace ServiceVehicleSelector2
             Redirector<DepotAIDetour>.Revert();
             Redirector<TransportStationAIDetour>.Revert();
             Redirector<PostOfficeAIDetour>.Revert();
-            Redirector<DisasterResponseBuildingAIDetour>.Revert();
             HarmonyInstance?.UnpatchAll();
             VehiclePrefabs.Deinit();
             SerializableDataExtension.instance.EventSaveData -=
