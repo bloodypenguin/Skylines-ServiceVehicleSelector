@@ -1,110 +1,156 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using ColossalFramework;
 using ColossalFramework.Math;
 using Harmony;
-using ServiceVehicleSelector2.Detours;
+using UnityEngine;
 
 namespace ServiceVehicleSelector2.HarmonyPatches
 {
     public class ServiceBuildingAIPatch
     {
-        public static MethodInfo getTranspiler(bool vehicleTypeUsed = false)
+        public static MethodInfo getTranspiler()
         {
-            return typeof(ServiceBuildingAIPatch).GetMethod(
-                vehicleTypeUsed ? nameof(TranspileWithVehicleType) : nameof(TranspileNoVehicleType),
-                BindingFlags.Static | BindingFlags.Public);
+            return typeof(ServiceBuildingAIPatch).GetMethod(nameof(Transpile),
+                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
         }
 
-        private static IEnumerable<CodeInstruction> TranspileNoVehicleType(IEnumerable<CodeInstruction> instructions)
-        {
-            return Transpile(instructions, false, 1, 2);
-        }
 
-        private static IEnumerable<CodeInstruction> TranspileWithVehicleType(IEnumerable<CodeInstruction> instructions)
+        private static IEnumerable<CodeInstruction> Transpile(MethodBase original,
+            IEnumerable<CodeInstruction> instructions)
         {
-            return Transpile(instructions, true, 1, 2);
-        }
-
-        public static IEnumerable<CodeInstruction> Transpile(IEnumerable<CodeInstruction> instructions,
-            bool vehicleTypeUsed, int minOccurrence, int maxOccurrence)
-        {
+            Debug.Log("Service Vehicle Selector 2: Transpling method: " + original);
+            var declaringType = original.DeclaringType;
             var codes = new List<CodeInstruction>(instructions);
             var newCodes = new List<CodeInstruction>();
             var occurrences = 0;
             foreach (var codeInstruction in codes)
             {
-                if (occurrences >= maxOccurrence ||
-                    codeInstruction.opcode != OpCodes.Callvirt || codeInstruction.operand == null ||
-                    !codeInstruction.operand.ToString().Contains(nameof(VehicleManager.GetRandomVehicleInfo)))
+                if (SkipInstruction(codeInstruction))
                 {
                     newCodes.Add(codeInstruction);
                     continue;
                 }
 
+                var vehicleTypeUsed = false;
+                if (declaringType == typeof(CableCarStationAI) ||
+                    declaringType == typeof(LandfillSiteAI) ||
+                    declaringType == typeof(CemeteryAI) ||
+                    declaringType == typeof(PoliceStationAI) ||
+                    declaringType == typeof(HospitalAI) ||
+                    declaringType == typeof(SnowDumpAI) ||
+                    declaringType == typeof(MaintenanceDepotAI))
+                {
+                    if (occurrences > 1)
+                    {
+                        newCodes.Add(codeInstruction);
+                        continue;
+                    }
+                }
+                else if (declaringType == typeof(FireStationAI) || declaringType == typeof(HelicopterDepotAI))
+                {
+                    if (occurrences > 2)
+                    {
+                        newCodes.Add(codeInstruction);
+                        continue;
+                    }
+
+                    vehicleTypeUsed = true;
+                }
+                else if (declaringType == typeof(DisasterResponseBuildingAI))
+                {
+                    if (occurrences < 1 || occurrences > 3)
+                    {
+                        newCodes.Add(codeInstruction);
+                        continue;
+                    }
+
+                    vehicleTypeUsed = true;
+                }
+
+                ChangeInstructions(newCodes, vehicleTypeUsed);
                 occurrences++;
-                if (occurrences < minOccurrence)
-                {
-                    continue;
-                }
-
-                var methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetRandomVehicleInfo));
-                var toRemove = vehicleTypeUsed ? 5 : 4;
-                newCodes.RemoveRange(newCodes.Count - toRemove, toRemove); //remove pass level (+vehicleType)
-                newCodes.Add(new CodeInstruction(OpCodes.Nop)); //pad      
-                newCodes.Add(new CodeInstruction(OpCodes.Nop)); //pad   
-                if (vehicleTypeUsed)
-                {
-                    newCodes.Add(new CodeInstruction(OpCodes.Ldc_I4_1));
-                }
-
-                newCodes.Add(new CodeInstruction(OpCodes.Ldarg_1));
-                newCodes.Add(new CodeInstruction(OpCodes.Ldarg_2));
-                newCodes.Add(new CodeInstruction(OpCodes.Call, methodToCall));
             }
 
             return newCodes.AsEnumerable();
         }
 
-        private static VehicleInfo GetRandomVehicleInfo(
-            VehicleManager instance,
-            ref Randomizer r,
-            ItemClass.Service service,
-            ItemClass.SubService subService,
-            ushort buildingID, ref Building data)
+        private static bool SkipInstruction(CodeInstruction codeInstruction)
         {
-            if (!ServiceVehicleSelectorMod.BuildingData.TryGetValue(buildingID, out var source) || source.Count <= 0)
-            {
-                return Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref r, data.Info.m_class.m_service,
-                    data.Info.m_class.m_subService, data.Info.m_class.m_level);
-            }
-
-            var array = source.ToArray();
-            return VehicleProvider.GetVehicleInfo(ref r, data.Info.m_class.m_service,
-                data.Info.m_class.m_subService, data.Info.m_class.m_level, array[r.Int32((uint) array.Length)]);
+            return codeInstruction.opcode != OpCodes.Callvirt || codeInstruction.operand == null ||
+                   !codeInstruction.operand.ToString().Contains(nameof(VehicleManager.GetRandomVehicleInfo));
         }
 
-        private static VehicleInfo GetRandomVehicleInfo(
+        private static void ChangeInstructions(List<CodeInstruction> newCodes, bool vehicleTypeUsed)
+        {
+            var methodToCall = vehicleTypeUsed
+                ? AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType))
+                : AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
+            var patchIndexOffset = vehicleTypeUsed ? 15 : 14;
+            var patchIndex = newCodes.Count - patchIndexOffset;
+            newCodes.RemoveRange(patchIndex, 2); //remove randomizer
+            newCodes.Insert(patchIndex, new CodeInstruction(OpCodes.Ldarg_1));
+            newCodes.Insert(patchIndex + 1, new CodeInstruction(OpCodes.Ldarg_2));
+            newCodes.Add(new CodeInstruction(OpCodes.Call, methodToCall));
+        }
+
+        private static VehicleInfo GetVehicleInfoWithoutType(
             VehicleManager instance,
-            ref Randomizer r,
+            ushort buildingID, ref Building data,
             ItemClass.Service service,
             ItemClass.SubService subService,
-            VehicleInfo.VehicleType vehicleType,
-            ushort buildingID, ref Building data)
+            ItemClass.Level level)
         {
             if (!ServiceVehicleSelectorMod.BuildingData.TryGetValue(buildingID, out var source) || source.Count <= 0)
             {
-                return Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref r, data.Info.m_class.m_service,
-                    data.Info.m_class.m_subService, data.Info.m_class.m_level);
+                return instance.GetRandomVehicleInfo(ref SimulationManager.instance.m_randomizer, service, subService,
+                    level);
             }
 
-            var array = source.ToArray();
-            return VehicleProvider.GetVehicleInfo(ref r, data.Info.m_class.m_service,
-                data.Info.m_class.m_subService, data.Info.m_class.m_level, array[r.Int32((uint) array.Length)],
-                vehicleType);
+            return GetRandomVehicleInfo(ref SimulationManager.instance.m_randomizer, service, subService, level,
+                source.ToArray());
+        }
+
+        private static VehicleInfo GetVehicleInfoWithType(
+            VehicleManager instance,
+            ushort buildingID, ref Building data,
+            ItemClass.Service service,
+            ItemClass.SubService subService,
+            ItemClass.Level level,
+            VehicleInfo.VehicleType vehicleType)
+        {
+            if (!ServiceVehicleSelectorMod.BuildingData.TryGetValue(buildingID, out var source) || source.Count <= 0)
+            {
+                return instance.GetRandomVehicleInfo(ref SimulationManager.instance.m_randomizer, service, subService,
+                    level, vehicleType);
+            }
+
+            return GetRandomVehicleInfo(ref SimulationManager.instance.m_randomizer, service, subService, level,
+                vehicleType,
+                source.ToArray());
+        }
+
+
+        private static VehicleInfo GetRandomVehicleInfo(ref Randomizer r,
+            ItemClass.Service service,
+            ItemClass.SubService subService,
+            ItemClass.Level level,
+            IList<string> array)
+        {
+            return VehicleProvider.GetVehicleInfo(ref r, service, subService, level,
+                array[r.Int32((uint) array.Count)]);
+        }
+
+        private static VehicleInfo GetRandomVehicleInfo(ref Randomizer r,
+            ItemClass.Service service,
+            ItemClass.SubService subService,
+            ItemClass.Level level,
+            VehicleInfo.VehicleType vehicleType,
+            IList<string> array)
+        {
+            return VehicleProvider.GetVehicleInfo(ref r, service, subService, level,
+                array[r.Int32((uint) array.Count)], vehicleType);
         }
     }
 }

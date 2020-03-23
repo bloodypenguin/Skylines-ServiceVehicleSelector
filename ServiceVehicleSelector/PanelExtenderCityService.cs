@@ -192,10 +192,10 @@ namespace ServiceVehicleSelector2
     private void PopulateVehicleListBox(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)
     {
       this._vehicleListBox.ClearItems();
-      PrefabData[] prefab = VehiclePrefabs.instance.GetPrefab(service, subService, level, vehicleType);
-      int length = prefab.Length;
+      PrefabData[] prefabs = VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType);
+      int length = prefabs.Length;
       for (int index = 0; index < length; ++index)
-        this._vehicleListBox.AddItem(prefab[index]);
+        this._vehicleListBox.AddItem(prefabs[index]);
     }
   }
 }

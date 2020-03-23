@@ -80,11 +80,11 @@ namespace ServiceVehicleSelector2
             Transpile(typeof(MaintenanceDepotAI), nameof(MaintenanceDepotAI.StartTransfer),
                 ServiceBuildingAIPatch.getTranspiler());
             Transpile(typeof(FireStationAI), nameof(FireStationAI.StartTransfer),
-                ServiceBuildingAIPatch.getTranspiler(true));
+                ServiceBuildingAIPatch.getTranspiler());
             Transpile(typeof(HelicopterDepotAI), nameof(HelicopterDepotAI.StartTransfer),
-                ServiceBuildingAIPatch.getTranspiler(true));
+                ServiceBuildingAIPatch.getTranspiler());
             Transpile(typeof(DisasterResponseBuildingAI), nameof(DisasterResponseBuildingAI.StartTransfer),
-                DisasterResponseBuildingAIPatch.getTranspiler());
+                ServiceBuildingAIPatch.getTranspiler());
 
             SerializableDataExtension.instance.EventSaveData +=
                 new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);
@@ -123,7 +123,7 @@ namespace ServiceVehicleSelector2
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogError("Failed to transpile method " + methodName);
+                UnityEngine.Debug.LogError("Service Vehicle Selector 2: Failed to transpile method " + methodName);
                 UnityEngine.Debug.LogException(e);
             }
         }

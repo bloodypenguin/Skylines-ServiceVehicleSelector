@@ -41,7 +41,6 @@
   <ItemGroup>
     <Compile Include="Detours\PostOfficeAIDetour.cs" />
     <Compile Include="Detours\TransportStationAIDetour.cs" />
-    <Compile Include="HarmonyPatches\DisasterResponseBuildingAIPatch.cs" />
     <Compile Include="HarmonyPatches\ServiceBuildingAIPatch.cs" />
     <Compile Include="RedirectionFramework\AssemblyRedirector.cs" />
     <Compile Include="RedirectionFramework\Attributes\IgnoreConditionAttribute.cs" />

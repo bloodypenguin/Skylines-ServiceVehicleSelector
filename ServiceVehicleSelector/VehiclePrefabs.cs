@@ -49,7 +49,7 @@ namespace ServiceVehicleSelector2
             VehiclePrefabs.instance = (VehiclePrefabs) null;
         }
 
-        public PrefabData[] GetPrefab(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)
+        public PrefabData[] GetPrefabs(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)
         {
             if (subService == ItemClass.SubService.PublicTransportPost)
             {
