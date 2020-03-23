@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Object = UnityEngine.Object;
 
 namespace ServiceVehicleSelector2
@@ -126,25 +125,14 @@ namespace ServiceVehicleSelector2
                 {
                     return this._fireHelicopterPrefabData;  
                 }
-
-                if (vehicleType == VehicleInfo.VehicleType.Car)
+                else
                 {
                     return this._fireDepartmentPrefabData;
                 }
             }
 
             if (service == ItemClass.Service.Garbage)
-            {
-                switch (level)
-                {
-                    case ItemClass.Level.Level1:
-                    case ItemClass.Level.Level2:
-                    case ItemClass.Level.Level3:
-                    case ItemClass.Level.Level4:
-                        return this._garbagePrefabData;
-                }
-            }
-
+                return this._garbagePrefabData;
             if (service == ItemClass.Service.HealthCare)
             {
                 if (level == ItemClass.Level.Level1)
@@ -185,7 +173,7 @@ namespace ServiceVehicleSelector2
                     {
                         return this._disasterResponseHelicopterPrefabData;
                     }
-                    if (vehicleType == VehicleInfo.VehicleType.Car)
+                    else
                     {
                         return this._disasterResponseTruckPrefabData;
                     }
@@ -307,15 +295,7 @@ namespace ServiceVehicleSelector2
                     }
                     else if (prefab.m_class.m_service == ItemClass.Service.Garbage)
                     {
-                        switch (prefab.m_class.m_level)
-                        {
-                            case ItemClass.Level.Level1:
-                            case ItemClass.Level.Level2:
-                            case ItemClass.Level.Level3:
-                            case ItemClass.Level.Level4:
-                                prefabDataList4.Add(new PrefabData(prefab));
-                                break;
-                        }                        
+                        prefabDataList4.Add(new PrefabData(prefab));              
                     }
                     else if (prefab.m_class.m_service == ItemClass.Service.HealthCare)
                     {
