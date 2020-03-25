@@ -101,6 +101,17 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     patchIndexOffset = 15;
                     methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
                 }
+                else if (declaringType == typeof(FishingHarborAI))
+                {
+                    if (occurrences > 2)
+                    {
+                        newCodes.Add(codeInstruction);
+                        continue;
+                    }
+
+                    patchIndexOffset = 12;
+                    methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+                }
                 else
                 {
                     throw new NotImplementedException("Service Vehicle Selector 2: unsupported patched type: " +

@@ -91,6 +91,8 @@ namespace ServiceVehicleSelector2
                 ServiceBuildingAIPatch.GetTranspiler());
             Transpile(typeof(DisasterResponseBuildingAI), nameof(DisasterResponseBuildingAI.StartTransfer),
                 ServiceBuildingAIPatch.GetTranspiler());
+            Transpile(typeof(FishingHarborAI), nameof(FishingHarborAI.TrySpawnBoat),
+                ServiceBuildingAIPatch.GetTranspiler());
 
             SerializableDataExtension.instance.EventSaveData +=
                 new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Object = UnityEngine.Object;
 
 namespace ServiceVehicleSelector2
@@ -33,6 +34,12 @@ namespace ServiceVehicleSelector2
         private PrefabData[] _disasterResponseTruckPrefabData;
 
         private PrefabData[] _intercityBusData;
+        private PrefabData[] _fishingBoatData;
+        private PrefabData[] _fishingBoat1Data;
+        private PrefabData[] _fishingBoat2Data;
+        private PrefabData[] _fishingBoat3Data;
+        private PrefabData[] _fishingBoat4Data;
+        private PrefabData[] _fishingBoat5Data;
         
         //TODO: pumping trucks, park trucks, evacuation buses
         
@@ -50,6 +57,24 @@ namespace ServiceVehicleSelector2
 
         public PrefabData[] GetPrefabs(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)
         {
+            if (service == ItemClass.Service.Fishing && vehicleType == VehicleInfo.VehicleType.Ship)
+            {
+                switch (level)
+                {
+                    case ItemClass.Level.None:
+                        return this._fishingBoatData;
+                    case ItemClass.Level.Level1:
+                        return this._fishingBoat1Data;
+                    case ItemClass.Level.Level2:
+                        return this._fishingBoat2Data;
+                    case ItemClass.Level.Level3:
+                        return this._fishingBoat3Data;
+                    case ItemClass.Level.Level4:
+                        return this._fishingBoat4Data;
+                    case ItemClass.Level.Level5:
+                        return this._fishingBoat5Data;
+                }
+            }
             if (subService == ItemClass.SubService.PublicTransportPost)
             {
                 if (level == ItemClass.Level.Level2)
@@ -220,6 +245,12 @@ namespace ServiceVehicleSelector2
             List<PrefabData> prefabDataList26 = new List<PrefabData>();
             
             List<PrefabData> prefabDataList27 = new List<PrefabData>(); //Sunset Harbor DLC
+            List<PrefabData> fishingBoatList = new List<PrefabData>();
+            List<PrefabData> fishingBoat1List = new List<PrefabData>();
+            List<PrefabData> fishingBoat2List = new List<PrefabData>();
+            List<PrefabData> fishingBoat3List = new List<PrefabData>();
+            List<PrefabData> fishingBoat4List = new List<PrefabData>();
+            List<PrefabData> fishingBoat5List = new List<PrefabData>();
             
             //TODO more Industry DLC + parklife truck
             
@@ -297,6 +328,30 @@ namespace ServiceVehicleSelector2
                     {
                         prefabDataList4.Add(new PrefabData(prefab));              
                     }
+                    else if (prefab.m_class.m_service == ItemClass.Service.Fishing && prefab.m_vehicleType == VehicleInfo.VehicleType.Ship)
+                    {
+                        switch (prefab.m_class.m_level)
+                        {
+                            case ItemClass.Level.None:
+                                fishingBoatList.Add(new PrefabData(prefab));
+                                break;
+                            case ItemClass.Level.Level1:
+                                fishingBoat1List.Add(new PrefabData(prefab));
+                                break;
+                            case ItemClass.Level.Level2:
+                                fishingBoat2List.Add(new PrefabData(prefab));
+                                break;
+                            case ItemClass.Level.Level3:
+                                fishingBoat3List.Add(new PrefabData(prefab));
+                                break;
+                            case ItemClass.Level.Level4:
+                                fishingBoat4List.Add(new PrefabData(prefab));
+                                break;
+                            case ItemClass.Level.Level5:
+                                fishingBoat5List.Add(new PrefabData(prefab));
+                                break;
+                        }           
+                    }
                     else if (prefab.m_class.m_service == ItemClass.Service.HealthCare)
                     {
                         if (prefab.m_class.m_level == ItemClass.Level.Level1)
@@ -364,6 +419,12 @@ namespace ServiceVehicleSelector2
             this._postTruckPrefabData = prefabDataList26.ToArray();
 
             this._intercityBusData = prefabDataList27.ToArray();
+            this._fishingBoatData = fishingBoatList.ToArray();
+            this._fishingBoat1Data = fishingBoat1List.ToArray();
+            this._fishingBoat2Data = fishingBoat2List.ToArray();
+            this._fishingBoat3Data = fishingBoat3List.ToArray();
+            this._fishingBoat4Data = fishingBoat4List.ToArray();
+            this._fishingBoat5Data = fishingBoat5List.ToArray();
         }
 
         private static bool IsTrailer(VehicleInfo prefab)

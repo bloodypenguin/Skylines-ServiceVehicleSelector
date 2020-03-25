@@ -104,6 +104,17 @@ namespace ServiceVehicleSelector2
             this._cachedItemClass = itemClass;
           }
         }
+        else if (itemClass.m_service == ItemClass.Service.Fishing && buildingInfo.m_buildingAI is FishingHarborAI)
+        {
+          canSelectVehicle = true;
+          if ((Object) this._cachedItemClass != (Object) itemClass)
+          {
+            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, 0.0f);
+            _headerLabel.text = "Boat types";
+            this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.Ship);
+            this._cachedItemClass = itemClass;
+          }
+        }
         else
         {
           canSelectVehicle = false;
