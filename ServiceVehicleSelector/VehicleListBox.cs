@@ -80,7 +80,7 @@ namespace ServiceVehicleSelector2
         {
           VehicleListBoxRow vehicleListBoxRow = this._items[index];
           if (vehicleListBoxRow.IsSelected)
-            stringSet.Add(vehicleListBoxRow.Prefab.ObjectName);
+            stringSet.Add(vehicleListBoxRow.Prefab.PrefabName);
         }
         return stringSet;
       }
@@ -91,7 +91,7 @@ namespace ServiceVehicleSelector2
         for (int index = 0; index < this._items.Length; ++index)
         {
           VehicleListBoxRow vehicleListBoxRow = this._items[index];
-          vehicleListBoxRow.IsSelected = value.Contains(vehicleListBoxRow.Prefab.ObjectName);
+          vehicleListBoxRow.IsSelected = value.Contains(vehicleListBoxRow.Prefab.PrefabName);
         }
       }
     }
@@ -104,7 +104,7 @@ namespace ServiceVehicleSelector2
         for (int index = 0; index < this._items.Length; ++index)
         {
           VehicleListBoxRow vehicleListBoxRow = this._items[index];
-          stringSet.Add(vehicleListBoxRow.Prefab.ObjectName);
+          stringSet.Add(vehicleListBoxRow.Prefab.PrefabName);
         }
         return stringSet;
       }

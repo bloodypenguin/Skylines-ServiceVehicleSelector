@@ -13,7 +13,7 @@ namespace ServiceVehicleSelector2
     
     public static VehicleInfo GetVehicleInfo(ref Randomizer randomizer, ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, string prefabName, VehicleInfo.VehicleType vehicleType)
     {
-      var prefabData = Array.Find(VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType), item => item.ObjectName == prefabName);
+      var prefabData = Array.Find(VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType), item => item.PrefabName == prefabName);
       if (prefabData != null)
         return PrefabCollection<VehicleInfo>.GetPrefab((uint) prefabData.PrefabDataIndex);
       Utils.LogWarning((object) ("Unknown prefab: " + prefabName));

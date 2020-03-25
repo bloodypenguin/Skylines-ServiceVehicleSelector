@@ -75,9 +75,9 @@ namespace ServiceVehicleSelector2
       this._label.height = this.height;
       this._label.width = this.width - (float) this.autoLayoutPadding.left;
       this._label.verticalAlignment = UIVerticalAlignment.Middle;
-      if (!Utils.Truncate(this._label, this._prefab.Title, "…"))
+      if (!Utils.Truncate(this._label, this._prefab.DisplayName, "…"))
         return;
-      this._label.tooltip = this._prefab.Title;
+      this._label.tooltip = this._prefab.DisplayName;
     }
 
     public override void OnDestroy()

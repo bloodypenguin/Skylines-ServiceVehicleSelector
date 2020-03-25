@@ -16,6 +16,7 @@ namespace ServiceVehicleSelector2
     private bool _initialized;
     private ushort _cachedBuildingID;
     private ItemClass _cachedItemClass;
+    private ItemClass _cachedItemVehicleClass;
     private CityServiceWorldInfoPanel _cityServiceWorldInfoPanel;
     private UIPanel _prefabPanel;
     private UILabel _headerLabel;
@@ -107,12 +108,19 @@ namespace ServiceVehicleSelector2
         else if (itemClass.m_service == ItemClass.Service.Fishing && buildingInfo.m_buildingAI is FishingHarborAI)
         {
           canSelectVehicle = true;
-          if ((Object) this._cachedItemClass != (Object) itemClass)
+          var fishingHarborAi = ((FishingHarborAI)buildingInfo.m_buildingAI);
+          var itemVehicleClass = fishingHarborAi.m_outputVehicleClass;
+          if ((Object) this._cachedItemClass != (Object) itemClass || this._cachedItemVehicleClass != itemVehicleClass)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, 0.0f);
             _headerLabel.text = "Boat types";
-            this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.Ship);
+            this.PopulateVehicleListBox(
+              itemVehicleClass.m_service, 
+              itemVehicleClass.m_subService, 
+              itemVehicleClass.m_level, 
+              VehicleInfo.VehicleType.Ship);
             this._cachedItemClass = itemClass;
+            this._cachedItemVehicleClass = itemVehicleClass;
           }
         }
         else
