@@ -265,7 +265,7 @@ namespace ServiceVehicleSelector2
             for (int index = 0; index < PrefabCollection<VehicleInfo>.PrefabCount(); ++index)
             {
                 VehicleInfo prefab = PrefabCollection<VehicleInfo>.GetPrefab((uint) index);
-                if ((Object) prefab != (Object) null && !VehiclePrefabs.IsTrailer(prefab) && prefab.m_placementStyle != ItemClass.Placement.Procedural)
+                if ((Object) prefab != (Object) null && prefab.m_placementStyle != ItemClass.Placement.Procedural)
                 {
                     if (prefab.m_vehicleAI is PrivatePlaneAI)
                     {
@@ -406,14 +406,6 @@ namespace ServiceVehicleSelector2
                     }
                 }
             }
-        }
-
-        private static bool IsTrailer(VehicleInfo prefab)
-        {
-            string str = ColossalFramework.Globalization.Locale.GetUnchecked("VEHICLE_TITLE", prefab.name);
-            if (!str.StartsWith("VEHICLE_TITLE"))
-                return str.StartsWith("Trailer");
-            return true;
         }
     }
 }
