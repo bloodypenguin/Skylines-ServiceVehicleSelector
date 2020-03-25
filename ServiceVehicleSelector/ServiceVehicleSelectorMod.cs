@@ -70,6 +70,8 @@ namespace ServiceVehicleSelector2
                 ServiceBuildingAIPatch.GetTranspiler());
             Transpile(typeof(TransportStationAI), "CreateIncomingVehicle",
                 ServiceBuildingAIPatch.GetTranspiler());
+            Transpile(typeof(PrivateAirportAI), "CheckVehicles",
+                ServiceBuildingAIPatch.GetTranspiler());
             Transpile(typeof(PanelExtenderCityService), "OnSelectedPrefabsChanged",
                 PanelExtenderCityServicePatch.GetTranspiler()); //needed for reverse redirect
             Transpile(typeof(PostOfficeAI), nameof(PostOfficeAI.StartTransfer),

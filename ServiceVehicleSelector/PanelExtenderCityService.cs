@@ -54,7 +54,8 @@ namespace ServiceVehicleSelector2
             this._cachedItemClass = itemClass;
           }
         }
-        else if (itemClass.m_service == ItemClass.Service.HealthCare && !(buildingInfo.m_buildingAI is SaunaAI) ||
+        else if (buildingInfo.m_buildingAI is PrivateAirportAI ||
+                 itemClass.m_service == ItemClass.Service.HealthCare && !(buildingInfo.m_buildingAI is SaunaAI) ||
                  itemClass.m_service == ItemClass.Service.FireDepartment && !(buildingInfo.m_buildingAI is FirewatchTowerAI || buildingInfo.m_buildingAI is HelicopterDepotAI) ||
                  itemClass.m_service == ItemClass.Service.Garbage && !buildingInfo.m_isFloating ||
                  itemClass.m_service == ItemClass.Service.PoliceDepartment ||
@@ -216,11 +217,9 @@ namespace ServiceVehicleSelector2
     private void PopulateVehicleListBox(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)
     {
       this._vehicleListBox.ClearItems();
-      PrefabData[] prefabs = VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType);
-      int length = prefabs.Length;
-      for (int index = 0; index < length; ++index)
+      foreach (var prefabData in VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType))
       {
-        this._vehicleListBox.AddItem(prefabs[index]);
+        this._vehicleListBox.AddItem(prefabData);
       }
     }
   }

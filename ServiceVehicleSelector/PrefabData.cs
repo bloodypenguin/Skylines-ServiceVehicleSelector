@@ -13,6 +13,7 @@ namespace ServiceVehicleSelector2
   public class PrefabData
   {
     private VehicleInfo _info;
+    private string _displayName = null;
 
     public int PrefabDataIndex => this._info.m_prefabDataIndex;
 
@@ -22,14 +23,17 @@ namespace ServiceVehicleSelector2
     {
       get
       {
-        var m_displayName = Locale.GetUnchecked("VEHICLE_TITLE", this._info.name);
-        if (m_displayName.StartsWith("VEHICLE_TITLE"))
+        if (_displayName != null)
         {
-          m_displayName = this._info.name.Substring(this._info.name.IndexOf('.') + 1).Replace("_Data", "");
+          return _displayName;
         }
-        m_displayName = CleanName(m_displayName, !this._info.name.Contains("."));
-
-        return m_displayName;
+        var displayName = Locale.GetUnchecked("VEHICLE_TITLE", this._info.name);
+        if (displayName.StartsWith("VEHICLE_TITLE"))
+        {
+          displayName = this._info.name.Substring(this._info.name.IndexOf('.') + 1).Replace("_Data", "");
+        }
+        _displayName = CleanName(displayName, !this._info.name.Contains("."));
+        return  _displayName;
       }
     }
     

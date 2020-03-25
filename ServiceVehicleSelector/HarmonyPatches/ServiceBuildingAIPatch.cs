@@ -50,7 +50,8 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     declaringType == typeof(HospitalAI) ||
                     declaringType == typeof(SnowDumpAI) ||
                     declaringType == typeof(MaintenanceDepotAI) ||
-                    declaringType == typeof(TransportStationAI)
+                    declaringType == typeof(TransportStationAI)||
+                    declaringType == typeof(PrivateAirportAI)
                 )
                 {
                     if (occurrences > 1)

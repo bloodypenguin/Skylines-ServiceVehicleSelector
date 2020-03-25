@@ -7,39 +7,41 @@ namespace ServiceVehicleSelector2
     public class VehiclePrefabs
     {
         public static VehiclePrefabs instance;
-        private PrefabData[] _deathCarePrefabData;
-        private PrefabData[] _fireDepartmentPrefabData;
-        private PrefabData[] _garbagePrefabData;
-        private PrefabData[] _healthCarePrefabData;
-        private PrefabData[] _policeDepartmentPrefabData;
-        private PrefabData[] _prisonPrefabData;
-        private PrefabData[] _taxiPrefabData;
-        private PrefabData[] _trainPrefabData;
-        private PrefabData[] _shipPrefabData;
-        private PrefabData[] _roadPrefabData;
-        private PrefabData[] _roadSnowPrefabData;
-        private PrefabData[] _cableCarPrefabData;
-        private PrefabData[] _passengerPlanePrefabData;
-        private PrefabData[] _passengerShipPrefabData;
-        private PrefabData[] _passengerTrainPrefabData;
+        private List<PrefabData> _deathCarePrefabData;
+        private List<PrefabData> _fireDepartmentPrefabData;
+        private List<PrefabData> _garbagePrefabData;
+        private List<PrefabData> _healthCarePrefabData;
+        private List<PrefabData> _policeDepartmentPrefabData;
+        private List<PrefabData> _prisonPrefabData;
+        private List<PrefabData> _taxiPrefabData;
+        private List<PrefabData> _trainPrefabData;
+        private List<PrefabData> _shipPrefabData;
+        private List<PrefabData> _roadPrefabData;
+        private List<PrefabData> _roadSnowPrefabData;
+        private List<PrefabData> _cableCarPrefabData;
+        private List<PrefabData> _passengerPlanePrefabData;
+        private List<PrefabData> _passengerShipPrefabData;
+        private List<PrefabData> _passengerTrainPrefabData;
         
-        private PrefabData[] _postVanPrefabData;
-        private PrefabData[] _cargoPlanePrefabData;
-        private PrefabData[] _postTruckPrefabData;
+        private List<PrefabData> _postVanPrefabData;
+        private List<PrefabData> _cargoPlanePrefabData;
+        private List<PrefabData> _postTruckPrefabData;
         
-        private PrefabData[] _medicalHelicopterPrefabData;
-        private PrefabData[] _policeHelicopterPrefabData;
-        private PrefabData[] _fireHelicopterPrefabData;
-        private PrefabData[] _disasterResponseHelicopterPrefabData;
-        private PrefabData[] _disasterResponseTruckPrefabData;
+        private List<PrefabData> _medicalHelicopterPrefabData;
+        private List<PrefabData> _policeHelicopterPrefabData;
+        private List<PrefabData> _fireHelicopterPrefabData;
+        private List<PrefabData> _disasterResponseHelicopterPrefabData;
+        private List<PrefabData> _disasterResponseTruckPrefabData;
 
-        private PrefabData[] _intercityBusData;
-        private PrefabData[] _fishingBoatData;
-        private PrefabData[] _fishingBoat1Data;
-        private PrefabData[] _fishingBoat2Data;
-        private PrefabData[] _fishingBoat3Data;
-        private PrefabData[] _fishingBoat4Data;
-        private PrefabData[] _fishingBoat5Data;
+        private List<PrefabData> _intercityBusData;
+        private List<PrefabData> _fishingBoatData;
+        private List<PrefabData> _fishingBoat1Data;
+        private List<PrefabData> _fishingBoat2Data;
+        private List<PrefabData> _fishingBoat3Data;
+        private List<PrefabData> _fishingBoat4Data;
+        private List<PrefabData> _fishingBoat5Data;
+
+        private List<PrefabData> _privatePlanesData;
         
         //TODO: pumping trucks, park trucks, evacuation buses
         
@@ -55,8 +57,13 @@ namespace ServiceVehicleSelector2
             VehiclePrefabs.instance = (VehiclePrefabs) null;
         }
 
-        public PrefabData[] GetPrefabs(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)
+        public List<PrefabData> GetPrefabs(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)
         {
+            if (service == ItemClass.Service.Monument && level == ItemClass.Level.Level5) //TODO: make a better check in the future
+            {
+                return _privatePlanesData;
+            }
+            
             if (service == ItemClass.Service.Fishing && vehicleType == VehicleInfo.VehicleType.Ship)
             {
                 switch (level)
@@ -206,7 +213,7 @@ namespace ServiceVehicleSelector2
             }
             
             if (service != ItemClass.Service.Road)
-                return (PrefabData[]) null;
+                return (List<PrefabData>) null;
             if (level == ItemClass.Level.Level2)
                 return this._roadPrefabData;
             return this._roadSnowPrefabData;
@@ -214,43 +221,44 @@ namespace ServiceVehicleSelector2
 
         private void FindAllPrefabs()
         {
-            List<PrefabData> prefabDataList1 = new List<PrefabData>();
-            List<PrefabData> prefabDataList2 = new List<PrefabData>();
-            List<PrefabData> prefabDataList3 = new List<PrefabData>();
-            List<PrefabData> prefabDataList4 = new List<PrefabData>();
-            List<PrefabData> prefabDataList5 = new List<PrefabData>();
-            List<PrefabData> prefabDataList6 = new List<PrefabData>();
-            List<PrefabData> prefabDataList7 = new List<PrefabData>();
-            List<PrefabData> prefabDataList8 = new List<PrefabData>();
-            List<PrefabData> prefabDataList9 = new List<PrefabData>();
-            List<PrefabData> prefabDataList10 = new List<PrefabData>();
-            List<PrefabData> prefabDataList11 = new List<PrefabData>();
-            List<PrefabData> prefabDataList12 = new List<PrefabData>();
-            List<PrefabData> prefabDataList13 = new List<PrefabData>();           
-            List<PrefabData> prefabDataList14 = new List<PrefabData>();
-            List<PrefabData> prefabDataList15 = new List<PrefabData>();
+            _taxiPrefabData = new List<PrefabData>();
+            _trainPrefabData = new List<PrefabData>();
+            _deathCarePrefabData = new List<PrefabData>();
+            _garbagePrefabData = new List<PrefabData>();
+            _fireDepartmentPrefabData = new List<PrefabData>();
+            _healthCarePrefabData = new List<PrefabData>();
+            _policeDepartmentPrefabData = new List<PrefabData>();
+            _prisonPrefabData = new List<PrefabData>();
+            _roadPrefabData = new List<PrefabData>();
+            _roadSnowPrefabData = new List<PrefabData>();
+            _cableCarPrefabData = new List<PrefabData>();
+            _passengerTrainPrefabData = new List<PrefabData>();
+            _shipPrefabData = new List<PrefabData>();           
+            _passengerPlanePrefabData = new List<PrefabData>();
+            _passengerShipPrefabData = new List<PrefabData>();
             
-            List<PrefabData> prefabDataList16 = new List<PrefabData>(); //Natural Disasters DLC
-            List<PrefabData> prefabDataList17 = new List<PrefabData>();
-            List<PrefabData> prefabDataList18 = new List<PrefabData>();
-            List<PrefabData> prefabDataList19 = new List<PrefabData>();
-            List<PrefabData> prefabDataList20 = new List<PrefabData>();
-            List<PrefabData> prefabDataList21 = new List<PrefabData>(); //unused: pumping truck
-            List<PrefabData> prefabDataList22 = new List<PrefabData>(); //unused: evac bus
+            _medicalHelicopterPrefabData = new List<PrefabData>(); //Natural Disasters DLC
+            _policeHelicopterPrefabData = new List<PrefabData>();
+            _fireHelicopterPrefabData = new List<PrefabData>();
+            _disasterResponseHelicopterPrefabData = new List<PrefabData>();
+            _disasterResponseTruckPrefabData = new List<PrefabData>();
+            //unused: pumping truck
+            //unused: evac bus
             
-            List<PrefabData> prefabDataList23 = new List<PrefabData>(); //unused: parklife truck
+            //unused: parklife truck
             
-            List<PrefabData> prefabDataList24 = new List<PrefabData>(); //Industry DLC
-            List<PrefabData> prefabDataList25 = new List<PrefabData>();
-            List<PrefabData> prefabDataList26 = new List<PrefabData>();
+            _cargoPlanePrefabData = new List<PrefabData>(); //Industry DLC
+            _postVanPrefabData = new List<PrefabData>();
+            _postTruckPrefabData = new List<PrefabData>();
             
-            List<PrefabData> prefabDataList27 = new List<PrefabData>(); //Sunset Harbor DLC
-            List<PrefabData> fishingBoatList = new List<PrefabData>();
-            List<PrefabData> fishingBoat1List = new List<PrefabData>();
-            List<PrefabData> fishingBoat2List = new List<PrefabData>();
-            List<PrefabData> fishingBoat3List = new List<PrefabData>();
-            List<PrefabData> fishingBoat4List = new List<PrefabData>();
-            List<PrefabData> fishingBoat5List = new List<PrefabData>();
+            _intercityBusData = new List<PrefabData>(); //Sunset Harbor DLC
+            _fishingBoatData = new List<PrefabData>();
+            _fishingBoat1Data = new List<PrefabData>();
+            _fishingBoat2Data = new List<PrefabData>();
+            _fishingBoat3Data = new List<PrefabData>();
+            _fishingBoat4Data = new List<PrefabData>();
+            _fishingBoat5Data = new List<PrefabData>();
+            _privatePlanesData = new List<PrefabData>();
             
             //TODO more Industry DLC + parklife truck
             
@@ -259,57 +267,62 @@ namespace ServiceVehicleSelector2
                 VehicleInfo prefab = PrefabCollection<VehicleInfo>.GetPrefab((uint) index);
                 if ((Object) prefab != (Object) null && !VehiclePrefabs.IsTrailer(prefab) && prefab.m_placementStyle != ItemClass.Placement.Procedural)
                 {
+                    if (prefab.m_vehicleAI is PrivatePlaneAI)
+                    {
+                        _privatePlanesData.Add(new PrefabData(prefab));
+                    }
+                    
                     if (prefab.m_class.m_service == ItemClass.Service.PublicTransport)
                     {
                         if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportTrain)
                         {
                             if (prefab.m_class.m_level == ItemClass.Level.Level4)
                             {
-                                prefabDataList2.Add(new PrefabData(prefab));
+                                _trainPrefabData.Add(new PrefabData(prefab));
                             } else if (prefab.m_class.m_level == ItemClass.Level.Level1)
                             {
-                                prefabDataList12.Add(new PrefabData(prefab));
+                                _passengerTrainPrefabData.Add(new PrefabData(prefab));
                             }
                         }
                         else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportBus)
                         {
                             if (prefab.m_class.m_level == ItemClass.Level.Level3)
                             {
-                                prefabDataList27.Add(new PrefabData(prefab));
+                                _intercityBusData.Add(new PrefabData(prefab));
                             }
                         }
                         else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportTaxi)
-                            prefabDataList1.Add(new PrefabData(prefab));
+                            _taxiPrefabData.Add(new PrefabData(prefab));
                         else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportCableCar)
-                            prefabDataList11.Add(new PrefabData(prefab));
+                            _cableCarPrefabData.Add(new PrefabData(prefab));
                         else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportPlane)
                         {
                             if (prefab.m_class.m_level == ItemClass.Level.Level4)
                             {
-                                prefabDataList24.Add(new PrefabData(prefab));
+                                _cargoPlanePrefabData.Add(new PrefabData(prefab));
                             } else if (prefab.m_class.m_level == ItemClass.Level.Level1)
                             {
-                                prefabDataList14.Add(new PrefabData(prefab));
+                                _passengerPlanePrefabData.Add(new PrefabData(prefab));
                             }
                         } 
                         else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportShip)
                         {
                             if (prefab.m_class.m_level == ItemClass.Level.Level4)
                             {
-                                prefabDataList13.Add(new PrefabData(prefab));
+                                _shipPrefabData.Add(new PrefabData(prefab));
                             } else if (prefab.m_class.m_level == ItemClass.Level.Level1)
                             {
-                                prefabDataList15.Add(new PrefabData(prefab));
+                                _passengerShipPrefabData.Add(new PrefabData(prefab));
                             }
                         }
                         else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportPost)
                         {
                             if (prefab.m_class.m_level == ItemClass.Level.Level2)
                             {
-                                prefabDataList25.Add(new PrefabData(prefab));
+                                _postVanPrefabData.Add(new PrefabData(prefab));
                             } else if (prefab.m_class.m_level == ItemClass.Level.Level5)
                             {
-                                prefabDataList26.Add(new PrefabData(prefab));
+                                _postTruckPrefabData.Add(new PrefabData(prefab));
                             }
                         }
                     }
@@ -317,65 +330,65 @@ namespace ServiceVehicleSelector2
                     {
                         if (prefab.m_vehicleType == VehicleInfo.VehicleType.Helicopter)
                         {
-                            prefabDataList18.Add(new PrefabData(prefab));     
+                            _fireHelicopterPrefabData.Add(new PrefabData(prefab));     
                         }
                         else
                         {
-                            prefabDataList5.Add(new PrefabData(prefab));                            
+                            _fireDepartmentPrefabData.Add(new PrefabData(prefab));                            
                         }
                     }
                     else if (prefab.m_class.m_service == ItemClass.Service.Garbage)
                     {
-                        prefabDataList4.Add(new PrefabData(prefab));              
+                        _garbagePrefabData.Add(new PrefabData(prefab));              
                     }
                     else if (prefab.m_class.m_service == ItemClass.Service.Fishing && prefab.m_vehicleType == VehicleInfo.VehicleType.Ship)
                     {
                         switch (prefab.m_class.m_level)
                         {
                             case ItemClass.Level.None:
-                                fishingBoatList.Add(new PrefabData(prefab));
+                                _fishingBoatData.Add(new PrefabData(prefab));
                                 break;
                             case ItemClass.Level.Level1:
-                                fishingBoat1List.Add(new PrefabData(prefab));
+                                _fishingBoat1Data.Add(new PrefabData(prefab));
                                 break;
                             case ItemClass.Level.Level2:
-                                fishingBoat2List.Add(new PrefabData(prefab));
+                                _fishingBoat2Data.Add(new PrefabData(prefab));
                                 break;
                             case ItemClass.Level.Level3:
-                                fishingBoat3List.Add(new PrefabData(prefab));
+                                _fishingBoat3Data.Add(new PrefabData(prefab));
                                 break;
                             case ItemClass.Level.Level4:
-                                fishingBoat4List.Add(new PrefabData(prefab));
+                                _fishingBoat4Data.Add(new PrefabData(prefab));
                                 break;
                             case ItemClass.Level.Level5:
-                                fishingBoat5List.Add(new PrefabData(prefab));
+                                _fishingBoat5Data.Add(new PrefabData(prefab));
                                 break;
                         }           
                     }
                     else if (prefab.m_class.m_service == ItemClass.Service.HealthCare)
                     {
                         if (prefab.m_class.m_level == ItemClass.Level.Level1)
-                            prefabDataList6.Add(new PrefabData(prefab));
+                            _healthCarePrefabData.Add(new PrefabData(prefab));
                         else if (prefab.m_class.m_level == ItemClass.Level.Level2)
-                            prefabDataList3.Add(new PrefabData(prefab));
+                            _deathCarePrefabData.Add(new PrefabData(prefab));
                         else if (prefab.m_class.m_level == ItemClass.Level.Level3)
-                            prefabDataList16.Add(new PrefabData(prefab));
+                            _medicalHelicopterPrefabData.Add(new PrefabData(prefab));
                     }
                     else if (prefab.m_class.m_service == ItemClass.Service.PoliceDepartment)
                     {
                         if (prefab.m_class.m_level == ItemClass.Level.Level1)
-                            prefabDataList7.Add(new PrefabData(prefab));
+                            _policeDepartmentPrefabData.Add(new PrefabData(prefab));
                         else if (prefab.m_class.m_level == ItemClass.Level.Level4)
-                            prefabDataList8.Add(new PrefabData(prefab));
+                            _prisonPrefabData.Add(new PrefabData(prefab));
                         else if (prefab.m_class.m_level == ItemClass.Level.Level3)
-                            prefabDataList17.Add(new PrefabData(prefab));
+                            _policeHelicopterPrefabData.Add(new PrefabData(prefab));
                     }
                     else if (prefab.m_class.m_service == ItemClass.Service.Road)
                     {
                         if (prefab.m_class.m_level == ItemClass.Level.Level2)
-                            prefabDataList9.Add(new PrefabData(prefab));
+                            _roadPrefabData.Add(new PrefabData(prefab));
                         else
-                            prefabDataList10.Add(new PrefabData(prefab));
+                            _roadSnowPrefabData.Add(new PrefabData(prefab));
                     }
                     else if (prefab.m_class.m_service == ItemClass.Service.Disaster)
                     {
@@ -383,48 +396,16 @@ namespace ServiceVehicleSelector2
                         {
                             if (prefab.m_vehicleType == VehicleInfo.VehicleType.Helicopter)
                             {
-                                prefabDataList19.Add(new PrefabData(prefab));
+                                _disasterResponseHelicopterPrefabData.Add(new PrefabData(prefab));
                             }
                             else
                             {
-                                prefabDataList20.Add(new PrefabData(prefab));  
+                                _disasterResponseTruckPrefabData.Add(new PrefabData(prefab));  
                             }
                         }
                     }
                 }
             }
-            this._taxiPrefabData = prefabDataList1.ToArray();
-            this._trainPrefabData = prefabDataList2.ToArray();
-            this._deathCarePrefabData = prefabDataList3.ToArray();
-            this._fireDepartmentPrefabData = prefabDataList5.ToArray();
-            this._garbagePrefabData = prefabDataList4.ToArray();
-            this._healthCarePrefabData = prefabDataList6.ToArray();
-            this._policeDepartmentPrefabData = prefabDataList7.ToArray();
-            this._prisonPrefabData = prefabDataList8.ToArray();
-            this._roadPrefabData = prefabDataList9.ToArray();
-            this._roadSnowPrefabData = prefabDataList10.ToArray();
-            this._cableCarPrefabData = prefabDataList11.ToArray();
-            this._passengerTrainPrefabData = prefabDataList12.ToArray();
-            this._shipPrefabData = prefabDataList13.ToArray();
-            this._passengerPlanePrefabData = prefabDataList14.ToArray();
-            this._passengerShipPrefabData = prefabDataList15.ToArray();
-            this._medicalHelicopterPrefabData = prefabDataList16.ToArray();
-            this._policeHelicopterPrefabData = prefabDataList17.ToArray();
-            this._fireHelicopterPrefabData = prefabDataList18.ToArray();
-            this._disasterResponseHelicopterPrefabData = prefabDataList19.ToArray();
-            this._disasterResponseTruckPrefabData = prefabDataList20.ToArray();
-            
-            this._cargoPlanePrefabData = prefabDataList24.ToArray();
-            this._postVanPrefabData = prefabDataList25.ToArray();
-            this._postTruckPrefabData = prefabDataList26.ToArray();
-
-            this._intercityBusData = prefabDataList27.ToArray();
-            this._fishingBoatData = fishingBoatList.ToArray();
-            this._fishingBoat1Data = fishingBoat1List.ToArray();
-            this._fishingBoat2Data = fishingBoat2List.ToArray();
-            this._fishingBoat3Data = fishingBoat3List.ToArray();
-            this._fishingBoat4Data = fishingBoat4List.ToArray();
-            this._fishingBoat5Data = fishingBoat5List.ToArray();
         }
 
         private static bool IsTrailer(VehicleInfo prefab)
