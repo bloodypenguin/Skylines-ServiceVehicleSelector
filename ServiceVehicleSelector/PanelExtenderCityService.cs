@@ -13,6 +13,8 @@ namespace ServiceVehicleSelector2
 {
   public class PanelExtenderCityService : MonoBehaviour
   {
+    private  const float VerticalOffset = 40f; //TODO: needed due to the UI issue, revert if CO fixes the panel
+    
     private bool _initialized;
     private ushort _cachedBuildingID;
     private ItemClass _cachedItemClass;
@@ -48,7 +50,7 @@ namespace ServiceVehicleSelector2
           canSelectVehicle = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
           {
-            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, 0.0f);
+            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             _headerLabel.text = "Vehicle types";
             this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
             this._cachedItemClass = itemClass;
@@ -67,7 +69,7 @@ namespace ServiceVehicleSelector2
           canSelectVehicle = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
           {
-            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, 0.0f);
+            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             _headerLabel.text = "Vehicle types";
             this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
             this._cachedItemClass = itemClass;
@@ -84,11 +86,11 @@ namespace ServiceVehicleSelector2
           {
             if (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain)
             {          
-              _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 181f, 0.0f);
+              _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 181f, VerticalOffset);
             }
             else
             {
-              _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, 0.0f);
+              _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             }
             _headerLabel.text = "Intercity types";
             this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
@@ -100,7 +102,7 @@ namespace ServiceVehicleSelector2
           canSelectVehicle = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
           {
-            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, 0.0f);
+            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             _headerLabel.text = "Helicopter types";
             this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.Helicopter);
             this._cachedItemClass = itemClass;
@@ -113,7 +115,7 @@ namespace ServiceVehicleSelector2
           var itemVehicleClass = fishingHarborAi.m_boatClass;
           if ((Object) this._cachedItemClass != (Object) itemClass || this._cachedItemVehicleClass != itemVehicleClass)
           {
-            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, 0.0f);
+            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             _headerLabel.text = "Boat types";
             this.PopulateVehicleListBox(
               itemVehicleClass.m_service, 
@@ -157,11 +159,13 @@ namespace ServiceVehicleSelector2
     private void CreatePrefabPanel()
     {
       UIPanel uiPanel = this._cityServiceWorldInfoPanel.component.AddUIComponent<UIPanel>();
+      
+      //TODO: fix if CO fixes the issues
       var parentHeight = 285f; //uiPanel.parent.height; broken due to autoformat
       
       uiPanel.name = "SvsVehicleTypes";
       uiPanel.AlignTo(uiPanel.parent, UIAlignAnchor.TopRight);
-      uiPanel.relativePosition = new Vector3(uiPanel.parent.width + 1f, 0.0f);
+      uiPanel.relativePosition = new Vector3(uiPanel.parent.width + 1f, VerticalOffset);
       uiPanel.width = 180f;
       uiPanel.height = parentHeight - 16f;
       
