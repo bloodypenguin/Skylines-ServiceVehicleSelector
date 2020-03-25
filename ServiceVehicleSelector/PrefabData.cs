@@ -22,10 +22,6 @@ namespace ServiceVehicleSelector2
     {
       get
       {
-        if (this._info?.name != null && this._info.name.StartsWith("Fishing Boat")) //otherwise all stock ones will be called the same
-        {
-          return this._info.name;
-        }
         var m_displayName = Locale.GetUnchecked("VEHICLE_TITLE", this._info.name);
         if (m_displayName.StartsWith("VEHICLE_TITLE"))
         {

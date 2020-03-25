@@ -109,7 +109,7 @@ namespace ServiceVehicleSelector2
         {
           canSelectVehicle = true;
           var fishingHarborAi = ((FishingHarborAI)buildingInfo.m_buildingAI);
-          var itemVehicleClass = fishingHarborAi.m_outputVehicleClass;
+          var itemVehicleClass = fishingHarborAi.m_boatClass;
           if ((Object) this._cachedItemClass != (Object) itemClass || this._cachedItemVehicleClass != itemVehicleClass)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, 0.0f);
@@ -219,7 +219,9 @@ namespace ServiceVehicleSelector2
       PrefabData[] prefabs = VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType);
       int length = prefabs.Length;
       for (int index = 0; index < length; ++index)
+      {
         this._vehicleListBox.AddItem(prefabs[index]);
+      }
     }
   }
 }
