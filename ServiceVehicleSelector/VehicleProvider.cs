@@ -2,9 +2,9 @@
 using ColossalFramework;
 using ColossalFramework.Math;
 
-namespace ServiceVehicleSelector2.Detours
+namespace ServiceVehicleSelector2
 {
-  public static class VehicleManagerMod
+  public static class VehicleProvider
   {
     public static VehicleInfo GetVehicleInfo(ref Randomizer randomizer, ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, string prefabName)
     {
@@ -13,7 +13,8 @@ namespace ServiceVehicleSelector2.Detours
     
     public static VehicleInfo GetVehicleInfo(ref Randomizer randomizer, ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, string prefabName, VehicleInfo.VehicleType vehicleType)
     {
-      PrefabData prefabData = Array.Find<PrefabData>(VehiclePrefabs.instance.GetPrefab(service, subService, level, vehicleType), (Predicate<PrefabData>) (item => item.ObjectName == prefabName));
+      var prefabData = VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType)
+        .Find(item => item.PrefabName == prefabName);
       if (prefabData != null)
         return PrefabCollection<VehicleInfo>.GetPrefab((uint) prefabData.PrefabDataIndex);
       Utils.LogWarning((object) ("Unknown prefab: " + prefabName));

@@ -7,16 +7,18 @@
 using ColossalFramework;
 using ColossalFramework.UI;
 using System.Collections.Generic;
-using ServiceVehicleSelector2.Detours;
 using UnityEngine;
 
 namespace ServiceVehicleSelector2
 {
   public class PanelExtenderCityService : MonoBehaviour
   {
+    private  const float VerticalOffset = 40f; //TODO: needed due to the UI issue, revert if CO fixes the panel
+    
     private bool _initialized;
     private ushort _cachedBuildingID;
     private ItemClass _cachedItemClass;
+    private ItemClass _cachedItemVehicleClass;
     private CityServiceWorldInfoPanel _cityServiceWorldInfoPanel;
     private UIPanel _prefabPanel;
     private UILabel _headerLabel;
@@ -48,13 +50,14 @@ namespace ServiceVehicleSelector2
           canSelectVehicle = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
           {
-            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, 0.0f);
+            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             _headerLabel.text = "Vehicle types";
             this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
             this._cachedItemClass = itemClass;
           }
         }
-        else if (itemClass.m_service == ItemClass.Service.HealthCare && !(buildingInfo.m_buildingAI is SaunaAI) ||
+        else if (buildingInfo.m_buildingAI is PrivateAirportAI ||
+                 itemClass.m_service == ItemClass.Service.HealthCare && !(buildingInfo.m_buildingAI is SaunaAI) ||
                  itemClass.m_service == ItemClass.Service.FireDepartment && !(buildingInfo.m_buildingAI is FirewatchTowerAI || buildingInfo.m_buildingAI is HelicopterDepotAI) ||
                  itemClass.m_service == ItemClass.Service.Garbage && !buildingInfo.m_isFloating ||
                  itemClass.m_service == ItemClass.Service.PoliceDepartment ||
@@ -66,28 +69,28 @@ namespace ServiceVehicleSelector2
           canSelectVehicle = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
           {
-            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, 0.0f);
+            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             _headerLabel.text = "Vehicle types";
             this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
             this._cachedItemClass = itemClass;
           }
         }
         else if (itemClass.m_service == ItemClass.Service.PublicTransport &&
-                 itemClass.m_level == ItemClass.Level.Level1 &&
+                 ((itemClass.m_level == ItemClass.Level.Level1 &&
                  (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain ||
                   itemClass.m_subService == ItemClass.SubService.PublicTransportPlane ||
-                  itemClass.m_subService == ItemClass.SubService.PublicTransportShip))
+                  itemClass.m_subService == ItemClass.SubService.PublicTransportShip)) || (itemClass.m_level == ItemClass.Level.Level3 && itemClass.m_subService == ItemClass.SubService.PublicTransportBus)))
         {
           canSelectVehicle = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
           {
             if (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain)
             {          
-              _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 181f, 0.0f);
+              _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 181f, VerticalOffset);
             }
             else
             {
-              _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, 0.0f);
+              _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             }
             _headerLabel.text = "Intercity types";
             this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
@@ -99,10 +102,28 @@ namespace ServiceVehicleSelector2
           canSelectVehicle = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)
           {
-            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, 0.0f);
+            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             _headerLabel.text = "Helicopter types";
             this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.Helicopter);
             this._cachedItemClass = itemClass;
+          }
+        }
+        else if (itemClass.m_service == ItemClass.Service.Fishing && buildingInfo.m_buildingAI is FishingHarborAI)
+        {
+          canSelectVehicle = true;
+          var fishingHarborAi = ((FishingHarborAI)buildingInfo.m_buildingAI);
+          var itemVehicleClass = fishingHarborAi.m_boatClass;
+          if ((Object) this._cachedItemClass != (Object) itemClass || this._cachedItemVehicleClass != itemVehicleClass)
+          {
+            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
+            _headerLabel.text = "Boat types";
+            this.PopulateVehicleListBox(
+              itemVehicleClass.m_service, 
+              itemVehicleClass.m_subService, 
+              itemVehicleClass.m_level, 
+              VehicleInfo.VehicleType.Ship);
+            this._cachedItemClass = itemClass;
+            this._cachedItemVehicleClass = itemVehicleClass;
           }
         }
         else
@@ -138,11 +159,13 @@ namespace ServiceVehicleSelector2
     private void CreatePrefabPanel()
     {
       UIPanel uiPanel = this._cityServiceWorldInfoPanel.component.AddUIComponent<UIPanel>();
+      
+      //TODO: fix if CO fixes the issues
       var parentHeight = 285f; //uiPanel.parent.height; broken due to autoformat
       
       uiPanel.name = "SvsVehicleTypes";
       uiPanel.AlignTo(uiPanel.parent, UIAlignAnchor.TopRight);
-      uiPanel.relativePosition = new Vector3(uiPanel.parent.width + 1f, 0.0f);
+      uiPanel.relativePosition = new Vector3(uiPanel.parent.width + 1f, VerticalOffset);
       uiPanel.width = 180f;
       uiPanel.height = parentHeight - 16f;
       
@@ -186,16 +209,22 @@ namespace ServiceVehicleSelector2
       {
         return;
       }
-      TransportStationAIDetour.ReleaseVehicles(transportStationAi, building, ref BuildingManager.instance.m_buildings.m_buffer[building]);
+      ReleaseVehicles(transportStationAi, building, ref BuildingManager.instance.m_buildings.m_buffer[building]);
+    }
+
+    private static void ReleaseVehicles(TransportStationAI ai, ushort buildingID, ref Building data)
+    {
+      //this should be replaced by the patch to call TransportStationAI.ReleaseVehicles
+      Debug.Log("ReleaseVehicles");
     }
 
     private void PopulateVehicleListBox(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)
     {
       this._vehicleListBox.ClearItems();
-      PrefabData[] prefab = VehiclePrefabs.instance.GetPrefab(service, subService, level, vehicleType);
-      int length = prefab.Length;
-      for (int index = 0; index < length; ++index)
-        this._vehicleListBox.AddItem(prefab[index]);
+      foreach (var prefabData in VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType))
+      {
+        this._vehicleListBox.AddItem(prefabData);
+      }
     }
   }
 }
