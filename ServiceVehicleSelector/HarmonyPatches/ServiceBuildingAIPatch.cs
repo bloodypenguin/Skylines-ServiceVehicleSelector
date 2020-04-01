@@ -5,26 +5,63 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ColossalFramework.Math;
 using Harmony;
+using JetBrains.Annotations;
+using ServiceVehicleSelector2.Util;
 using UnityEngine;
 
 namespace ServiceVehicleSelector2.HarmonyPatches
 {
     public class ServiceBuildingAIPatch
     {
-        public static MethodInfo GetTranspiler()
+        public static void Apply()
         {
-            return typeof(ServiceBuildingAIPatch).GetMethod(nameof(Transpile),
-                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+
+            Transpile(typeof(DepotAI), nameof(DepotAI.StartTransfer));
+            Transpile(typeof(TransportStationAI), "CreateOutgoingVehicle");
+            Transpile(typeof(TransportStationAI), "CreateIncomingVehicle");
+            Transpile(typeof(PrivateAirportAI), "CheckVehicles");
+            Transpile(typeof(PostOfficeAI), nameof(PostOfficeAI.StartTransfer));
+            Transpile(typeof(CableCarStationAI), "CreateVehicle");
+            Transpile(typeof(LandfillSiteAI), nameof(LandfillSiteAI.StartTransfer));
+            Transpile(typeof(CemeteryAI), nameof(CemeteryAI.StartTransfer));
+            Transpile(typeof(PoliceStationAI), nameof(PoliceStationAI.StartTransfer));
+            Transpile(typeof(HospitalAI), nameof(HospitalAI.StartTransfer));
+            Transpile(typeof(SnowDumpAI), nameof(SnowDumpAI.StartTransfer));
+            Transpile(typeof(MaintenanceDepotAI), nameof(MaintenanceDepotAI.StartTransfer));
+            Transpile(typeof(FireStationAI), nameof(FireStationAI.StartTransfer));
+            Transpile(typeof(HelicopterDepotAI), nameof(HelicopterDepotAI.StartTransfer));
+            Transpile(typeof(DisasterResponseBuildingAI), nameof(DisasterResponseBuildingAI.StartTransfer));
+            Transpile(typeof(FishingHarborAI), nameof(FishingHarborAI.TrySpawnBoat));
+        }
+
+        public static void Undo()
+        {
+            Restore(typeof(DepotAI), nameof(DepotAI.StartTransfer));
+            Restore(typeof(TransportStationAI), "CreateOutgoingVehicle");
+            Restore(typeof(TransportStationAI), "CreateIncomingVehicle");
+            Restore(typeof(PrivateAirportAI), "CheckVehicles");
+            Restore(typeof(PostOfficeAI), nameof(PostOfficeAI.StartTransfer));
+            Restore(typeof(CableCarStationAI), "CreateVehicle");
+            Restore(typeof(LandfillSiteAI), nameof(LandfillSiteAI.StartTransfer));
+            Restore(typeof(CemeteryAI), nameof(CemeteryAI.StartTransfer));
+            Restore(typeof(PoliceStationAI), nameof(PoliceStationAI.StartTransfer));
+            Restore(typeof(HospitalAI), nameof(HospitalAI.StartTransfer));
+            Restore(typeof(SnowDumpAI), nameof(SnowDumpAI.StartTransfer));
+            Restore(typeof(MaintenanceDepotAI), nameof(MaintenanceDepotAI.StartTransfer));
+            Restore(typeof(FireStationAI), nameof(FireStationAI.StartTransfer));
+            Restore(typeof(HelicopterDepotAI), nameof(HelicopterDepotAI.StartTransfer));
+            Restore(typeof(DisasterResponseBuildingAI), nameof(DisasterResponseBuildingAI.StartTransfer));
+            Restore(typeof(FishingHarborAI), nameof(FishingHarborAI.TrySpawnBoat));
         }
 
 
-        private static IEnumerable<CodeInstruction> Transpile(MethodBase original,
+        private static IEnumerable<CodeInstruction> TranspileMethod(MethodBase original,
             IEnumerable<CodeInstruction> instructions)
         {
-            Debug.Log("Service Vehicle Selector 2: Transpiling method: " + original.DeclaringType + "." + original);
+            Debug.Log("SVS2: Transpiling method: " + original.DeclaringType + "." + original);
             if (original.GetParameters()[0].ParameterType != typeof(ushort))
             {
-                throw new Exception("Service Vehicle Selector 2: parameter 0 type is not ushort: " +
+                throw new Exception("SVS2: parameter 0 type is not ushort: " +
                                     original.GetParameters()[0].ParameterType);
             }
 
@@ -115,7 +152,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 }
                 else
                 {
-                    throw new NotImplementedException("Service Vehicle Selector 2: unsupported patched type: " +
+                    throw new NotImplementedException("SVS2: unsupported patched type: " +
                                                       declaringType);
                 }
 
@@ -219,6 +256,18 @@ namespace ServiceVehicleSelector2.HarmonyPatches
         {
             return VehicleProvider.GetVehicleInfo(ref r, service, subService, level,
                 array[r.Int32((uint) array.Count)], vehicleType);
+        }
+
+        private static void Transpile(Type type, string methodName)
+        {
+            PatchUtil.Patch(new PatchUtil.MethodDefinition(type, methodName),
+                null, null,
+                new PatchUtil.MethodDefinition(typeof(ServiceBuildingAIPatch), nameof(TranspileMethod)));
+        }
+        
+        private static void Restore(Type type, string methodName)
+        {
+            PatchUtil.Unpatch(new PatchUtil.MethodDefinition(type, methodName));
         }
     }
 }

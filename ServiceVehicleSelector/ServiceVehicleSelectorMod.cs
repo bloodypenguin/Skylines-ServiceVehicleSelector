@@ -10,8 +10,6 @@ using ICities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using Harmony;
 using ServiceVehicleSelector2.HarmonyPatches;
 using UnityEngine;
 
@@ -25,8 +23,6 @@ namespace ServiceVehicleSelector2
         public static Dictionary<ushort, HashSet<string>> BuildingData;
         private LoadMode _loadMode;
         private GameObject _gameObject;
-        private static bool _isImprovedPublicTransportPresent;
-        private HarmonyInstance HarmonyInstance;
 
         public string Name => "Service Vehicle Selector 2 (r" + ServiceVehicleSelectorMod._version + ")";
 
@@ -34,7 +30,7 @@ namespace ServiceVehicleSelector2
 
         public void OnCreated(ILoading loading)
         {
-            HarmonyInstance = HarmonyInstance.Create("github.com/bloodypenguin/Skylines-ServiceVehicleSelector");
+
         }
 
         public void OnLevelLoaded(LoadMode mode)
@@ -42,14 +38,6 @@ namespace ServiceVehicleSelector2
             this._loadMode = mode;
             if (mode != LoadMode.LoadGame && mode != LoadMode.NewGame && this._loadMode != LoadMode.NewGameFromScenario)
                 return;
-            try
-            {
-                _isImprovedPublicTransportPresent = Utils.IsModActive("Improved Public Transport");
-            }
-            catch
-            {
-                _isImprovedPublicTransportPresent = false;
-            }
 
             UIView objectOfType = UnityEngine.Object.FindObjectOfType<UIView>();
             if ((UnityEngine.Object) objectOfType != (UnityEngine.Object) null)
@@ -62,39 +50,10 @@ namespace ServiceVehicleSelector2
             VehiclePrefabs.Init();
             if (!ServiceVehicleSelectorMod.TryLoadData(out ServiceVehicleSelectorMod.BuildingData))
                 Utils.Log((object) "Loading default building data.");
-            Transpile(typeof(CargoTruckAI), nameof(CargoTruckAI.ChangeVehicleType),
-                CargoTruckAIPatch.GetTranspiler(), true);
-            Transpile(typeof(DepotAI), nameof(DepotAI.StartTransfer),
-                ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(TransportStationAI), "CreateOutgoingVehicle",
-                ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(TransportStationAI), "CreateIncomingVehicle",
-                ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(PrivateAirportAI), "CheckVehicles",
-                ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(PanelExtenderCityService), "OnSelectedPrefabsChanged",
-                PanelExtenderCityServicePatch.GetTranspiler()); //needed for reverse redirect
-            Transpile(typeof(PostOfficeAI), nameof(PostOfficeAI.StartTransfer),
-                ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(CableCarStationAI), "CreateVehicle",
-                ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(LandfillSiteAI), nameof(LandfillSiteAI.StartTransfer),
-                ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(CemeteryAI), nameof(CemeteryAI.StartTransfer), ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(PoliceStationAI), nameof(PoliceStationAI.StartTransfer),
-                ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(HospitalAI), nameof(HospitalAI.StartTransfer), ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(SnowDumpAI), nameof(SnowDumpAI.StartTransfer), ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(MaintenanceDepotAI), nameof(MaintenanceDepotAI.StartTransfer),
-                ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(FireStationAI), nameof(FireStationAI.StartTransfer),
-                ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(HelicopterDepotAI), nameof(HelicopterDepotAI.StartTransfer),
-                ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(DisasterResponseBuildingAI), nameof(DisasterResponseBuildingAI.StartTransfer),
-                ServiceBuildingAIPatch.GetTranspiler());
-            Transpile(typeof(FishingHarborAI), nameof(FishingHarborAI.TrySpawnBoat),
-                ServiceBuildingAIPatch.GetTranspiler());
+            PanelExtenderCityServicePatch.Apply(); //needed for reverse redirect
+            ServiceBuildingAIPatch.Apply();
+            CargoTruckAIPatch.Apply();
+
 
             SerializableDataExtension.instance.EventSaveData +=
                 new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);
@@ -103,13 +62,14 @@ namespace ServiceVehicleSelector2
 
         public void OnLevelUnloading()
         {
-            _isImprovedPublicTransportPresent = false;
             if (this._loadMode != LoadMode.LoadGame && this._loadMode != LoadMode.NewGame &&
                 this._loadMode != LoadMode.NewGameFromScenario)
                 return;
             ServiceVehicleSelectorMod.BuildingData.Clear();
             ServiceVehicleSelectorMod.BuildingData = (Dictionary<ushort, HashSet<string>>) null;
-            HarmonyInstance?.UnpatchAll();
+            ServiceBuildingAIPatch.Undo();
+            CargoTruckAIPatch.Undo();
+            PanelExtenderCityServicePatch.Undo();
             VehiclePrefabs.Deinit();
             SerializableDataExtension.instance.EventSaveData -=
                 new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);
@@ -118,32 +78,6 @@ namespace ServiceVehicleSelector2
                 return;
             UnityEngine.Object.Destroy((UnityEngine.Object) this._gameObject);
         }
-
-        private void Transpile(Type type, string methodName, MethodInfo transpiler, bool staticMethod = false)
-        {
-            try
-            {
-                var bindingFlags = BindingFlags.NonPublic | BindingFlags.Public;
-                if (staticMethod)
-                {
-                    bindingFlags |= BindingFlags.Static;
-                }
-                else
-                {
-                    bindingFlags |= BindingFlags.Instance;
-                }
-
-                HarmonyInstance.Patch(type.GetMethod(methodName,
-                        bindingFlags),
-                    transpiler: new HarmonyMethod(transpiler));
-            }
-            catch (Exception e)
-            {
-                UnityEngine.Debug.LogError("Service Vehicle Selector 2: Failed to transpile method " + methodName);
-                UnityEngine.Debug.LogException(e);
-            }
-        }
-
 
         public void OnReleased()
         {

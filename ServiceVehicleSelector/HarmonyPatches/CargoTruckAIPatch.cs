@@ -5,22 +5,33 @@ using System.Reflection.Emit;
 using ColossalFramework;
 using ColossalFramework.Math;
 using Harmony;
+using ServiceVehicleSelector2.Util;
 using UnityEngine;
 
 namespace ServiceVehicleSelector2.HarmonyPatches
 {
     public class CargoTruckAIPatch
     {
-        public static MethodInfo GetTranspiler()
+        public static void Apply()
         {
-            return typeof(CargoTruckAIPatch).GetMethod(nameof(Transpile),
-                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            PatchUtil.Patch(
+                new PatchUtil.MethodDefinition(typeof(CargoTruckAI), nameof(CargoTruckAI.ChangeVehicleType),
+                    BindingFlags.Static | BindingFlags.Public),
+                null, null,
+                new PatchUtil.MethodDefinition(typeof(CargoTruckAIPatch), (nameof(Transpile))));
+        }
+
+        public static void Undo()
+        {
+            PatchUtil.Unpatch(new PatchUtil.MethodDefinition(typeof(CargoTruckAI),
+                nameof(CargoTruckAI.ChangeVehicleType),
+                BindingFlags.Static | BindingFlags.Public));
         }
 
         private static IEnumerable<CodeInstruction> Transpile(MethodBase original,
             IEnumerable<CodeInstruction> instructions)
         {
-            Debug.Log("Service Vehicle Selector 2: Transpiling method: " + original.DeclaringType + "." + original);
+            Debug.Log("SVS2: Transpiling method: " + original.DeclaringType + "." + original);
             var codes = new List<CodeInstruction>(instructions);
             var newCodes = new List<CodeInstruction>();
             foreach (var codeInstruction in codes)
@@ -38,7 +49,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 newCodes.Add(new CodeInstruction(OpCodes.Call,
                     AccessTools.Method(typeof(CargoTruckAIPatch), nameof(GetTrainVehicleInfo))));
                 Debug.Log(
-                    "Service Vehicle Selector 2: Transpiled CargoTruckAI.ChangeVehicleType()");
+                    "SVS2: Transpiled CargoTruckAI.ChangeVehicleType()");
             }
 
             return newCodes.AsEnumerable();
@@ -61,12 +72,13 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             var fromOutsideToStation = infoFrom?.m_buildingAI is OutsideConnectionAI &&
                                        infoFrom?.m_class?.m_subService == infoTo?.m_class?.m_subService;
             var cargoStationId = fromOutsideToStation ? cargoStation2 : cargoStation1;
-            if (!ServiceVehicleSelectorMod.BuildingData.TryGetValue(cargoStationId, out var source) || source.Count <= 0)
+            if (!ServiceVehicleSelectorMod.BuildingData.TryGetValue(cargoStationId, out var source) ||
+                source.Count <= 0)
             {
                 return instance.GetRandomVehicleInfo(
                     ref Singleton<SimulationManager>.instance.m_randomizer, service, subService, level);
             }
-            
+
             var array = source.ToArray();
             return GetRandomVehicleInfoOverride(ref SimulationManager.instance.m_randomizer, service, subService, level,
                 array);

@@ -47,7 +47,8 @@
     <Compile Include="SerializableDataExtension.cs" />
     <Compile Include="UIHelper.cs" />
     <Compile Include="PanelExtenderCityService.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="Util\PatchUtil.cs" />
+    <Compile Include="Util\Utils.cs" />
     <Compile Include="VehicleListBox.cs" />
     <Compile Include="VehicleListBoxRow.cs" />
     <Compile Include="VehicleProvider.cs" />
