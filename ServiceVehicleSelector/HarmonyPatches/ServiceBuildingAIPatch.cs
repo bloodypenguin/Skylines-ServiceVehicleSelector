@@ -15,7 +15,6 @@ namespace ServiceVehicleSelector2.HarmonyPatches
     {
         public static void Apply()
         {
-
             Transpile(typeof(DepotAI), nameof(DepotAI.StartTransfer));
             Transpile(typeof(TransportStationAI), "CreateOutgoingVehicle");
             Transpile(typeof(TransportStationAI), "CreateIncomingVehicle");
@@ -78,89 +77,96 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     continue;
                 }
 
-                var methodToCall =
-                    AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
-                if (declaringType == typeof(CableCarStationAI) ||
-                    declaringType == typeof(LandfillSiteAI) ||
-                    declaringType == typeof(CemeteryAI) ||
-                    declaringType == typeof(PoliceStationAI) ||
-                    declaringType == typeof(HospitalAI) ||
-                    declaringType == typeof(SnowDumpAI) ||
-                    declaringType == typeof(MaintenanceDepotAI) ||
-                    declaringType == typeof(TransportStationAI)||
-                    declaringType == typeof(PrivateAirportAI)
-                )
-                {
-                    if (occurrences > 1)
-                    {
-                        newCodes.Add(codeInstruction);
-                        continue;
-                    }
-                }
-                else if (declaringType == typeof(DepotAI))
-                {
-                    if (occurrences != 1)
-                    {
-                        newCodes.Add(codeInstruction);
-                        continue;
-                    }
-
-                    methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoForDepot));
-                }
-                else if (declaringType == typeof(PostOfficeAI))
-                {
-                    if (occurrences > 1)
-                    {
-                        newCodes.Add(codeInstruction);
-                        continue;
-                    }
-
-                    patchIndexOffset = 11;
-                }
-                else if (declaringType == typeof(FireStationAI) || declaringType == typeof(HelicopterDepotAI))
-                {
-                    if (occurrences > 2)
-                    {
-                        newCodes.Add(codeInstruction);
-                        continue;
-                    }
-
-                    patchIndexOffset = 15;
-                    methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
-                }
-                else if (declaringType == typeof(DisasterResponseBuildingAI))
-                {
-                    if (occurrences < 1 || occurrences > 3)
-                    {
-                        newCodes.Add(codeInstruction);
-                        continue;
-                    }
-
-                    patchIndexOffset = 15;
-                    methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
-                }
-                else if (declaringType == typeof(FishingHarborAI))
-                {
-                    if (occurrences > 2)
-                    {
-                        newCodes.Add(codeInstruction);
-                        continue;
-                    }
-
-                    patchIndexOffset = 12;
-                    methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
-                }
-                else
-                {
-                    throw new NotImplementedException("SVS2: unsupported patched type: " +
-                                                      declaringType);
-                }
-
-                ChangeInstructions(newCodes, methodToCall, patchIndexOffset);
+                ProcessOccurence(declaringType, occurrences, newCodes, codeInstruction, ref patchIndexOffset);
                 occurrences++;
             }
 
             return newCodes.AsEnumerable();
+        }
+
+        private static void ProcessOccurence(Type declaringType, int occurrences, List<CodeInstruction> newCodes,
+            CodeInstruction codeInstruction, ref int patchIndexOffset)
+        {
+            var methodToCall =
+                AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
+            if (declaringType == typeof(CableCarStationAI) ||
+                declaringType == typeof(LandfillSiteAI) ||
+                declaringType == typeof(CemeteryAI) ||
+                declaringType == typeof(PoliceStationAI) ||
+                declaringType == typeof(HospitalAI) ||
+                declaringType == typeof(SnowDumpAI) ||
+                declaringType == typeof(MaintenanceDepotAI) ||
+                declaringType == typeof(TransportStationAI) ||
+                declaringType == typeof(PrivateAirportAI)
+            )
+            {
+                if (occurrences > 1)
+                {
+                    newCodes.Add(codeInstruction);
+                    return;
+                }
+            }
+            else if (declaringType == typeof(DepotAI))
+            {
+                if (occurrences != 1)
+                {
+                    newCodes.Add(codeInstruction);
+                    return;
+                }
+
+                UnityEngine.Debug.LogWarning($"Depot!Found! :{newCodes.Count}");
+                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoForDepot));
+            }
+            else if (declaringType == typeof(PostOfficeAI))
+            {
+                if (occurrences > 1)
+                {
+                    newCodes.Add(codeInstruction);
+                    return;
+                }
+
+                patchIndexOffset = 11;
+            }
+            else if (declaringType == typeof(FireStationAI) || declaringType == typeof(HelicopterDepotAI))
+            {
+                if (occurrences > 2)
+                {
+                    newCodes.Add(codeInstruction);
+                    return;
+                }
+
+                patchIndexOffset = 15;
+                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+            }
+            else if (declaringType == typeof(DisasterResponseBuildingAI))
+            {
+                if (occurrences < 1 || occurrences > 3)
+                {
+                    newCodes.Add(codeInstruction);
+                    return;
+                }
+
+                patchIndexOffset = 15;
+                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+            }
+            else if (declaringType == typeof(FishingHarborAI))
+            {
+                if (occurrences > 2)
+                {
+                    newCodes.Add(codeInstruction);
+                    return;
+                }
+
+                patchIndexOffset = 12;
+                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+            }
+            else
+            {
+                throw new NotImplementedException("SVS2: unsupported patched type: " +
+                                                  declaringType);
+            }
+
+            ChangeInstructions(newCodes, methodToCall, patchIndexOffset);
         }
 
         private static bool SkipInstruction(CodeInstruction codeInstruction)
@@ -264,7 +270,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 null, null,
                 new PatchUtil.MethodDefinition(typeof(ServiceBuildingAIPatch), nameof(TranspileMethod)));
         }
-        
+
         private static void Restore(Type type, string methodName)
         {
             PatchUtil.Unpatch(new PatchUtil.MethodDefinition(type, methodName));
