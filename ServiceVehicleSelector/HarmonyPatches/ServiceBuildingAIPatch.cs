@@ -114,7 +114,6 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     return;
                 }
 
-                UnityEngine.Debug.LogWarning($"Depot!Found! :{newCodes.Count}");
                 methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoForDepot));
             }
             else if (declaringType == typeof(PostOfficeAI))
