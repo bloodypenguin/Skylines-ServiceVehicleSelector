@@ -16,6 +16,7 @@ namespace ServiceVehicleSelector2
         private List<PrefabData> _taxiPrefabData;
         private List<PrefabData> _trainPrefabData;
         private List<PrefabData> _shipPrefabData;
+        private List<PrefabData> _ferryPrefabData;
         private List<PrefabData> _roadPrefabData;
         private List<PrefabData> _roadSnowPrefabData;
         private List<PrefabData> _cableCarPrefabData;
@@ -131,7 +132,11 @@ namespace ServiceVehicleSelector2
                 if (level == ItemClass.Level.Level4)
                 {
                     return this._shipPrefabData;
-                }        
+                }      
+                if (level == ItemClass.Level.Level3)
+                {
+                    return this._ferryPrefabData;
+                }      
                 if (level == ItemClass.Level.Level1)
                 {
                     return this._passengerShipPrefabData;
@@ -233,7 +238,8 @@ namespace ServiceVehicleSelector2
             _roadSnowPrefabData = new List<PrefabData>();
             _cableCarPrefabData = new List<PrefabData>();
             _passengerTrainPrefabData = new List<PrefabData>();
-            _shipPrefabData = new List<PrefabData>();           
+            _shipPrefabData = new List<PrefabData>();   
+            _ferryPrefabData = new List<PrefabData>();
             _passengerPlanePrefabData = new List<PrefabData>();
             _passengerShipPrefabData = new List<PrefabData>();
             
@@ -313,6 +319,9 @@ namespace ServiceVehicleSelector2
                             } else if (prefab.m_class.m_level == ItemClass.Level.Level1)
                             {
                                 _passengerShipPrefabData.Add(new PrefabData(prefab));
+                            } else if (prefab.m_class.m_level == ItemClass.Level.Level3)
+                            {
+                                _ferryPrefabData.Add(new PrefabData(prefab));
                             }
                         }
                         else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportPost)

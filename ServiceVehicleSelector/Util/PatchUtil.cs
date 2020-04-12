@@ -53,8 +53,9 @@ namespace ServiceVehicleSelector2.Util
             var bindingFlags = original.BindingFlags == BindingFlags.Default
                 ? BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static
                 : original.BindingFlags;
-            var methodInfo = original.Type.GetMethod(original.MethodName,
-                bindingFlags);
+            var methodInfo = original.ArgumentTypes == null
+                ? original.Type.GetMethod(original.MethodName, bindingFlags)
+                : original.Type.GetMethod(original.MethodName, bindingFlags, null, original.ArgumentTypes, null);
             if (methodInfo == null)
             {
                 throw new Exception(
@@ -69,8 +70,10 @@ namespace ServiceVehicleSelector2.Util
             var bindingFlags = patch.BindingFlags == BindingFlags.Default
                 ? BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static
                 : patch.BindingFlags;
-            var methodInfo = patch.Type.GetMethod(patch.MethodName,
-                bindingFlags);
+            var methodInfo = patch.ArgumentTypes == null
+                ? patch.Type.GetMethod(patch.MethodName, bindingFlags)
+                : patch.Type.GetMethod(patch.MethodName, bindingFlags, null, patch.ArgumentTypes, null);
+            
             if (methodInfo == null)
             {
                 throw new Exception($"SVS2: Failed to find patch method {patch.Type.FullName}.{patch.MethodName}");
@@ -81,17 +84,22 @@ namespace ServiceVehicleSelector2.Util
 
         public class MethodDefinition
         {
-            public MethodDefinition(Type type, string methodName, BindingFlags bindingFlags = BindingFlags.Default)
+            public MethodDefinition(Type type, string methodName, 
+                BindingFlags bindingFlags = BindingFlags.Default,
+                Type[] argumentTypes = null)
             {
                 Type = type;
                 MethodName = methodName;
                 BindingFlags = bindingFlags;
+                ArgumentTypes = argumentTypes;
             }
 
             public Type Type { get; }
             public string MethodName { get; }
 
             public BindingFlags BindingFlags { get; }
+            
+            public Type[] ArgumentTypes { get; }
         }
     }
 }

@@ -52,7 +52,7 @@ namespace ServiceVehicleSelector2
                 Utils.Log((object) "Loading default building data.");
             PanelExtenderCityServicePatch.Apply(); //needed for reverse redirect
             ServiceBuildingAIPatch.Apply();
-            CargoTruckAIPatch.Apply();
+            CargoTruckAIChangeVehicleTypePatch.Apply();
 
 
             SerializableDataExtension.instance.EventSaveData +=
@@ -68,7 +68,7 @@ namespace ServiceVehicleSelector2
             ServiceVehicleSelectorMod.BuildingData.Clear();
             ServiceVehicleSelectorMod.BuildingData = (Dictionary<ushort, HashSet<string>>) null;
             ServiceBuildingAIPatch.Undo();
-            CargoTruckAIPatch.Undo();
+            CargoTruckAIChangeVehicleTypePatch.Undo();
             PanelExtenderCityServicePatch.Undo();
             VehiclePrefabs.Deinit();
             SerializableDataExtension.instance.EventSaveData -=

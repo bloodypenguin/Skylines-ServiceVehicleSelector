@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace ServiceVehicleSelector2.HarmonyPatches
 {
-    public class CargoTruckAIPatch
+    public class CargoTruckAIChangeVehicleTypePatch
     {
         public static void Apply()
         {
@@ -18,7 +18,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 new PatchUtil.MethodDefinition(typeof(CargoTruckAI), nameof(CargoTruckAI.ChangeVehicleType),
                     BindingFlags.Static | BindingFlags.Public),
                 null, null,
-                new PatchUtil.MethodDefinition(typeof(CargoTruckAIPatch), (nameof(Transpile))));
+                new PatchUtil.MethodDefinition(typeof(CargoTruckAIChangeVehicleTypePatch), (nameof(Transpile))));
         }
 
         public static void Undo()
@@ -47,7 +47,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 newCodes.Insert(patchIndex, new CodeInstruction(OpCodes.Ldloc_S, 6));
                 newCodes.Insert(patchIndex + 1, new CodeInstruction(OpCodes.Ldloc_S, 7));
                 newCodes.Add(new CodeInstruction(OpCodes.Call,
-                    AccessTools.Method(typeof(CargoTruckAIPatch), nameof(GetTrainVehicleInfo))));
+                    AccessTools.Method(typeof(CargoTruckAIChangeVehicleTypePatch), nameof(GetCargoVehicleInfo))));
                 Debug.Log(
                     "SVS2: Transpiled CargoTruckAI.ChangeVehicleType()");
             }
@@ -61,7 +61,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                    !codeInstruction.operand.ToString().Contains(nameof(VehicleManager.GetRandomVehicleInfo));
         }
 
-        private static VehicleInfo GetTrainVehicleInfo(
+        private static VehicleInfo GetCargoVehicleInfo(
             VehicleManager instance,
             ushort cargoStation1, ushort cargoStation2,
             ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level)
