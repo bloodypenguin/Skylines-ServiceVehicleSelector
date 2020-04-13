@@ -74,7 +74,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             var cargoStationId = fromOutsideToStation ? cargoStation2 : cargoStation1;
             if (infoFrom?.m_class?.name == "Ferry Cargo Facility") //to support Cargo Ferries
             {
-                level = ItemClass.Level.Level3;
+                level = ItemClass.Level.Level5;
             }
             if (!ServiceVehicleSelectorMod.BuildingData.TryGetValue(cargoStationId, out var source) ||
                 source.Count <= 0)

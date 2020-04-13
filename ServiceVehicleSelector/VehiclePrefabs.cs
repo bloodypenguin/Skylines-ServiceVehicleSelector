@@ -133,7 +133,7 @@ namespace ServiceVehicleSelector2
                 {
                     return this._shipPrefabData;
                 }      
-                if (level == ItemClass.Level.Level3)
+                if (level == ItemClass.Level.Level5)
                 {
                     return this._ferryPrefabData;
                 }      
@@ -319,7 +319,7 @@ namespace ServiceVehicleSelector2
                             } else if (prefab.m_class.m_level == ItemClass.Level.Level1)
                             {
                                 _passengerShipPrefabData.Add(new PrefabData(prefab));
-                            } else if (prefab.m_class.m_level == ItemClass.Level.Level3)
+                            } else if (prefab.m_class.m_level == ItemClass.Level.Level5)
                             {
                                 _ferryPrefabData.Add(new PrefabData(prefab));
                             }
