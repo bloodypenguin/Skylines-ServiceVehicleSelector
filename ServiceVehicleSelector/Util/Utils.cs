@@ -19,7 +19,7 @@ namespace ServiceVehicleSelector2
   public static class Utils
   {
     private static readonly string _fileName = "ServiceVehicleSelector.log";
-    private static readonly string _logPrefix = "ServiceVehicleSelector: ";
+    private static readonly string _logPrefix = "SVS2: ";
 
     public static void ClearLogFile()
     {
