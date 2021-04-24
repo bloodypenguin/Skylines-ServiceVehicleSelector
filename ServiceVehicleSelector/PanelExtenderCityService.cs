@@ -81,7 +81,8 @@ namespace ServiceVehicleSelector2
                  ((itemClass.m_level == ItemClass.Level.Level1 &&
                  (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain ||
                   itemClass.m_subService == ItemClass.SubService.PublicTransportPlane ||
-                  itemClass.m_subService == ItemClass.SubService.PublicTransportShip)) || (itemClass.m_level == ItemClass.Level.Level3 && itemClass.m_subService == ItemClass.SubService.PublicTransportBus)))
+                  (itemClass.m_subService == ItemClass.SubService.PublicTransportShip && buildingInfo?.m_buildingAI is HarborAI harborAI && harborAI?.m_transportInfo?.m_netLayer == ItemClass.Layer.Default)))
+                  || (itemClass.m_level == ItemClass.Level.Level3 && itemClass.m_subService == ItemClass.SubService.PublicTransportBus)))
         {
           canSelectVehicle = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)

@@ -16,7 +16,7 @@ namespace ServiceVehicleSelector2
         private List<PrefabData> _taxiPrefabData;
         private List<PrefabData> _trainPrefabData;
         private List<PrefabData> _shipPrefabData;
-        private List<PrefabData> _ferryPrefabData;
+        private List<PrefabData> _bargePrefabData;
         private List<PrefabData> _roadPrefabData;
         private List<PrefabData> _roadSnowPrefabData;
         private List<PrefabData> _cableCarPrefabData;
@@ -135,7 +135,7 @@ namespace ServiceVehicleSelector2
                 }      
                 if (level == ItemClass.Level.Level5)
                 {
-                    return this._ferryPrefabData;
+                    return this._bargePrefabData;
                 }      
                 if (level == ItemClass.Level.Level1)
                 {
@@ -239,7 +239,7 @@ namespace ServiceVehicleSelector2
             _cableCarPrefabData = new List<PrefabData>();
             _passengerTrainPrefabData = new List<PrefabData>();
             _shipPrefabData = new List<PrefabData>();   
-            _ferryPrefabData = new List<PrefabData>();
+            _bargePrefabData = new List<PrefabData>();
             _passengerPlanePrefabData = new List<PrefabData>();
             _passengerShipPrefabData = new List<PrefabData>();
             
@@ -321,7 +321,7 @@ namespace ServiceVehicleSelector2
                                 _passengerShipPrefabData.Add(new PrefabData(prefab));
                             } else if (prefab.m_class.m_level == ItemClass.Level.Level5)
                             {
-                                _ferryPrefabData.Add(new PrefabData(prefab));
+                                _bargePrefabData.Add(new PrefabData(prefab));
                             }
                         }
                         else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportPost)
