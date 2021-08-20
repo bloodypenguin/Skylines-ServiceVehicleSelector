@@ -12,6 +12,7 @@ namespace ServiceVehicleSelector2
         private List<PrefabData> _garbagePrefabData;
         private List<PrefabData> _healthCarePrefabData;
         private List<PrefabData> _policeDepartmentPrefabData;
+        private List<PrefabData> _policeDepartmentMixedPrefabData;
         private List<PrefabData> _prisonPrefabData;
         private List<PrefabData> _taxiPrefabData;
         private List<PrefabData> _trainPrefabData;
@@ -30,6 +31,7 @@ namespace ServiceVehicleSelector2
         
         private List<PrefabData> _medicalHelicopterPrefabData;
         private List<PrefabData> _policeHelicopterPrefabData;
+        private List<PrefabData> _prisonPoliceHelicopterPrefabData;
         private List<PrefabData> _fireHelicopterPrefabData;
         private List<PrefabData> _disasterResponseHelicopterPrefabData;
         private List<PrefabData> _disasterResponseTruckPrefabData;
@@ -58,7 +60,7 @@ namespace ServiceVehicleSelector2
             VehiclePrefabs.instance = (VehiclePrefabs) null;
         }
 
-        public List<PrefabData> GetPrefabs(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)
+        public List<PrefabData> GetPrefabs(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType, Building building = default(Building))
         {
             if (service == ItemClass.Service.Monument && level == ItemClass.Level.Level5) //TODO: make a better check in the future
             {
@@ -189,15 +191,25 @@ namespace ServiceVehicleSelector2
             {
                 if (level == ItemClass.Level.Level1)
                 {
+                    if((building.m_flags & Building.Flags.Downgrading) == 0)
+                    {
+                        return this._policeDepartmentMixedPrefabData;
+                    }
                     return this._policeDepartmentPrefabData;
                 }
-
                 if (level == ItemClass.Level.Level4)
                 {
-                    return this._prisonPrefabData;
+                    if (vehicleType == VehicleInfo.VehicleType.Car)
+                    {
+                        return this._prisonPrefabData;
+                    }
                 }
                 if (level == ItemClass.Level.Level3)
                 {
+                    if((building.m_flags & Building.Flags.Downgrading) == 0)
+                    {
+                        return this._prisonPoliceHelicopterPrefabData;
+                    }
                     return this._policeHelicopterPrefabData;
                 }
             }
@@ -233,6 +245,7 @@ namespace ServiceVehicleSelector2
             _fireDepartmentPrefabData = new List<PrefabData>();
             _healthCarePrefabData = new List<PrefabData>();
             _policeDepartmentPrefabData = new List<PrefabData>();
+            _policeDepartmentMixedPrefabData = new List<PrefabData>();
             _prisonPrefabData = new List<PrefabData>();
             _roadPrefabData = new List<PrefabData>();
             _roadSnowPrefabData = new List<PrefabData>();
@@ -245,6 +258,7 @@ namespace ServiceVehicleSelector2
             
             _medicalHelicopterPrefabData = new List<PrefabData>(); //Natural Disasters DLC
             _policeHelicopterPrefabData = new List<PrefabData>();
+            _prisonPoliceHelicopterPrefabData = new List<PrefabData>();
             _fireHelicopterPrefabData = new List<PrefabData>();
             _disasterResponseHelicopterPrefabData = new List<PrefabData>();
             _disasterResponseTruckPrefabData = new List<PrefabData>();
@@ -385,12 +399,28 @@ namespace ServiceVehicleSelector2
                     }
                     else if (prefab.m_class.m_service == ItemClass.Service.PoliceDepartment)
                     {
-                        if (prefab.m_class.m_level == ItemClass.Level.Level1)
+                        if (prefab.m_class.m_level == ItemClass.Level.Level1) 
+                        {
                             _policeDepartmentPrefabData.Add(new PrefabData(prefab));
+                            _policeDepartmentMixedPrefabData.Add(new PrefabData(prefab));
+                        }    
                         else if (prefab.m_class.m_level == ItemClass.Level.Level4)
-                            _prisonPrefabData.Add(new PrefabData(prefab));
+                        {
+                            if(prefab.m_vehicleType == VehicleInfo.VehicleType.Helicopter)
+                            {
+                                _prisonPoliceHelicopterPrefabData.Add(new PrefabData(prefab));
+                            }
+                            else
+                            {
+                                _prisonPrefabData.Add(new PrefabData(prefab));
+                                _policeDepartmentMixedPrefabData.Add(new PrefabData(prefab));
+                            }
+                        }  
                         else if (prefab.m_class.m_level == ItemClass.Level.Level3)
+                        {
                             _policeHelicopterPrefabData.Add(new PrefabData(prefab));
+                            _prisonPoliceHelicopterPrefabData.Add(new PrefabData(prefab));
+                        }      
                     }
                     else if (prefab.m_class.m_service == ItemClass.Service.Road)
                     {

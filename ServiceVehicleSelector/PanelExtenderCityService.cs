@@ -18,6 +18,7 @@ namespace ServiceVehicleSelector2
     private bool _initialized;
     private ushort _cachedBuildingID;
     private ItemClass _cachedItemClass;
+    private Building.Flags _cachedflags;
     private ItemClass _cachedItemVehicleClass;
     private CityServiceWorldInfoPanel _cityServiceWorldInfoPanel;
     private UIPanel _prefabPanel;
@@ -69,11 +70,30 @@ namespace ServiceVehicleSelector2
                  itemClass.m_subService == ItemClass.SubService.PublicTransportCableCar && buildingInfo.m_buildingAI is CableCarStationAI)
         {
           canSelectVehicle = true;
-          if ((Object) this._cachedItemClass != (Object) itemClass)
+          if ((Object) this._cachedItemClass != (Object) itemClass || _cachedflags != building.m_flags)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             _headerLabel.text = "Vehicle types";
-            this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
+            if(itemClass.m_service == ItemClass.Service.PoliceDepartment && buildingInfo.GetAI() is HelicopterDepotAI) // police helicopter depot
+            {
+                this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.Helicopter, building);
+            }
+            else if(buildingInfo.m_buildingAI.GetType().Name.Equals("NewPoliceStationAI"))
+            {
+                if(itemClass.m_service == ItemClass.Service.PoliceDepartment && itemClass.m_level >= ItemClass.Level.Level4) // prison
+                {
+                    this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.Car, building);
+                } 
+                else if(itemClass.m_service == ItemClass.Service.PoliceDepartment && itemClass.m_level < ItemClass.Level.Level4) // mixed police
+                {
+                    this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, ItemClass.Level.Level1, VehicleInfo.VehicleType.Car, building);
+                }    
+            } 
+            else
+            {
+                this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
+            }
+            _cachedflags = building.m_flags;
             this._cachedItemClass = itemClass;
           }
         }
@@ -221,10 +241,10 @@ namespace ServiceVehicleSelector2
       Debug.Log("ReleaseVehicles");
     }
 
-    private void PopulateVehicleListBox(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)
+    private void PopulateVehicleListBox(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType, Building building = default(Building))
     {
       this._vehicleListBox.ClearItems();
-      foreach (var prefabData in VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType))
+      foreach (var prefabData in VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType, building))
       {
         this._vehicleListBox.AddItem(prefabData);
       }
