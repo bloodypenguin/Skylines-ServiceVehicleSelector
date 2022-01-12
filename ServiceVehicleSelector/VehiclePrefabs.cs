@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Object = UnityEngine.Object;
 
 namespace ServiceVehicleSelector2
@@ -90,7 +89,8 @@ namespace ServiceVehicleSelector2
                 if (level == ItemClass.Level.Level2)
                 {
                     return this._postVanPrefabData;
-                } else if (level == ItemClass.Level.Level5)
+                } 
+                if (level == ItemClass.Level.Level5)
                 {
                     return this._postTruckPrefabData;
                 }
@@ -142,17 +142,6 @@ namespace ServiceVehicleSelector2
                 if (level == ItemClass.Level.Level1)
                 {
                     return this._passengerShipPrefabData;
-                }
-            }
-            if (subService == ItemClass.SubService.PublicTransportPost)
-            {
-                if (level == ItemClass.Level.Level2)
-                {
-                    return this._postVanPrefabData;
-                }        
-                if (level == ItemClass.Level.Level5)
-                {
-                    return this._postTruckPrefabData;
                 }
             }
             
