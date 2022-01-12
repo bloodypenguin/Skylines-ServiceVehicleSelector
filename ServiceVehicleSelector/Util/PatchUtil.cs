@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 
 namespace ServiceVehicleSelector2.Util
@@ -8,10 +8,10 @@ namespace ServiceVehicleSelector2.Util
     public static class PatchUtil
     {
         private const string HarmonyId = "github.com/bloodypenguin/Skylines-ServiceVehicleSelector";
-        private static HarmonyInstance _harmonyInstance = null;
+        private static Harmony _harmonyInstance = null;
 
-        private static HarmonyInstance HarmonyInstance =>
-            _harmonyInstance ?? (_harmonyInstance = HarmonyInstance.Create(HarmonyId));
+        private static Harmony HarmonyInstance =>
+            _harmonyInstance ?? (_harmonyInstance = new Harmony(HarmonyId));
 
         public static void Patch(
             MethodDefinition original,
