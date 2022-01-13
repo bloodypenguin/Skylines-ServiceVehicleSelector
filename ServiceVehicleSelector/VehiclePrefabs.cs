@@ -24,7 +24,7 @@ namespace ServiceVehicleSelector2
         private List<PrefabData> _passengerShipPrefabData;
         private List<PrefabData> _passengerTrainPrefabData;
         
-        private List<PrefabData> _postVanPrefabData;
+        private List<PrefabData> _postVanTruckPrefabData;
         private List<PrefabData> _cargoPlanePrefabData;
         private List<PrefabData> _postTruckPrefabData;
         
@@ -86,11 +86,11 @@ namespace ServiceVehicleSelector2
             }
             if (subService == ItemClass.SubService.PublicTransportPost)
             {
-                if (level == ItemClass.Level.Level2)
+                if (level == ItemClass.Level.Level2) // post office
                 {
-                    return this._postVanPrefabData;
+                    return this._postVanTruckPrefabData;
                 } 
-                if (level == ItemClass.Level.Level5)
+                if (level == ItemClass.Level.Level5) // transfer facility 
                 {
                     return this._postTruckPrefabData;
                 }
@@ -178,28 +178,32 @@ namespace ServiceVehicleSelector2
             }
             if (service == ItemClass.Service.PoliceDepartment)
             {
-                if (level == ItemClass.Level.Level1)
+                if (level == ItemClass.Level.Level1) // police station 
                 {
-                    if((building.m_flags & Building.Flags.Downgrading) == 0)
+                    if((building.m_flags & Building.Flags.Downgrading) == 0) // police station with prison van fleet
                     {
-                        return this._policeDepartmentMixedPrefabData;
-                    }
-                    return this._policeDepartmentPrefabData;
-                }
-                if (level == ItemClass.Level.Level4)
-                {
-                    if (vehicleType == VehicleInfo.VehicleType.Car)
+                        return this._policeDepartmentMixedPrefabData; // use mixed police car/police van
+                    } 
+                    else
                     {
-                        return this._prisonPrefabData;
+                        return this._policeDepartmentPrefabData; // only police 
                     }
                 }
-                if (level == ItemClass.Level.Level3)
+                if (level == ItemClass.Level.Level4) // if prison
                 {
-                    if((building.m_flags & Building.Flags.Downgrading) == 0)
+                    return this._prisonPrefabData; // return prison van
+                }
+                if (level == ItemClass.Level.Level3) // police helicopter depot 
+                {
+                    if((building.m_flags & Building.Flags.Downgrading) == 0) // allow prison helicopters 
                     {
-                        return this._prisonPoliceHelicopterPrefabData;
+                        return this._prisonPoliceHelicopterPrefabData; // use mixed police heli/prison heli
                     }
-                    return this._policeHelicopterPrefabData;
+                    else
+                    {
+                        return this._policeHelicopterPrefabData; // use only police heli
+                    }
+                    
                 }
             }
 
@@ -257,7 +261,7 @@ namespace ServiceVehicleSelector2
             //unused: parklife truck
             
             _cargoPlanePrefabData = new List<PrefabData>(); //Industry DLC
-            _postVanPrefabData = new List<PrefabData>();
+            _postVanTruckPrefabData = new List<PrefabData>(); 
             _postTruckPrefabData = new List<PrefabData>();
             
             _intercityBusData = new List<PrefabData>(); //Sunset Harbor DLC
@@ -329,11 +333,13 @@ namespace ServiceVehicleSelector2
                         }
                         else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportPost)
                         {
-                            if (prefab.m_class.m_level == ItemClass.Level.Level2)
+                            if (prefab.m_class.m_level == ItemClass.Level.Level2) // if van add to mixed
                             {
-                                _postVanPrefabData.Add(new PrefabData(prefab));
-                            } else if (prefab.m_class.m_level == ItemClass.Level.Level5)
+                                _postVanTruckPrefabData.Add(new PrefabData(prefab));
+                                
+                            } else if (prefab.m_class.m_level == ItemClass.Level.Level5) // if truck add to truck and mixed
                             {
+                                _postVanTruckPrefabData.Add(new PrefabData(prefab));
                                 _postTruckPrefabData.Add(new PrefabData(prefab));
                             }
                         }
