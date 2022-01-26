@@ -61,7 +61,7 @@ namespace ServiceVehicleSelector2
             VehiclePrefabs.instance = (VehiclePrefabs) null;
         }
 
-        public List<PrefabData> GetPrefabs(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo vehicleInfo, Building building = default(Building))
+        public List<PrefabData> GetPrefabs(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType, int listbox, Building building = default(Building))
         {
             if (service == ItemClass.Service.Monument && level == ItemClass.Level.Level5) //TODO: make a better check in the future
             {
@@ -73,7 +73,7 @@ namespace ServiceVehicleSelector2
                 return _waterTruckPrefabData;
             }
             
-            if (service == ItemClass.Service.Fishing && vehicleInfo.m_vehicleType == VehicleInfo.VehicleType.Ship)
+            if (service == ItemClass.Service.Fishing && vehicleType == VehicleInfo.VehicleType.Ship)
             {
                 switch (level)
                 {
@@ -96,11 +96,11 @@ namespace ServiceVehicleSelector2
             {
                 if (level == ItemClass.Level.Level2) // post office
                 {
-                    if(vehicleInfo.m_class.m_level == ItemClass.Level.Level2)
+                    if(listbox == 1)
                     {
                         return this._postVanPrefabData;
                     }
-                    if(vehicleInfo.m_class.m_level == ItemClass.Level.Level5)
+                    if(listbox == 2)
                     {
                         return this._postTruckPrefabData;
                     }
@@ -170,7 +170,7 @@ namespace ServiceVehicleSelector2
                 
             if (service == ItemClass.Service.FireDepartment)
             {
-                if (vehicleInfo.m_vehicleType == VehicleInfo.VehicleType.Helicopter)
+                if (vehicleType == VehicleInfo.VehicleType.Helicopter)
                 {
                     return this._fireHelicopterPrefabData;  
                 }
@@ -207,11 +207,11 @@ namespace ServiceVehicleSelector2
                 {
                     if((building.m_flags & Building.Flags.Downgrading) == 0) // police station with prison van fleet
                     {
-                        if(vehicleInfo.m_class.m_level == ItemClass.Level.Level2)
+                        if(listbox == 1)
                         {
                             return this._policeDepartmentPrefabData;
                         }
-                        if(vehicleInfo.m_class.m_level == ItemClass.Level.Level5)
+                        if(listbox == 2)
                         {
                             return this._prisonPrefabData;
                         }
@@ -229,11 +229,11 @@ namespace ServiceVehicleSelector2
                 {
                     if((building.m_flags & Building.Flags.Downgrading) == 0) // allow prison helicopters 
                     {
-                        if(vehicleInfo.m_class.m_level == ItemClass.Level.Level3)
+                        if(listbox == 1)
                         {
                             return this._policeHelicopterPrefabData;
                         }
-                        if(vehicleInfo.m_class.m_level == ItemClass.Level.Level4)
+                        if(listbox == 2)
                         {
                             return this._prisonHelicopterPrefabData;
                         }
@@ -250,7 +250,7 @@ namespace ServiceVehicleSelector2
             {
                 if (level == ItemClass.Level.Level2)
                 {
-                    if (vehicleInfo.m_vehicleType == VehicleInfo.VehicleType.Helicopter)
+                    if (vehicleType == VehicleInfo.VehicleType.Helicopter)
                     {
                         return this._disasterResponseHelicopterPrefabData;
                     }
@@ -265,23 +265,15 @@ namespace ServiceVehicleSelector2
             {
                 if(level == ItemClass.Level.Level1)
                 {
-                    if(vehicleInfo.m_class.m_level == ItemClass.Level.Level2)
-                    {
-                        return this._waterTruckPrefabData;
-                    }
-                    
+                    return this._waterTruckPrefabData;
                 }
             }
 
-             if(service == ItemClass.Service.Beautification) 
+            if(service == ItemClass.Service.Beautification) 
             {
                 if(level == ItemClass.Level.Level1)
                 {
-                    if(vehicleInfo.m_class.m_level == ItemClass.Level.Level1)
-                    {
-                        return this._parkTruckPrefabData;
-                    }
-                    
+                    return this._parkTruckPrefabData;
                 }
             }
             
@@ -500,7 +492,14 @@ namespace ServiceVehicleSelector2
                     {
                         if (prefab.m_class.m_level == ItemClass.Level.Level2)
                         {
-                            _waterTruckData.Add(new PrefabData(prefab));
+                            _waterTruckPrefabData.Add(new PrefabData(prefab));
+                        }
+                    }
+                    else if(prefab.m_class.m_service == ItemClass.Service.Beautification) 
+                    {
+                        if(prefab.m_class.m_level == ItemClass.Level.Level1)
+                        {
+                            _parkTruckPrefabData.Add(new PrefabData(prefab));
                         }
                     }
                 }

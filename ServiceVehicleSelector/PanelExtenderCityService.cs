@@ -266,28 +266,30 @@ namespace ServiceVehicleSelector2
 
     private void PopulateVehicleListBox(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType, Building building = default(Building))
     {
+        var secondBox = false;
         if(service == ItemClass.Service.PoliceDepartment)
         {
             if ((building.m_flags & Building.Flags.Downgrading) != 0)
             {
-                this._vehicleListBox2.ClearItems();
-                if(building.Info.GetAI() is HelicopterDepotAI) // heli depot with prison helis
-                {
-
-                }
-                if (building.Info.m_buildingAI.GetType().Name.Equals("NewPoliceStationAI")) // police station with prison van fleet
-                {
-
-                }
+                secondBox = true;
             }
         }
         if(service == ItemClass.Service.PublicTransport && subService == ItemClass.SubService.PublicTransportPost && level == ItemClass.Level.Level2) // post offices
         {
-            this._vehicleListBox2.ClearItems();
+            secondBox = true;
+        }
+
+        if(secondBox)
+        {
+            this._vehicleListBox2.ClearItems(); 
+            foreach (var prefabData in VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType, 2, building))
+            {
+                this._vehicleListBox2.AddItem(prefabData);
+            }
         }
 
         this._vehicleListBox.ClearItems(); 
-        foreach (var prefabData in VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType, building))
+        foreach (var prefabData in VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType, 1, building))
         {
             this._vehicleListBox.AddItem(prefabData);
         }
