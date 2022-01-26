@@ -284,6 +284,16 @@ namespace ServiceVehicleSelector2
             return this._roadSnowPrefabData;
         }
 
+        public bool isTwoVehicleTypes(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, Building building = default(Building))
+        {
+            if(service == ItemClass.Service.PoliceDepartment && (building.m_flags & Building.Flags.Downgrading) != 0 || 
+               service == ItemClass.Service.PublicTransport && subService == ItemClass.SubService.PublicTransportPost && level == ItemClass.Level.Level2)
+            {
+                return true;
+            }
+            return false;
+        }
+
         private void FindAllPrefabs()
         {
             _taxiPrefabData = new List<PrefabData>();

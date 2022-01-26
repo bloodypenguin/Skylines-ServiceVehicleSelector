@@ -77,7 +77,7 @@ namespace ServiceVehicleSelector2
             {
                 _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
                 _headerLabel.text = "Vehicle types";
-                this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
+                this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None, building);
                 this._cachedItemClass = itemClass;
             }
         }
@@ -107,7 +107,7 @@ namespace ServiceVehicleSelector2
         else if (itemClass.m_service == ItemClass.Service.FireDepartment && buildingInfo.m_buildingAI is HelicopterDepotAI || itemClass.m_service == ItemClass.Service.Disaster && buildingInfo.m_buildingAI is DisasterResponseBuildingAI)
         {
           canSelectVehicle = true;
-          if ((Object) this._cachedItemClass != (Object) itemClass)
+          if (this._cachedItemClass != itemClass)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             _headerLabel.text = "Helicopter types";
@@ -120,7 +120,7 @@ namespace ServiceVehicleSelector2
           canSelectVehicle = true;
           var fishingHarborAi = ((FishingHarborAI)buildingInfo.m_buildingAI);
           var itemVehicleClass = fishingHarborAi.m_boatClass;
-          if ((Object) this._cachedItemClass != (Object) itemClass || this._cachedItemVehicleClass != itemVehicleClass)
+          if (this._cachedItemClass != itemClass || this._cachedItemVehicleClass != itemVehicleClass)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             _headerLabel.text = "Boat types";
@@ -149,9 +149,12 @@ namespace ServiceVehicleSelector2
               this._vehicleListBox.SetSelectionStateToAll(false);
           }
           this._prefabPanel.Show();
+            
         }
         else
-          this._prefabPanel.Hide();
+        {
+            this._prefabPanel.Hide();
+        }
         this._cachedBuildingID = buildingId;
       }
     }
@@ -266,28 +269,21 @@ namespace ServiceVehicleSelector2
 
     private void PopulateVehicleListBox(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType, Building building = default(Building))
     {
-        var secondBox = false;
-        if(service == ItemClass.Service.PoliceDepartment)
+        if(VehiclePrefabs.instance.isTwoVehicleTypes(service, subService, level, building))
         {
-            if ((building.m_flags & Building.Flags.Downgrading) != 0)
-            {
-                secondBox = true;
-            }
-        }
-        if(service == ItemClass.Service.PublicTransport && subService == ItemClass.SubService.PublicTransportPost && level == ItemClass.Level.Level2) // post offices
-        {
-            secondBox = true;
-        }
-
-        if(secondBox)
-        {
+            this._prefabPanel2.relativePosition = new Vector3(this._prefabPanel2.parent.width + 1f, VerticalOffset);
+            this._headerLabel2.text = "Vehicle types";
             this._vehicleListBox2.ClearItems(); 
             foreach (var prefabData in VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType, 2, building))
             {
                 this._vehicleListBox2.AddItem(prefabData);
             }
+            this._prefabPanel2.Show();
         }
-
+        else
+        {
+            this._prefabPanel2.Hide();
+        }
         this._vehicleListBox.ClearItems(); 
         foreach (var prefabData in VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType, 1, building))
         {
