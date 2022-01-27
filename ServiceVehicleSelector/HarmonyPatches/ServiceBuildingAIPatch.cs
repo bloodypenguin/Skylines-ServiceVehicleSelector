@@ -4,8 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ColossalFramework.Math;
-using Harmony;
-using JetBrains.Annotations;
+using HarmonyLib;
 using ServiceVehicleSelector2.Util;
 using UnityEngine;
 

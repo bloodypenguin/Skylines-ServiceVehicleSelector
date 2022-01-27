@@ -18,11 +18,15 @@ namespace ServiceVehicleSelector2
     private bool _initialized;
     private ushort _cachedBuildingID;
     private ItemClass _cachedItemClass;
+    private Building.Flags _cachedflags;
     private ItemClass _cachedItemVehicleClass;
     private CityServiceWorldInfoPanel _cityServiceWorldInfoPanel;
     private UIPanel _prefabPanel;
+    private UIPanel _prefabPanel2;
     private UILabel _headerLabel;
+    private UILabel _headerLabel2;
     private VehicleListBox _vehicleListBox;
+    private VehicleListBox _vehicleListBox2;
 
     private void Update()
     {
@@ -59,7 +63,7 @@ namespace ServiceVehicleSelector2
           }
         }
         else if (buildingInfo.m_buildingAI is PrivateAirportAI ||
-                 itemClass.m_service == ItemClass.Service.HealthCare && !(buildingInfo.m_buildingAI is SaunaAI) ||
+                 itemClass.m_service == ItemClass.Service.HealthCare && !(buildingInfo.m_buildingAI is SaunaAI) && !(buildingInfo.m_buildingAI.GetType().Name.Equals("NursingHomeAI")) ||
                  itemClass.m_service == ItemClass.Service.FireDepartment && !(buildingInfo.m_buildingAI is FirewatchTowerAI || buildingInfo.m_buildingAI is HelicopterDepotAI) ||
                  itemClass.m_service == ItemClass.Service.Garbage && !buildingInfo.m_isFloating ||
                  itemClass.m_service == ItemClass.Service.PoliceDepartment ||
@@ -68,14 +72,14 @@ namespace ServiceVehicleSelector2
                  itemClass.m_subService == ItemClass.SubService.PublicTransportPost ||
                  itemClass.m_subService == ItemClass.SubService.PublicTransportCableCar && buildingInfo.m_buildingAI is CableCarStationAI)
         {
-          canSelectVehicle = true;
-          if ((Object) this._cachedItemClass != (Object) itemClass)
-          {
-            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
-            _headerLabel.text = "Vehicle types";
-            this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
-            this._cachedItemClass = itemClass;
-          }
+            canSelectVehicle = true;
+            if (this._cachedItemClass != itemClass)
+            {
+                _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
+                _headerLabel.text = "Vehicle types";
+                this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None, building);
+                this._cachedItemClass = itemClass;
+            }
         }
         else if (itemClass.m_service == ItemClass.Service.PublicTransport &&
                  ((itemClass.m_level == ItemClass.Level.Level1 &&
@@ -103,7 +107,7 @@ namespace ServiceVehicleSelector2
         else if (itemClass.m_service == ItemClass.Service.FireDepartment && buildingInfo.m_buildingAI is HelicopterDepotAI || itemClass.m_service == ItemClass.Service.Disaster && buildingInfo.m_buildingAI is DisasterResponseBuildingAI)
         {
           canSelectVehicle = true;
-          if ((Object) this._cachedItemClass != (Object) itemClass)
+          if (this._cachedItemClass != itemClass)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             _headerLabel.text = "Helicopter types";
@@ -116,7 +120,7 @@ namespace ServiceVehicleSelector2
           canSelectVehicle = true;
           var fishingHarborAi = ((FishingHarborAI)buildingInfo.m_buildingAI);
           var itemVehicleClass = fishingHarborAi.m_boatClass;
-          if ((Object) this._cachedItemClass != (Object) itemClass || this._cachedItemVehicleClass != itemVehicleClass)
+          if (this._cachedItemClass != itemClass || this._cachedItemVehicleClass != itemVehicleClass)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             _headerLabel.text = "Boat types";
@@ -145,9 +149,12 @@ namespace ServiceVehicleSelector2
               this._vehicleListBox.SetSelectionStateToAll(false);
           }
           this._prefabPanel.Show();
+            
         }
         else
-          this._prefabPanel.Hide();
+        {
+            this._prefabPanel.Hide();
+        }
         this._cachedBuildingID = buildingId;
       }
     }
@@ -161,35 +168,74 @@ namespace ServiceVehicleSelector2
 
     private void CreatePrefabPanel()
     {
-      UIPanel uiPanel = this._cityServiceWorldInfoPanel.component.AddUIComponent<UIPanel>();
+        UIPanel uiPanel, uiPanel2;
+        uiPanel = this._cityServiceWorldInfoPanel.component.AddUIComponent<UIPanel>();
+                
       
-      //TODO: fix if CO fixes the issues
-      var parentHeight = 285f; //uiPanel.parent.height; broken due to autoformat
+        //TODO: fix if CO fixes the issues
+        var parentHeight = 285f; //uiPanel.parent.height; broken due to autoformat
       
-      uiPanel.name = "SvsVehicleTypes";
-      uiPanel.AlignTo(uiPanel.parent, UIAlignAnchor.TopRight);
-      uiPanel.relativePosition = new Vector3(uiPanel.parent.width + 1f, VerticalOffset);
-      uiPanel.width = 180f;
-      uiPanel.height = parentHeight - 16f;
+        uiPanel.name = "SvsVehicleTypes";
+        uiPanel.AlignTo(uiPanel.parent, UIAlignAnchor.TopRight);
+        uiPanel.relativePosition = new Vector3(uiPanel.parent.width + 1f, VerticalOffset);
+        uiPanel.width = 180f;
+        uiPanel.height = parentHeight - 16f;
       
-      uiPanel.backgroundSprite = "UnlockingPanel2";
-      uiPanel.opacity = 0.95f;
-      this._prefabPanel = uiPanel;
-      UILabel uiLabel = uiPanel.AddUIComponent<UILabel>();
-      uiLabel.text = "Select types";
-      uiLabel.textAlignment = UIHorizontalAlignment.Center;
-      uiLabel.font = UIHelper.Font;
-      uiLabel.position = new Vector3((float) ((double) uiPanel.width / 2.0 - (double) uiLabel.width / 2.0), (float) ((double) uiLabel.height / 2.0 - 20.0));
-      this._headerLabel = uiLabel;
-      VehicleListBox vehicleListBox = VehicleListBox.Create((UIComponent) uiPanel);
-      vehicleListBox.name = "VehicleListBox";
-      vehicleListBox.AlignTo((UIComponent) uiPanel, UIAlignAnchor.TopLeft);
-      vehicleListBox.relativePosition = new Vector3(3f, 40f);
-      vehicleListBox.width = uiPanel.width - 6f;
-      vehicleListBox.height = parentHeight - 61f;
-      vehicleListBox.Font = UIHelper.Font;
-      vehicleListBox.eventSelectedItemsChanged += new PropertyChangedEventHandler<HashSet<string>>(this.OnSelectedPrefabsChanged);
-      this._vehicleListBox = vehicleListBox;
+        uiPanel.backgroundSprite = "UnlockingPanel2";
+        uiPanel.opacity = 0.95f;
+        this._prefabPanel = uiPanel;
+        UILabel uiLabel = uiPanel.AddUIComponent<UILabel>();
+        uiLabel.text = "Select types";
+        uiLabel.textAlignment = UIHorizontalAlignment.Center;
+        uiLabel.font = UIHelper.Font;
+        uiLabel.position = new Vector3((float) ((double) uiPanel.width / 2.0 - (double) uiLabel.width / 2.0), (float) ((double) uiLabel.height / 2.0 - 20.0));
+        this._headerLabel = uiLabel;
+        VehicleListBox vehicleListBox = VehicleListBox.Create((UIComponent) uiPanel);
+        vehicleListBox.name = "VehicleListBox";
+        vehicleListBox.AlignTo((UIComponent) uiPanel, UIAlignAnchor.TopLeft);
+        vehicleListBox.relativePosition = new Vector3(3f, 40f);
+        vehicleListBox.width = uiPanel.width - 6f;
+        vehicleListBox.height = parentHeight - 61f;
+        vehicleListBox.Font = UIHelper.Font;
+        vehicleListBox.eventSelectedItemsChanged += new PropertyChangedEventHandler<HashSet<string>>(this.OnSelectedPrefabsChanged);
+        this._vehicleListBox = vehicleListBox;
+
+        ushort building_index = Utils.GetPrivate<InstanceID>((object) this._cityServiceWorldInfoPanel, "m_InstanceID").Building;
+        Building building= BuildingManager.instance.m_buildings.m_buffer[building_index];
+        BuildingInfo info = building.Info;
+        if (info == null)
+        {
+            return;
+        }
+        if(info.GetAI() is PostOfficeAI || 
+            ((info.GetAI() is HelicopterDepotAI || info.m_buildingAI.GetType().Name.Equals("NewPoliceStationAI")) && (building.m_flags & Building.Flags.Downgrading) != 0))
+        {
+            uiPanel2 = this._cityServiceWorldInfoPanel.component.AddUIComponent<UIPanel>();
+            uiPanel2.name = "SvsVehicleTypes";
+            uiPanel2.AlignTo(uiPanel, UIAlignAnchor.TopRight);
+            uiPanel2.relativePosition = new Vector3(uiPanel.width + 1f, VerticalOffset);
+            uiPanel2.width = 180f;
+            uiPanel2.height = parentHeight - 16f;
+
+            uiPanel2.backgroundSprite = "UnlockingPanel2";
+            uiPanel2.opacity = 0.95f;
+            this._prefabPanel = uiPanel2;
+            UILabel uiLabel2 = uiPanel2.AddUIComponent<UILabel>();
+            uiLabel2.text = "Select types";
+            uiLabel2.textAlignment = UIHorizontalAlignment.Center;
+            uiLabel2.font = UIHelper.Font;
+            uiLabel2.position = new Vector3((float) ((double) uiPanel2.width / 2.0 - (double) uiLabel2.width / 2.0), (float) ((double) uiLabel2.height / 2.0 - 20.0));
+            this._headerLabel2 = uiLabel2;
+            VehicleListBox vehicleListBox2 = VehicleListBox.Create((UIComponent) uiPanel2);
+            vehicleListBox2.name = "VehicleListBox";
+            vehicleListBox2.AlignTo((UIComponent) uiPanel2, UIAlignAnchor.TopLeft);
+            vehicleListBox2.relativePosition = new Vector3(3f, 40f);
+            vehicleListBox2.width = uiPanel2.width - 6f;
+            vehicleListBox2.height = parentHeight - 61f;
+            vehicleListBox2.Font = UIHelper.Font;
+            vehicleListBox2.eventSelectedItemsChanged += new PropertyChangedEventHandler<HashSet<string>>(this.OnSelectedPrefabsChanged);
+            this._vehicleListBox2 = vehicleListBox2;
+        }
     }
 
     private void OnSelectedPrefabsChanged(UIComponent component, HashSet<string> selectedItems)
@@ -221,13 +267,28 @@ namespace ServiceVehicleSelector2
       Debug.Log("ReleaseVehicles");
     }
 
-    private void PopulateVehicleListBox(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType)
+    private void PopulateVehicleListBox(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType vehicleType, Building building = default(Building))
     {
-      this._vehicleListBox.ClearItems();
-      foreach (var prefabData in VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType))
-      {
-        this._vehicleListBox.AddItem(prefabData);
-      }
+        if(VehiclePrefabs.instance.isTwoVehicleTypes(service, subService, level, building))
+        {
+            this._prefabPanel2.relativePosition = new Vector3(this._prefabPanel2.parent.width + 1f, VerticalOffset);
+            this._headerLabel2.text = "Vehicle types";
+            this._vehicleListBox2.ClearItems(); 
+            foreach (var prefabData in VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType, 2, building))
+            {
+                this._vehicleListBox2.AddItem(prefabData);
+            }
+            this._prefabPanel2.Show();
+        }
+        else
+        {
+            this._prefabPanel2.Hide();
+        }
+        this._vehicleListBox.ClearItems(); 
+        foreach (var prefabData in VehiclePrefabs.instance.GetPrefabs(service, subService, level, vehicleType, 1, building))
+        {
+            this._vehicleListBox.AddItem(prefabData);
+        }
     }
   }
 }
