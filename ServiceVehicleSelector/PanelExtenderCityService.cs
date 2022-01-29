@@ -78,11 +78,11 @@ namespace ServiceVehicleSelector2
           }
         }
         else if (itemClass.m_service == ItemClass.Service.PublicTransport &&
-                 ((itemClass.m_level == ItemClass.Level.Level1 &&
-                 (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain ||
-                  itemClass.m_subService == ItemClass.SubService.PublicTransportPlane ||
-                  (itemClass.m_subService == ItemClass.SubService.PublicTransportShip && buildingInfo?.m_buildingAI is HarborAI harborAI && harborAI?.m_transportInfo?.m_netLayer == ItemClass.Layer.Default)))
-                  || (itemClass.m_level == ItemClass.Level.Level3 && itemClass.m_subService == ItemClass.SubService.PublicTransportBus)))
+                 (itemClass.m_level == ItemClass.Level.Level1 &&
+                  (itemClass.m_subService == ItemClass.SubService.PublicTransportTrain ||
+                   itemClass.m_subService == ItemClass.SubService.PublicTransportShip && buildingInfo?.m_buildingAI is HarborAI harborAI && harborAI?.m_transportInfo?.m_netLayer == ItemClass.Layer.Default)
+                  || itemClass.m_level == ItemClass.Level.Level3 && itemClass.m_subService == ItemClass.SubService.PublicTransportBus 
+                  || itemClass.m_subService == ItemClass.SubService.PublicTransportPlane && itemClass.m_level is ItemClass.Level.Level1 or ItemClass.Level.Level2 or ItemClass.Level.Level3 && buildingInfo.m_buildingAI is DepotAI depotAi && depotAi.m_transportInfo?.m_vehicleType == VehicleInfo.VehicleType.Plane))
         {
           canSelectVehicle = true;
           if ((Object) this._cachedItemClass != (Object) itemClass)

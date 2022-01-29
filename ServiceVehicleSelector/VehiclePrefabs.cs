@@ -21,6 +21,8 @@ namespace ServiceVehicleSelector2
         private List<PrefabData> _roadSnowPrefabData;
         private List<PrefabData> _cableCarPrefabData;
         private List<PrefabData> _passengerPlanePrefabData;
+        private List<PrefabData> _passengerPlanePrefabDataLarge;
+        private List<PrefabData> _passengerPlanePrefabDataSmall;
         private List<PrefabData> _passengerShipPrefabData;
         private List<PrefabData> _passengerTrainPrefabData;
         
@@ -118,13 +120,21 @@ namespace ServiceVehicleSelector2
 
             if (subService == ItemClass.SubService.PublicTransportPlane)
             {
-                if (level == ItemClass.Level.Level4)
-                {
-                    return this._cargoPlanePrefabData;
-                }
                 if (level == ItemClass.Level.Level1)
                 {
                     return this._passengerPlanePrefabData;
+                }
+                if (level == ItemClass.Level.Level2)
+                {
+                    return this._passengerPlanePrefabDataLarge;
+                }
+                if (level == ItemClass.Level.Level3)
+                {
+                    return this._passengerPlanePrefabDataSmall;
+                }
+                if (level == ItemClass.Level.Level4)
+                {
+                    return this._cargoPlanePrefabData;
                 }
             }
             if (subService == ItemClass.SubService.PublicTransportShip)
@@ -241,6 +251,8 @@ namespace ServiceVehicleSelector2
             _shipPrefabData = new List<PrefabData>();   
             _bargePrefabData = new List<PrefabData>();
             _passengerPlanePrefabData = new List<PrefabData>();
+            _passengerPlanePrefabDataLarge = new List<PrefabData>();
+            _passengerPlanePrefabDataSmall = new List<PrefabData>();
             _passengerShipPrefabData = new List<PrefabData>();
             
             _medicalHelicopterPrefabData = new List<PrefabData>(); //Natural Disasters DLC
@@ -301,15 +313,21 @@ namespace ServiceVehicleSelector2
                             _taxiPrefabData.Add(new PrefabData(prefab));
                         else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportCableCar)
                             _cableCarPrefabData.Add(new PrefabData(prefab));
-                        else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportPlane)
+                        else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportPlane && prefab.m_vehicleType == VehicleInfo.VehicleType.Plane)
                         {
-                            if (prefab.m_class.m_level == ItemClass.Level.Level4)
-                            {
-                                _cargoPlanePrefabData.Add(new PrefabData(prefab));
-                            } else if (prefab.m_class.m_level == ItemClass.Level.Level1)
+                            if (prefab.m_class.m_level == ItemClass.Level.Level1)
                             {
                                 _passengerPlanePrefabData.Add(new PrefabData(prefab));
-                            }
+                            } else if (prefab.m_class.m_level == ItemClass.Level.Level2)
+                            {
+                                _passengerPlanePrefabDataLarge.Add(new PrefabData(prefab));
+                            } else if (prefab.m_class.m_level == ItemClass.Level.Level3)
+                            {
+                                _passengerPlanePrefabDataSmall.Add(new PrefabData(prefab));
+                            } else  if (prefab.m_class.m_level == ItemClass.Level.Level4)
+                            {
+                                _cargoPlanePrefabData.Add(new PrefabData(prefab));
+                            } 
                         } 
                         else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportShip)
                         {
