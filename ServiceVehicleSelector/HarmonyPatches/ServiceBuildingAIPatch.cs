@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ColossalFramework.Math;
 using HarmonyLib;
-using JetBrains.Annotations;
 using ServiceVehicleSelector2.Util;
 using UnityEngine;
 
@@ -68,7 +67,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             var codes = new List<CodeInstruction>(instructions);
             var newCodes = new List<CodeInstruction>();
             var occurrences = 0;
-            var patchIndexOffset = 14;
+
             foreach (var codeInstruction in codes)
             {
                 if (SkipInstruction(codeInstruction))
@@ -77,26 +76,39 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     continue;
                 }
 
-                ProcessOccurence(declaringType, occurrences, newCodes, codeInstruction, ref patchIndexOffset);
+                ProcessOccurence(declaringType, occurrences, newCodes, codeInstruction);
                 occurrences++;
             }
 
             return newCodes.AsEnumerable();
         }
-
+        
         private static void ProcessOccurence(Type declaringType, int occurrences, List<CodeInstruction> newCodes,
-            CodeInstruction codeInstruction, ref int patchIndexOffset)
+            CodeInstruction codeInstruction)
         {
             var methodToCall =
                 AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
-            if (declaringType == typeof(CableCarStationAI) ||
+            int patchIndexOffset; //how many instructions the randomization code includes
+            if (declaringType == typeof(TransportStationAI))
+            {
+                if (occurrences == 0)
+                {
+                    patchIndexOffset = 14;
+                } else if (occurrences == 1)
+                {
+                    patchIndexOffset = 17;
+                } else {
+                    newCodes.Add(codeInstruction);
+                    return;
+                }
+                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+            } else if (declaringType == typeof(CableCarStationAI) ||
                 declaringType == typeof(LandfillSiteAI) ||
                 declaringType == typeof(CemeteryAI) ||
                 declaringType == typeof(PoliceStationAI) ||
                 declaringType == typeof(HospitalAI) ||
                 declaringType == typeof(SnowDumpAI) ||
                 declaringType == typeof(MaintenanceDepotAI) ||
-                declaringType == typeof(TransportStationAI) ||
                 declaringType == typeof(PrivateAirportAI)
             )
             {
@@ -105,11 +117,18 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     newCodes.Add(codeInstruction);
                     return;
                 }
+
+                patchIndexOffset = 14;
             }
             else if (declaringType == typeof(DepotAI))
             {
-                if (occurrences != 1)
+                if (occurrences == 0)
                 {
+                    patchIndexOffset = 11;
+                } else if (occurrences == 1)
+                {
+                    patchIndexOffset = 14;
+                } else {
                     newCodes.Add(codeInstruction);
                     return;
                 }

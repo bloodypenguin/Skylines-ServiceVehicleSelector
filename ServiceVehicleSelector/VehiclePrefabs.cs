@@ -118,7 +118,7 @@ namespace ServiceVehicleSelector2
                 }
             }
 
-            if (subService == ItemClass.SubService.PublicTransportPlane)
+            if (subService == ItemClass.SubService.PublicTransportPlane && vehicleType == VehicleInfo.VehicleType.Plane)
             {
                 if (level == ItemClass.Level.Level1)
                 {

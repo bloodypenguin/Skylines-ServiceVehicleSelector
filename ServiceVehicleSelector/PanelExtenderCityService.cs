@@ -96,7 +96,9 @@ namespace ServiceVehicleSelector2
               _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             }
             _headerLabel.text = "Intercity types";
-            this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
+
+            var buildingAi = buildingInfo.m_buildingAI as TransportStationAI;
+            this.PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, buildingAi.m_transportInfo.m_vehicleType);
             this._cachedItemClass = itemClass;
           }
         }       
