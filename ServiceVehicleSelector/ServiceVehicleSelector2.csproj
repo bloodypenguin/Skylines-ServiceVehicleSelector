@@ -41,6 +41,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="HarmonyPatches\CargoTruckAIChangeVehicleTypePatch.cs" />
+    <Compile Include="HarmonyPatches\ServiceBuildingVehicleSelectorPatch\GetVehicleInfoPatch.cs" />
     <Compile Include="HarmonyPatches\ServiceBuildingAIPatch.cs" />
     <Compile Include="HarmonyPatches\PanelExtenderCityServicePatch.cs" />
     <Compile Include="ServiceVehicleSelectorMod.cs" />

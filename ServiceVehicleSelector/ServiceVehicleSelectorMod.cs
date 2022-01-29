@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CitiesHarmony.API;
 using ServiceVehicleSelector2.HarmonyPatches;
+using ServiceVehicleSelector2.HarmonyPatches.ServiceBuildingVehicleSelectorPatch;
 using UnityEngine;
 
 namespace ServiceVehicleSelector2
@@ -53,7 +54,7 @@ namespace ServiceVehicleSelector2
             PanelExtenderCityServicePatch.Apply(); //needed for reverse redirect
             ServiceBuildingAIPatch.Apply();
             CargoTruckAIChangeVehicleTypePatch.Apply();
-
+            GetVehicleInfoPatch.Apply();
 
             SerializableDataExtension.instance.EventSaveData +=
                 new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);
@@ -74,6 +75,7 @@ namespace ServiceVehicleSelector2
             ServiceBuildingAIPatch.Undo();
             CargoTruckAIChangeVehicleTypePatch.Undo();
             PanelExtenderCityServicePatch.Undo();
+            GetVehicleInfoPatch.Undo();
             VehiclePrefabs.Deinit();
             SerializableDataExtension.instance.EventSaveData -=
                 new SerializableDataExtension.SaveDataEventHandler(ServiceVehicleSelectorMod.OnSaveData);
