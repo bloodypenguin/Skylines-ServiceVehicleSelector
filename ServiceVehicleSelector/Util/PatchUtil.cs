@@ -1,17 +1,18 @@
 using System;
 using System.Reflection;
-using Harmony;
 using UnityEngine;
+using HarmonyLib;
 
 namespace ServiceVehicleSelector2.Util
 {
-    public static class PatchUtil
+    internal static class PatchUtil
     {
+        //use a different ID in your mod if you copy this!!!
         private const string HarmonyId = "github.com/bloodypenguin/Skylines-ServiceVehicleSelector";
-        private static HarmonyInstance _harmonyInstance = null;
+        private static Harmony _harmonyInstance = null;
 
-        private static HarmonyInstance HarmonyInstance =>
-            _harmonyInstance ?? (_harmonyInstance = HarmonyInstance.Create(HarmonyId));
+        private static Harmony HarmonyInstance =>
+            _harmonyInstance ??= new Harmony(HarmonyId);
 
         public static void Patch(
             MethodDefinition original,
@@ -22,12 +23,12 @@ namespace ServiceVehicleSelector2.Util
             if (prefix == null && postfix == null && transpiler == null)
             {
                 throw new Exception(
-                    $"SVS2: prefix, postfix and transpiler are null for method {original.Type.FullName}.{original.MethodName}");
+                    $"SVS 2: prefix, postfix and transpiler are null for method {original.Type.FullName}.{original.MethodName}");
             }
 
             try
             {
-                Debug.Log($"SVS2: Patching method {original.Type.FullName}.{original.MethodName}");
+                Debug.Log($"SVS 2: Patching method {original.Type.FullName}.{original.MethodName}");
                 var methodInfo = GetOriginal(original);
                 HarmonyInstance.Patch(methodInfo,
                     prefix: prefix == null ? null : new HarmonyMethod(GetPatch(prefix)),
@@ -37,21 +38,21 @@ namespace ServiceVehicleSelector2.Util
             }
             catch (Exception e)
             {
-                Debug.LogError($"SVS2: Failed to patch method {original.Type.FullName}.{original.MethodName}");
+                Debug.LogError($"SVS 2: Failed to patch method {original.Type.FullName}.{original.MethodName}");
                 Debug.LogException(e);
             }
         }
 
         public static void Unpatch(MethodDefinition original)
         {
-            Debug.Log($"SVS2: Unpatching method {original.Type.FullName}.{original.MethodName}");
+            Debug.Log($"SVS 2: Unpatching method {original.Type.FullName}.{original.MethodName}");
             HarmonyInstance.Unpatch(GetOriginal(original), HarmonyPatchType.All, HarmonyId);
         }
 
         private static MethodInfo GetOriginal(MethodDefinition original)
         {
             var bindingFlags = original.BindingFlags == BindingFlags.Default
-                ? BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static
+                ? BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly
                 : original.BindingFlags;
             var methodInfo = original.ArgumentTypes == null
                 ? original.Type.GetMethod(original.MethodName, bindingFlags)
@@ -59,7 +60,7 @@ namespace ServiceVehicleSelector2.Util
             if (methodInfo == null)
             {
                 throw new Exception(
-                    $"SVS2: Failed to find original method {original.Type.FullName}.{original.MethodName}");
+                    $"SVS 2: Failed to find original method {original.Type.FullName}.{original.MethodName}");
             }
 
             return methodInfo;
@@ -68,7 +69,7 @@ namespace ServiceVehicleSelector2.Util
         private static MethodInfo GetPatch(MethodDefinition patch)
         {
             var bindingFlags = patch.BindingFlags == BindingFlags.Default
-                ? BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static
+                ? BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly
                 : patch.BindingFlags;
             var methodInfo = patch.ArgumentTypes == null
                 ? patch.Type.GetMethod(patch.MethodName, bindingFlags)
@@ -76,7 +77,7 @@ namespace ServiceVehicleSelector2.Util
             
             if (methodInfo == null)
             {
-                throw new Exception($"SVS2: Failed to find patch method {patch.Type.FullName}.{patch.MethodName}");
+                throw new Exception($"SVS 2: Failed to find patch method {patch.Type.FullName}.{patch.MethodName}");
             }
 
             return methodInfo;

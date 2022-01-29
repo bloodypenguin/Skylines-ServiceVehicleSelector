@@ -10,12 +10,13 @@ using ICities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CitiesHarmony.API;
 using ServiceVehicleSelector2.HarmonyPatches;
 using UnityEngine;
 
 namespace ServiceVehicleSelector2
 {
-    public class ServiceVehicleSelectorMod : IUserMod, ILoadingExtension
+    public class ServiceVehicleSelectorMod : LoadingExtensionBase, IUserMod
     {
         private static readonly string _version = "5.1.1";
         private static readonly string _dataID = "CTS_BuildingData";
@@ -28,13 +29,12 @@ namespace ServiceVehicleSelector2
 
         public string Description => "Control the vehicle types a service building can spawn. ";
 
-        public void OnCreated(ILoading loading)
+        public override void OnLevelLoaded(LoadMode mode)
         {
-
-        }
-
-        public void OnLevelLoaded(LoadMode mode)
-        {
+            if (!HarmonyHelper.IsHarmonyInstalled)
+            {
+                return;
+            }
             this._loadMode = mode;
             if (mode != LoadMode.LoadGame && mode != LoadMode.NewGame && this._loadMode != LoadMode.NewGameFromScenario)
                 return;
@@ -60,8 +60,12 @@ namespace ServiceVehicleSelector2
             SerializableDataExtension.instance.Loaded = true;
         }
 
-        public void OnLevelUnloading()
+        public override void OnLevelUnloading()
         {
+            if (!HarmonyHelper.IsHarmonyInstalled)
+            {
+                return;
+            }
             if (this._loadMode != LoadMode.LoadGame && this._loadMode != LoadMode.NewGame &&
                 this._loadMode != LoadMode.NewGameFromScenario)
                 return;
@@ -77,10 +81,6 @@ namespace ServiceVehicleSelector2
             if (!((UnityEngine.Object) this._gameObject != (UnityEngine.Object) null))
                 return;
             UnityEngine.Object.Destroy((UnityEngine.Object) this._gameObject);
-        }
-
-        public void OnReleased()
-        {
         }
 
         private static bool TryLoadData(out Dictionary<ushort, HashSet<string>> data)
@@ -169,6 +169,10 @@ namespace ServiceVehicleSelector2
             Building building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int) buildingID];
             return !((UnityEngine.Object) building.Info == (UnityEngine.Object) null) &&
                    (building.m_flags & Building.Flags.Created) != Building.Flags.None;
+        }
+        
+        public void OnEnabled() {
+            HarmonyHelper.EnsureHarmonyInstalled();
         }
     }
 }
