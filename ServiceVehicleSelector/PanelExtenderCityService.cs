@@ -59,7 +59,7 @@ namespace ServiceVehicleSelector2
           }
         }
         else if (buildingInfo.m_buildingAI is PrivateAirportAI ||
-                 itemClass.m_service == ItemClass.Service.HealthCare && !(buildingInfo.m_buildingAI is SaunaAI) ||
+                 itemClass.m_service == ItemClass.Service.HealthCare && buildingInfo.m_buildingAI is HospitalAI or HelicopterDepotAI or CemeteryAI ||
                  itemClass.m_service == ItemClass.Service.FireDepartment && !(buildingInfo.m_buildingAI is FirewatchTowerAI || buildingInfo.m_buildingAI is HelicopterDepotAI) ||
                  itemClass.m_service == ItemClass.Service.Garbage && !buildingInfo.m_isFloating ||
                  itemClass.m_service == ItemClass.Service.PoliceDepartment ||
