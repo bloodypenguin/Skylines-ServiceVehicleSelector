@@ -6,6 +6,9 @@ namespace ServiceVehicleSelector2
 {
     public class VehiclePrefabs
     {
+
+        private static readonly List<PrefabData> EmptyList = new();
+        
         public static VehiclePrefabs instance;
         private List<PrefabData> _deathCarePrefabData;
         private List<PrefabData> _fireDepartmentPrefabData;
@@ -226,12 +229,15 @@ namespace ServiceVehicleSelector2
                     }
                 } 
             }
+
+            if (service == ItemClass.Service.Road)
+            {
+                if (level == ItemClass.Level.Level2)
+                    return this._roadPrefabData;
+                return this._roadSnowPrefabData;
+            }
             
-            if (service != ItemClass.Service.Road)
-                return (List<PrefabData>) null;
-            if (level == ItemClass.Level.Level2)
-                return this._roadPrefabData;
-            return this._roadSnowPrefabData;
+            return EmptyList;
         }
 
         private void FindAllPrefabs()
