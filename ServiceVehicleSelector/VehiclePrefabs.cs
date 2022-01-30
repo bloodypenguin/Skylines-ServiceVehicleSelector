@@ -121,20 +121,26 @@ namespace ServiceVehicleSelector2
                 }
             }
 
-            if (subService == ItemClass.SubService.PublicTransportPlane && vehicleType == VehicleInfo.VehicleType.Plane)
+            if (subService == ItemClass.SubService.PublicTransportPlane)
             {
-                if (level == ItemClass.Level.Level1)
+                if (vehicleType == VehicleInfo.VehicleType.Plane)
                 {
-                    return this._passengerPlanePrefabData;
+                    if (level == ItemClass.Level.Level1)
+                    {
+                        return this._passengerPlanePrefabData;
+                    }
+
+                    if (level == ItemClass.Level.Level2)
+                    {
+                        return this._passengerPlanePrefabDataLarge;
+                    }
+
+                    if (level == ItemClass.Level.Level3)
+                    {
+                        return this._passengerPlanePrefabDataSmall;
+                    }
                 }
-                if (level == ItemClass.Level.Level2)
-                {
-                    return this._passengerPlanePrefabDataLarge;
-                }
-                if (level == ItemClass.Level.Level3)
-                {
-                    return this._passengerPlanePrefabDataSmall;
-                }
+
                 if (level == ItemClass.Level.Level4)
                 {
                     return this._cargoPlanePrefabData;

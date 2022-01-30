@@ -39,7 +39,7 @@ namespace ServiceVehicleSelector2
         var buildingInfo = building.Info;
         var itemClass = buildingInfo.m_class;
         
-        if (itemClass.m_service == ItemClass.Service.PublicTransport &&
+        if (itemClass.m_service == ItemClass.Service.PublicTransport && buildingInfo.m_buildingAI is CargoStationAI &&
              (itemClass.m_level == ItemClass.Level.Level4 && itemClass.m_subService is ItemClass.SubService.PublicTransportTrain or ItemClass.SubService.PublicTransportPlane or ItemClass.SubService.PublicTransportShip ||
              itemClass.m_level == ItemClass.Level.Level5 && itemClass.m_subService == ItemClass.SubService.PublicTransportShip)) //the last condition is for barges
         {
