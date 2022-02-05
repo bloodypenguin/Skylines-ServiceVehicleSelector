@@ -146,7 +146,7 @@ namespace ServiceVehicleSelector2
         {
           if (_cachedBuildingID != buildingId)
           {
-            if (SerializableDataExtension.BuildingData.TryGetValue(buildingId, out var stringSet) && stringSet.Count > 0)
+            if (SerializableDataExtension.BuildingData().TryGetValue(buildingId, out var stringSet) && stringSet.Count > 0)
               _vehicleListBox.SelectedItems = stringSet;
             else
               _vehicleListBox.SetSelectionStateToAll(false);
@@ -204,10 +204,10 @@ namespace ServiceVehicleSelector2
       var building = Utils.GetPrivate<InstanceID>(_cityServiceWorldInfoPanel, "m_InstanceID").Building;
       if (building == 0)
         return;
-      if (!SerializableDataExtension.BuildingData.TryGetValue(building, out _))
-        SerializableDataExtension.BuildingData.Add(building, selectedItems);
+      if (!SerializableDataExtension.BuildingData().TryGetValue(building, out _))
+        SerializableDataExtension.BuildingData().Add(building, selectedItems);
       else
-        SerializableDataExtension.BuildingData[building] = selectedItems;
+        SerializableDataExtension.BuildingData()[building] = selectedItems;
       var info = BuildingManager.instance.m_buildings.m_buffer[building].Info;
       if (info == null)
       {

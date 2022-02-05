@@ -7,7 +7,7 @@ namespace ServiceVehicleSelector2
         public override void OnBuildingReleased(ushort id)
         {
             base.OnBuildingReleased(id);
-            if (!SerializableDataExtension.BuildingData.Remove(id))
+            if (!SerializableDataExtension.BuildingData().Remove(id))
             {
                 return;
             }

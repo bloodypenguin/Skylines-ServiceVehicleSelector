@@ -47,9 +47,9 @@
     <Compile Include="HarmonyPatches\ServiceBuildingAIPatch.cs" />
     <Compile Include="HarmonyPatches\PanelExtenderCityServicePatch.cs" />
     <Compile Include="LoadingExtension.cs" />
+    <Compile Include="SerializableDataExtension.cs" />
     <Compile Include="ServiceVehicleSelectorMod.cs" />
     <Compile Include="PrefabData.cs" />
-    <Compile Include="SerializableDataExtension.cs" />
     <Compile Include="UIHelper.cs" />
     <Compile Include="PanelExtenderCityService.cs" />
     <Compile Include="Util\PatchUtil.cs" />

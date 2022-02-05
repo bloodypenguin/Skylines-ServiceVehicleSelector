@@ -76,7 +76,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             {
                 level = ItemClass.Level.Level5;
             }
-            if (!SerializableDataExtension.BuildingData.TryGetValue(cargoStationId, out var source) ||
+            if (!SerializableDataExtension.BuildingData().TryGetValue(cargoStationId, out var source) ||
                 source.Count <= 0)
             {
                 return instance.GetRandomVehicleInfo(
