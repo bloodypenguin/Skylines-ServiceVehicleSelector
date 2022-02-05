@@ -10,24 +10,34 @@ namespace ServiceVehicleSelector2
     {
         private const string DataID = "CTS_BuildingData";
         private const string DataVersion = "v001";
-        private static bool _validated = false;
+        private static bool _validated;
 
-        private static Dictionary<ushort, HashSet<string>> _buildingData;
+        private static Dictionary<ushort, HashSet<string>> _primaryBuildingData;
+        private static Dictionary<ushort, HashSet<string>> _secondaryBuildingData;
 
         public static Dictionary<ushort, HashSet<string>> BuildingData()
         {
+            return BuildingData(true);
+        }
+        
+        public static Dictionary<ushort, HashSet<string>> BuildingData(bool primary)
+        {
             if (!_validated)
             {
-                ValidateBuildingData();
+                Utils.Log("SVS2 - Validating primary building data.");
+                ValidateBuildingData(_primaryBuildingData);
+                Utils.Log("SVS2 - Validating secondary building data.");
+                ValidateBuildingData(_secondaryBuildingData);
                 _validated = true;
             }
-            return _buildingData;
+            return _primaryBuildingData;
         }
 
         public override void OnLoadData()
         {
             _validated = false;
-            if (!TryLoadData(out _buildingData))
+            _secondaryBuildingData = new Dictionary<ushort, HashSet<string>>();
+            if (!TryLoadData(out _primaryBuildingData))
                 Utils.Log("SVS2 - No data was found in the save file. Default building data was used.");
         }
 
@@ -38,7 +48,7 @@ namespace ServiceVehicleSelector2
             try
             {
                 WriteString(DataVersion, data);
-                foreach (var keyValuePair in _buildingData)
+                foreach (var keyValuePair in _primaryBuildingData)
                     if (keyValuePair.Value.Count == 0)
                     {
                         invalidBuildingIds.Add(keyValuePair.Key);
@@ -61,7 +71,7 @@ namespace ServiceVehicleSelector2
             }
 
             foreach (var key in invalidBuildingIds)
-                _buildingData.Remove(key);
+                _primaryBuildingData.Remove(key);
         }
 
         private bool TryLoadData(out Dictionary<ushort, HashSet<string>> data)
@@ -175,14 +185,13 @@ namespace ServiceVehicleSelector2
                 data.Add(num);
         }
 
-        private static void ValidateBuildingData()
+        private static void ValidateBuildingData(Dictionary<ushort, HashSet<string>> data)
         {
-            Utils.Log("SVS2 - Validating building data.");
             try
             {
                 var keysToRemove = new HashSet<ushort>();
                 var valuesToRemove = new Dictionary<ushort, HashSet<string>>();
-                foreach (var keyValuePair in _buildingData)
+                foreach (var keyValuePair in data)
                 {
                     if (!IsStationValid(keyValuePair.Key))
                     {
@@ -202,14 +211,14 @@ namespace ServiceVehicleSelector2
 
                 foreach (var buildingId in keysToRemove)
                 {
-                    _buildingData.Remove(buildingId);
+                    data.Remove(buildingId);
                     Utils.LogWarning($"SVS2 - Removed building {buildingId} from config as it's not valid anymore");
                 }
 
                 foreach (var keyValuePair in valuesToRemove)
                 foreach (var prefabName in keyValuePair.Value)
                 {
-                    _buildingData[keyValuePair.Key].Remove(prefabName);
+                    data[keyValuePair.Key].Remove(prefabName);
                     Utils.LogWarning(
                         $"SVS2 - Removed prefab {prefabName} from building {keyValuePair.Key} config as it's not found");
                 }
