@@ -49,6 +49,7 @@ namespace ServiceVehicleSelector2
         
         private List<PrefabData> _waterTruckPrefabData;
         private List<PrefabData> _parkTruckPrefabData;
+        private List<PrefabData> _hotAirBalloonData;
         
         //TODO: evacuation buses, more Industries DLC stuff
 
@@ -124,6 +125,14 @@ namespace ServiceVehicleSelector2
                 }
 
                 return _trainPrefabData;
+            }
+            
+            if (subService == ItemClass.SubService.PublicTransportTours)
+            {
+                if (level == ItemClass.Level.Level4)
+                {
+                    return _hotAirBalloonData;
+                }
             }
             
             if (subService == ItemClass.SubService.PublicTransportBus)
@@ -286,6 +295,7 @@ namespace ServiceVehicleSelector2
             _waterTruckPrefabData = new List<PrefabData>();
 
             _parkTruckPrefabData = new List<PrefabData>(); //Park Life DLC
+            _hotAirBalloonData = new List<PrefabData>();
             
             _cargoPlanePrefabData = new List<PrefabData>(); //Industry DLC
             _postVanPrefabData = new List<PrefabData>();
@@ -324,9 +334,16 @@ namespace ServiceVehicleSelector2
                         {
                             _parkTruckPrefabData.Add(new PrefabData(prefab));
                         }
-                    } else if (prefab.m_class.m_service == ItemClass.Service.PublicTransport)
+                    } 
+                    else if (prefab.m_class.m_service == ItemClass.Service.PublicTransport)
                     {
-                        if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportTrain)
+                        if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportTours)
+                        {
+                            if (prefab.m_class.m_level == ItemClass.Level.Level4)
+                            {
+                                _hotAirBalloonData.Add(new PrefabData(prefab));
+                            }
+                        } else if (prefab.m_class.m_subService == ItemClass.SubService.PublicTransportTrain)
                         {
                             if (prefab.m_class.m_level == ItemClass.Level.Level4)
                             {

@@ -70,6 +70,7 @@ namespace ServiceVehicleSelector2
                  itemClass.m_service == ItemClass.Service.PoliceDepartment ||
                  itemClass.m_service == ItemClass.Service.Road && buildingInfo.m_buildingAI is not TollBoothAI|| 
                  itemClass.m_subService == ItemClass.SubService.PublicTransportTaxi && buildingInfo.m_buildingAI is DepotAI ||
+                 itemClass.m_subService == ItemClass.SubService.PublicTransportTours && itemClass.m_level == ItemClass.Level.Level4 && buildingInfo.m_buildingAI is TourBuildingAI ||
                  itemClass.m_subService == ItemClass.SubService.PublicTransportPost ||
                  itemClass.m_subService == ItemClass.SubService.PublicTransportCableCar && buildingInfo.m_buildingAI is CableCarStationAI)
         {

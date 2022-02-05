@@ -18,6 +18,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             Transpile(typeof(TransportStationAI), "CreateOutgoingVehicle");
             Transpile(typeof(TransportStationAI), "CreateIncomingVehicle");
             Transpile(typeof(PrivateAirportAI), "CheckVehicles");
+            Transpile(typeof(TourBuildingAI), "CheckVehicles");
             Transpile(typeof(PostOfficeAI), nameof(PostOfficeAI.StartTransfer));
             Transpile(typeof(CableCarStationAI), "CreateVehicle");
             Transpile(typeof(LandfillSiteAI), nameof(LandfillSiteAI.StartTransfer));
@@ -39,6 +40,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             Restore(typeof(TransportStationAI), "CreateOutgoingVehicle");
             Restore(typeof(TransportStationAI), "CreateIncomingVehicle");
             Restore(typeof(PrivateAirportAI), "CheckVehicles");
+            Restore(typeof(TourBuildingAI), "CheckVehicles");
             Restore(typeof(PostOfficeAI), nameof(PostOfficeAI.StartTransfer));
             Restore(typeof(CableCarStationAI), "CreateVehicle");
             Restore(typeof(LandfillSiteAI), nameof(LandfillSiteAI.StartTransfer));
@@ -180,7 +182,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 patchIndexOffset = 12;
                 methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
             }
-            else if (declaringType == typeof(WaterFacilityAI))
+            else if (declaringType == typeof(WaterFacilityAI) || declaringType == typeof(TourBuildingAI))
             {
                 if (occurrences > 0)
                 {
