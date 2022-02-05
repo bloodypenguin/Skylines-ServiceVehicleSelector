@@ -135,7 +135,7 @@ namespace ServiceVehicleSelector2
           if (_cachedBuildingID != buildingId)
           {
             HashSet<string> stringSet;
-            if (ServiceVehicleSelectorMod.BuildingData.TryGetValue(buildingId, out stringSet) && stringSet.Count > 0)
+            if (SerializableDataExtension.BuildingData.TryGetValue(buildingId, out stringSet) && stringSet.Count > 0)
               _vehicleListBox.SelectedItems = stringSet;
             else
               _vehicleListBox.SetSelectionStateToAll(false);
@@ -194,10 +194,10 @@ namespace ServiceVehicleSelector2
       if (building == 0)
         return;
       HashSet<string> stringSet;
-      if (!ServiceVehicleSelectorMod.BuildingData.TryGetValue(building, out stringSet))
-        ServiceVehicleSelectorMod.BuildingData.Add(building, selectedItems);
+      if (!SerializableDataExtension.BuildingData.TryGetValue(building, out stringSet))
+        SerializableDataExtension.BuildingData.Add(building, selectedItems);
       else
-        ServiceVehicleSelectorMod.BuildingData[building] = selectedItems;
+        SerializableDataExtension.BuildingData[building] = selectedItems;
       var info = BuildingManager.instance.m_buildings.m_buffer[building].Info;
       if (info == null)
       {

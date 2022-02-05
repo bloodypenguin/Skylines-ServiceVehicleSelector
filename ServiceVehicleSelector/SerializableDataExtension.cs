@@ -1,132 +1,174 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: ServiceVehicleSelector.SerializableDataExtension
-// Assembly: ServiceVehicleSelector, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: D0EBD243-0D3C-4ED4-95A5-A73C88972683
-// Assembly location: C:\Games\Steam\steamapps\workshop\content\255710\519691655\ServiceVehicleSelector.dll
-
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ColossalFramework;
 using ICities;
-using System;
 
 namespace ServiceVehicleSelector2
 {
-  public class SerializableDataExtension : ISerializableDataExtension
+  public class SerializableDataExtension : SerializableDataExtensionBase
   {
-    public static SerializableDataExtension instance;
-    private ISerializableData _serializableData;
-    private bool _loaded;
+    private const string DataID = "CTS_BuildingData";
+    private const string DataVersion = "v001";
 
-    public ISerializableData SerializableData
+    public static Dictionary<ushort, HashSet<string>> BuildingData;
+
+    public override void OnLoadData()
     {
-      get
+      if (!TryLoadData(out BuildingData))
+        Utils.Log("SVS2 - No data was found in the save file. Default building data was used.");
+    }
+
+    public override void OnSaveData()
+    {
+      var data = new FastList<byte>();
+      var invalidBuildingIds = new HashSet<ushort>();
+      try
       {
-        return this._serializableData;
-      }
-    }
+        WriteString(DataVersion, data);
+        foreach (var keyValuePair in BuildingData)
+        {
+          if (!IsStationValid(keyValuePair.Key) || keyValuePair.Value.Count == 0)
+          {
+            invalidBuildingIds.Add(keyValuePair.Key);
+          }
+          else
+          {
+            WriteUInt16(keyValuePair.Key, data);
+            WriteStringArray(keyValuePair.Value.ToArray(), data);
+          }
+        }
 
-    public bool Loaded
-    {
-      get
+        serializableDataManager.SaveData(DataID,
+          data.ToArray());
+      }
+      catch (Exception ex)
       {
-        return this._loaded;
-      }
-      set
-      {
-        this._loaded = value;
-      }
-    }
-
-    public event SerializableDataExtension.SaveDataEventHandler EventSaveData;
-
-    public void OnCreated(ISerializableData serializedData)
-    {
-      SerializableDataExtension.instance = this;
-      this._serializableData = serializedData;
-    }
-
-    public void OnLoadData()
-    {
-    }
-
-    public void OnSaveData()
-    {
-      // ISSUE: reference to a compiler-generated field
-      if (!this._loaded || this.EventSaveData == null)
+        var msg = $"SVS2 - Error while saving building data!\n{ex.Message}\n{ex.StackTrace}";
+        Utils.LogError(msg);
+        CODebugBase<LogChannel>.Log(LogChannel.Modding, msg, ErrorLevel.Error);
         return;
-      // ISSUE: reference to a compiler-generated field
-      this.EventSaveData();
+      }
+
+      foreach (var key in invalidBuildingIds)
+        BuildingData.Remove(key);
+    }
+    
+    private bool TryLoadData(out Dictionary<ushort, HashSet<string>> data)
+    {
+      data = new Dictionary<ushort, HashSet<string>>();
+      var serializedData = serializableDataManager.LoadData(DataID);
+      if (serializedData == null)
+        return false;
+      var index1 = 0;
+      try
+      {
+        Utils.Log("SVS2 - Try to load building data.");
+        var dataVersion = ReadString(serializedData, ref index1);
+        Utils.Log($"SVS2 - Found building data version: {dataVersion}");
+        if (string.IsNullOrEmpty(dataVersion) || dataVersion.Length != 4)
+        {
+          Utils.LogWarning("SVS2 - Found data version was in an unsupported format");
+          return false;
+        }
+        while (index1 < serializedData.Length)
+        {
+          var stringSet = new HashSet<string>();
+          var key = ReadUInt16(serializedData, ref index1);
+          var num = ReadInt32(serializedData, ref index1);
+          for (var index2 = 0; index2 < num; ++index2)
+          {
+            var name = ReadString(serializedData, ref index1);
+            if (PrefabCollection<VehicleInfo>.FindLoaded(name) !=
+                null)
+              stringSet.Add(name);
+          }
+
+          data.Add(key, stringSet);
+        }
+        Utils.Log("SVS2 - Building data was successfully loaded.");
+        return true;
+      }
+      catch (Exception ex)
+      {
+        Utils.LogError($"SVS2 - Could not load building data.\n{ex.Message}\n{ex.StackTrace}");
+        data = new Dictionary<ushort, HashSet<string>>();
+        return false;
+      }
     }
 
-    public void OnReleased()
+
+    private static void WriteUInt16(ushort value, FastList<byte> data)
     {
-      SerializableDataExtension.instance = (SerializableDataExtension) null;
+      AddToData(BitConverter.GetBytes(value), data);
     }
 
-    public static void WriteUInt16(ushort value, FastList<byte> data)
+    private static ushort ReadUInt16(byte[] data, ref int index)
     {
-      SerializableDataExtension.AddToData(BitConverter.GetBytes(value), data);
-    }
-
-    public static ushort ReadUInt16(byte[] data, ref int index)
-    {
-      int uint16 = (int) BitConverter.ToUInt16(data, index);
+      int uint16 = BitConverter.ToUInt16(data, index);
       index = index + 2;
       return (ushort) uint16;
     }
 
-    public static void WriteInt32(int value, FastList<byte> data)
+    private static void WriteInt32(int value, FastList<byte> data)
     {
-      SerializableDataExtension.AddToData(BitConverter.GetBytes(value), data);
+      AddToData(BitConverter.GetBytes(value), data);
     }
 
-    public static int ReadInt32(byte[] data, ref int index)
+    private static int ReadInt32(byte[] data, ref int index)
     {
-      int int32 = BitConverter.ToInt32(data, index);
+      var int32 = BitConverter.ToInt32(data, index);
       index = index + 4;
       return int32;
     }
 
-    public static void WriteString(string s, FastList<byte> data)
+    private static void WriteString(string s, FastList<byte> data)
     {
-      char[] charArray = s.ToCharArray();
-      SerializableDataExtension.WriteInt32(charArray.Length, data);
-      for (ushort index = 0; (int) index < charArray.Length; ++index)
-        SerializableDataExtension.AddToData(BitConverter.GetBytes(charArray[(int) index]), data);
+      var charArray = s.ToCharArray();
+      WriteInt32(charArray.Length, data);
+      for (ushort index = 0; index < charArray.Length; ++index)
+        AddToData(BitConverter.GetBytes(charArray[index]), data);
     }
 
-    public static string ReadString(byte[] data, ref int index)
+    private static string ReadString(byte[] data, ref int index)
     {
-      string empty = string.Empty;
-      int num = SerializableDataExtension.ReadInt32(data, ref index);
-      for (int index1 = 0; index1 < num; ++index1)
+      var empty = string.Empty;
+      var num = ReadInt32(data, ref index);
+      for (var index1 = 0; index1 < num; ++index1)
       {
         empty += BitConverter.ToChar(data, index).ToString();
-        index = index + 2;
+        index += 2;
       }
       return empty;
     }
 
-    public static void WriteStringArray(string[] array, FastList<byte> data)
+    private static void WriteStringArray(ICollection<string> array, FastList<byte> data)
     {
-      SerializableDataExtension.WriteInt32(array.Length, data);
-      for (int index = 0; index < array.Length; ++index)
-        SerializableDataExtension.WriteString(array[index], data);
+      WriteInt32(array.Count, data);
+      foreach (var t in array)
+        WriteString(t, data);
     }
 
     public static string[] ReadStringArray(byte[] data, ref int index)
     {
-      int length = SerializableDataExtension.ReadInt32(data, ref index);
-      string[] strArray = new string[length];
-      for (int index1 = 0; index1 < length; ++index1)
-        strArray[index1] = SerializableDataExtension.ReadString(data, ref index);
+      var length = ReadInt32(data, ref index);
+      var strArray = new string[length];
+      for (var index1 = 0; index1 < length; ++index1)
+        strArray[index1] = ReadString(data, ref index);
       return strArray;
     }
 
-    public static void AddToData(byte[] bytes, FastList<byte> data)
+    private static void AddToData(IEnumerable<byte> bytes, FastList<byte> data)
     {
-      foreach (byte num in bytes)
+      foreach (var num in bytes)
         data.Add(num);
     }
 
-    public delegate void SaveDataEventHandler();
+    private static bool IsStationValid(ushort buildingID)
+    {
+      var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
+      return !(building.Info == null) &&
+             (building.m_flags & Building.Flags.Created) != Building.Flags.None;
+    }
   }
 }

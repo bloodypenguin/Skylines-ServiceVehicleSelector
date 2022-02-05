@@ -210,7 +210,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             ItemClass.SubService subService,
             ItemClass.Level level)
         {
-            if (!ServiceVehicleSelectorMod.BuildingData.TryGetValue(buildingID, out var source) || source.Count <= 0)
+            if (!SerializableDataExtension.BuildingData.TryGetValue(buildingID, out var source) || source.Count <= 0)
             {
                 return instance.GetRandomVehicleInfo(ref SimulationManager.instance.m_randomizer, service, subService,
                     level);
@@ -228,7 +228,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             ItemClass.Level level,
             VehicleInfo.VehicleType vehicleType)
         {
-            if (!ServiceVehicleSelectorMod.BuildingData.TryGetValue(buildingID, out var source) || source.Count <= 0)
+            if (!SerializableDataExtension.BuildingData.TryGetValue(buildingID, out var source) || source.Count <= 0)
             {
                 return instance.GetRandomVehicleInfo(ref SimulationManager.instance.m_randomizer, service, subService,
                     level, vehicleType);
@@ -250,7 +250,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 service != ItemClass.Service.PublicTransport ||
                 subService != ItemClass.SubService.PublicTransportTaxi &&
                 subService != ItemClass.SubService.PublicTransportCableCar ||
-                !ServiceVehicleSelectorMod.BuildingData.TryGetValue(buildingID, out var source) || source.Count <= 0)
+                !SerializableDataExtension.BuildingData.TryGetValue(buildingID, out var source) || source.Count <= 0)
             {
                 return instance.GetRandomVehicleInfo(ref SimulationManager.instance.m_randomizer, service, subService,
                     level);
