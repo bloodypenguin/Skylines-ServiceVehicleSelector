@@ -14,6 +14,7 @@ namespace ServiceVehicleSelector2
     private int _cachedIndex = -1;
     private ItemClass _cachedItemClass;
     private ItemClass _cachedItemVehicleClass;
+    private ItemClass _cachedSecondaryVehicleClass; //for cargo stations
     private CityServiceWorldInfoPanel _cityServiceWorldInfoPanel;
     private UIPanel _prefabPanel;
     private UIDropDown _headerDropDown;
@@ -46,22 +47,54 @@ namespace ServiceVehicleSelector2
           if (_cachedItemClass != itemClass)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
-            _headerDropDown.items = new [] {"Vehicle types"};
+            _headerDropDown.items = new [] {"Truck types"};
             _headerDropDown.selectedIndex = 0;
             PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
             _cachedItemClass = itemClass;
           }
-        } else  if (itemClass.m_service == ItemClass.Service.PublicTransport && buildingInfo.m_buildingAI is CargoStationAI &&
+        } else  if (itemClass.m_service == ItemClass.Service.PublicTransport && buildingInfo.m_buildingAI is CargoStationAI cargoStationAI &&
                     (itemClass.m_level == ItemClass.Level.Level4 && itemClass.m_subService is ItemClass.SubService.PublicTransportTrain or ItemClass.SubService.PublicTransportPlane or ItemClass.SubService.PublicTransportShip ||
                      itemClass.m_level == ItemClass.Level.Level5 && itemClass.m_subService == ItemClass.SubService.PublicTransportShip)) //the last condition is for barges
         {
+          VehicleInfo.VehicleType primaryVehicle;
+          VehicleInfo.VehicleType secondaryVehicle;
+          ItemClass secondaryClass;
+          //we cannot check for item class equality as cargo airport item class has different level than its primary transport info's class
+          //TODO: support case when just level differs. Ex: cargo plane to cargo helicopter hub
+          if (cargoStationAI.m_transportInfo2 == null || cargoStationAI.m_transportInfo?.m_class.m_service == itemClass.m_service && cargoStationAI.m_transportInfo?.m_class.m_subService == itemClass.m_subService)
+          {
+            primaryVehicle = cargoStationAI.m_transportInfo?.m_vehicleType ?? VehicleInfo.VehicleType.None;
+            secondaryVehicle = cargoStationAI.m_transportInfo2?.m_vehicleType ?? VehicleInfo.VehicleType.None;
+            secondaryClass = cargoStationAI.m_transportInfo2?.m_class;
+          }
+          else
+          {
+            primaryVehicle = cargoStationAI.m_transportInfo2?.m_vehicleType ?? VehicleInfo.VehicleType.None;
+            secondaryVehicle = cargoStationAI.m_transportInfo?.m_vehicleType ?? VehicleInfo.VehicleType.None;
+            secondaryClass = cargoStationAI.m_transportInfo?.m_class;
+          }
+          var isHub = primaryVehicle != VehicleInfo.VehicleType.None && secondaryVehicle != VehicleInfo.VehicleType.None && primaryVehicle != secondaryVehicle;
           canSelectVehicle = true;
-          if (_cachedItemClass != itemClass)
+          if (_cachedItemClass != itemClass || _cachedSecondaryVehicleClass != secondaryClass || _cachedIndex != _headerDropDown.selectedIndex)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
-            _headerDropDown.items = new [] {"Vehicle types"};
-            _headerDropDown.selectedIndex = 0;
-            PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
+            if (_cachedItemClass != itemClass || _cachedSecondaryVehicleClass != secondaryClass)
+            {
+              _headerDropDown.items = isHub ? new[] { $"{primaryVehicle} types", $"{secondaryVehicle} types" } : new[] { $"{primaryVehicle} types" };
+              _headerDropDown.selectedIndex = 0;
+            }
+            if (_headerDropDown.selectedIndex == 0)
+            {
+              PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level,
+                VehicleInfo.VehicleType.None);
+            }
+            else
+            {
+              PopulateVehicleListBox(secondaryClass.m_service, secondaryClass.m_subService, ItemClass.Level.Level4,
+                VehicleInfo.VehicleType.None); //TODO: this makes custom cargo modes (using Level5) not possible for secondary
+            }
+
+            _cachedSecondaryVehicleClass = secondaryClass;
             _cachedItemClass = itemClass;
           }
         }
