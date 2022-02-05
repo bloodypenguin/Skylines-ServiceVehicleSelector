@@ -91,7 +91,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             CodeInstruction codeInstruction)
         {
             var methodToCall =
-                AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
+                AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetPrimaryVehicleInfoWithoutType));
             int patchIndexOffset; //how many instructions the randomization code includes
             if (declaringType == typeof(TransportStationAI))
             {
@@ -105,7 +105,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     newCodes.Add(codeInstruction);
                     return;
                 }
-                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetPrimaryVehicleInfoWithType));
             } else if (declaringType == typeof(CableCarStationAI) ||
                 declaringType == typeof(LandfillSiteAI) ||
                 declaringType == typeof(CemeteryAI) ||
@@ -158,18 +158,27 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 }
 
                 patchIndexOffset = 15;
-                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetPrimaryVehicleInfoWithType));
             }
             else if (declaringType == typeof(DisasterResponseBuildingAI))
             {
-                if (occurrences < 1 || occurrences > 3)
+                if (occurrences > 1)
                 {
                     newCodes.Add(codeInstruction);
                     return;
                 }
 
+                if (occurrences == 0)
+                {
+                    methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetSecondaryVehicleInfoWithType));         
+                }
+                else
+                {
+                    methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetPrimaryVehicleInfoWithType));
+                }
+
                 patchIndexOffset = 15;
-                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+
             }
             else if (declaringType == typeof(FishingHarborAI))
             {
@@ -180,7 +189,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 }
 
                 patchIndexOffset = 12;
-                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetPrimaryVehicleInfoWithType));
             }
             else if (declaringType == typeof(WaterFacilityAI) || declaringType == typeof(TourBuildingAI))
             {
@@ -191,7 +200,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 }
 
                 patchIndexOffset = 14;
-                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
+                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetPrimaryVehicleInfoWithoutType));
             }
             else
             {
@@ -218,14 +227,30 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             newCodes.Add(new CodeInstruction(OpCodes.Call, methodToCall));
         }
 
-        private static VehicleInfo GetVehicleInfoWithoutType(
+        private static VehicleInfo GetPrimaryVehicleInfoWithoutType(
             VehicleManager instance,
             ushort buildingID,
             ItemClass.Service service,
             ItemClass.SubService subService,
             ItemClass.Level level)
         {
-            if (!SerializableDataExtension.BuildingData().TryGetValue(buildingID, out var source) || source.Count <= 0)
+            return GetVehicleWithoutType(instance, buildingID, service, subService, level, 0);
+        }
+        
+        private static VehicleInfo GetSecondaryVehicleInfoWithoutType(
+            VehicleManager instance,
+            ushort buildingID,
+            ItemClass.Service service,
+            ItemClass.SubService subService,
+            ItemClass.Level level)
+        {
+            return GetVehicleWithoutType(instance, buildingID, service, subService, level, 1);
+        }
+
+        private static VehicleInfo GetVehicleWithoutType(VehicleManager instance, ushort buildingID, ItemClass.Service service,
+            ItemClass.SubService subService, ItemClass.Level level, int buildingDataIndex)
+        {
+            if (!SerializableDataExtension.BuildingData(buildingDataIndex).TryGetValue(buildingID, out var source) || source.Count <= 0)
             {
                 return instance.GetRandomVehicleInfo(ref SimulationManager.instance.m_randomizer, service, subService,
                     level);
@@ -235,7 +260,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 source.ToArray());
         }
 
-        private static VehicleInfo GetVehicleInfoWithType(
+        private static VehicleInfo GetPrimaryVehicleInfoWithType(
             VehicleManager instance,
             ushort buildingID,
             ItemClass.Service service,
@@ -243,7 +268,29 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             ItemClass.Level level,
             VehicleInfo.VehicleType vehicleType)
         {
-            if (!SerializableDataExtension.BuildingData().TryGetValue(buildingID, out var source) || source.Count <= 0)
+            return GetVehicleInfoWithType(instance, buildingID, service, subService, level, vehicleType, 0);
+        }
+        
+        private static VehicleInfo GetSecondaryVehicleInfoWithType(
+            VehicleManager instance,
+            ushort buildingID,
+            ItemClass.Service service,
+            ItemClass.SubService subService,
+            ItemClass.Level level,
+            VehicleInfo.VehicleType vehicleType)
+        {
+            return GetVehicleInfoWithType(instance, buildingID, service, subService, level, vehicleType, 1);
+        }
+
+        private static VehicleInfo GetVehicleInfoWithType(
+            VehicleManager instance,
+            ushort buildingID,
+            ItemClass.Service service,
+            ItemClass.SubService subService,
+            ItemClass.Level level,
+            VehicleInfo.VehicleType vehicleType, int buildingDataIndex)
+        {
+            if (!SerializableDataExtension.BuildingData(buildingDataIndex).TryGetValue(buildingID, out var source) || source.Count <= 0)
             {
                 return instance.GetRandomVehicleInfo(ref SimulationManager.instance.m_randomizer, service, subService,
                     level, vehicleType);

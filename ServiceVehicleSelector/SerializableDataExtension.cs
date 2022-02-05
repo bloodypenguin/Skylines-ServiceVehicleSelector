@@ -15,12 +15,7 @@ namespace ServiceVehicleSelector2
         private static Dictionary<ushort, HashSet<string>> _primaryBuildingData;
         private static Dictionary<ushort, HashSet<string>> _secondaryBuildingData;
 
-        public static Dictionary<ushort, HashSet<string>> BuildingData()
-        {
-            return BuildingData(true);
-        }
-        
-        public static Dictionary<ushort, HashSet<string>> BuildingData(bool primary)
+        public static Dictionary<ushort, HashSet<string>> BuildingData(int index = 0)
         {
             if (!_validated)
             {
@@ -30,7 +25,13 @@ namespace ServiceVehicleSelector2
                 ValidateBuildingData(_secondaryBuildingData);
                 _validated = true;
             }
-            return _primaryBuildingData;
+
+            if (index == 0)
+            {
+                return _primaryBuildingData;
+            }
+
+            return _secondaryBuildingData;
         }
 
         public override void OnLoadData()

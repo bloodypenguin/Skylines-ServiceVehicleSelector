@@ -11,11 +11,12 @@ namespace ServiceVehicleSelector2
     
     private bool _initialized;
     private ushort _cachedBuildingID;
+    private int _cachedIndex = -1;
     private ItemClass _cachedItemClass;
     private ItemClass _cachedItemVehicleClass;
     private CityServiceWorldInfoPanel _cityServiceWorldInfoPanel;
     private UIPanel _prefabPanel;
-    private UILabel _headerLabel;
+    private UIDropDown _headerDropDown;
     private VehicleListBox _vehicleListBox;
 
     private void Update()
@@ -45,7 +46,8 @@ namespace ServiceVehicleSelector2
           if (_cachedItemClass != itemClass)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
-            _headerLabel.text = "Vehicle types";
+            _headerDropDown.items = new [] {"Vehicle types"};
+            _headerDropDown.selectedIndex = 0;
             PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
             _cachedItemClass = itemClass;
           }
@@ -57,7 +59,8 @@ namespace ServiceVehicleSelector2
           if (_cachedItemClass != itemClass)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
-            _headerLabel.text = "Vehicle types";
+            _headerDropDown.items = new [] {"Vehicle types"};
+            _headerDropDown.selectedIndex = 0;
             PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
             _cachedItemClass = itemClass;
           }
@@ -71,15 +74,47 @@ namespace ServiceVehicleSelector2
                  itemClass.m_service == ItemClass.Service.Road && buildingInfo.m_buildingAI is not TollBoothAI|| 
                  itemClass.m_subService == ItemClass.SubService.PublicTransportTaxi && buildingInfo.m_buildingAI is DepotAI ||
                  itemClass.m_subService == ItemClass.SubService.PublicTransportTours && itemClass.m_level == ItemClass.Level.Level4 && buildingInfo.m_buildingAI is TourBuildingAI ||
-                 itemClass.m_subService == ItemClass.SubService.PublicTransportPost ||
                  itemClass.m_subService == ItemClass.SubService.PublicTransportCableCar && buildingInfo.m_buildingAI is CableCarStationAI)
         {
           canSelectVehicle = true;
           if (_cachedItemClass != itemClass)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
-            _headerLabel.text = "Vehicle types";
+            _headerDropDown.items = new [] {"Vehicle types"};
+            _headerDropDown.selectedIndex = 0;
             PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
+            _cachedItemClass = itemClass;
+          }
+        }
+        else if (itemClass.m_subService == ItemClass.SubService.PublicTransportPost)
+        {
+          canSelectVehicle = true;
+          
+          
+          if (_cachedItemClass != itemClass || _cachedIndex != _headerDropDown.selectedIndex)
+          {
+            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
+
+            if (_cachedItemClass != itemClass)
+            {
+              if (itemClass.m_level == ItemClass.Level.Level2)
+              {
+                _headerDropDown.items = new[] { "Van types" };
+              }
+              else
+              {
+                _headerDropDown.items = new[] { "Truck types", "Van types" };
+              }
+              _headerDropDown.selectedIndex = 0;
+            }
+            if (_headerDropDown.selectedIndex == 0)
+            {
+              PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None); 
+            }
+            else //vans for sorting
+            {
+              PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, ItemClass.Level.Level2, VehicleInfo.VehicleType.None);
+            }
             _cachedItemClass = itemClass;
           }
         }
@@ -101,21 +136,46 @@ namespace ServiceVehicleSelector2
             {
               _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
             }
-            _headerLabel.text = "Intercity types";
+            _headerDropDown.items = new [] {"Intercity types"};
+            _headerDropDown.selectedIndex = 0;
 
             var buildingAi = buildingInfo.m_buildingAI as TransportStationAI;
             PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, buildingAi.m_transportInfo.m_vehicleType);
             _cachedItemClass = itemClass;
           }
         }       
-        else if (itemClass.m_service == ItemClass.Service.FireDepartment && buildingInfo.m_buildingAI is HelicopterDepotAI || itemClass.m_service == ItemClass.Service.Disaster && buildingInfo.m_buildingAI is DisasterResponseBuildingAI)
+        else if (itemClass.m_service == ItemClass.Service.FireDepartment && buildingInfo.m_buildingAI is HelicopterDepotAI)
         {
           canSelectVehicle = true;
           if (_cachedItemClass != itemClass)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
-            _headerLabel.text = "Helicopter types";
+            _headerDropDown.items = new [] {"Helicopter types"};
+            _headerDropDown.selectedIndex = 0;
             PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.Helicopter);
+            _cachedItemClass = itemClass;
+          }
+        }
+        else if (itemClass.m_service == ItemClass.Service.Disaster && buildingInfo.m_buildingAI is DisasterResponseBuildingAI)
+        {
+          canSelectVehicle = true;
+          if (_cachedItemClass != itemClass || _cachedIndex != _headerDropDown.selectedIndex)
+          {
+            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
+            if (_cachedItemClass != itemClass)
+            {
+              _headerDropDown.items = new [] {"Helicopter types", "Truck types"};
+              _headerDropDown.selectedIndex = 0;
+            }
+
+            if (_headerDropDown.selectedIndex == 0)
+            {
+              PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.Helicopter); 
+            }
+            else
+            {
+              PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.Car);   
+            }
             _cachedItemClass = itemClass;
           }
         }
@@ -127,7 +187,8 @@ namespace ServiceVehicleSelector2
           if (_cachedItemClass != itemClass || _cachedItemVehicleClass != itemVehicleClass)
           {
             _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
-            _headerLabel.text = "Boat types";
+            _headerDropDown.items = new [] {"Boat types"};
+            _headerDropDown.selectedIndex = 0;
             PopulateVehicleListBox(
               itemVehicleClass.m_service, 
               itemVehicleClass.m_subService, 
@@ -140,13 +201,13 @@ namespace ServiceVehicleSelector2
         else
         {
           canSelectVehicle = false;
-        }     
-       
+        }
+        
         if (canSelectVehicle)
         {
-          if (_cachedBuildingID != buildingId)
+          if (_cachedBuildingID != buildingId || _cachedIndex != _headerDropDown.selectedIndex)
           {
-            if (SerializableDataExtension.BuildingData().TryGetValue(buildingId, out var stringSet) && stringSet.Count > 0)
+            if (SerializableDataExtension.BuildingData(_headerDropDown.selectedIndex).TryGetValue(buildingId, out var stringSet) && stringSet.Count > 0)
               _vehicleListBox.SelectedItems = stringSet;
             else
               _vehicleListBox.SetSelectionStateToAll(false);
@@ -155,6 +216,7 @@ namespace ServiceVehicleSelector2
         }
         else
           _prefabPanel.Hide();
+        _cachedIndex = _headerDropDown.selectedIndex;
         _cachedBuildingID = buildingId;
       }
     }
@@ -182,12 +244,11 @@ namespace ServiceVehicleSelector2
       uiPanel.backgroundSprite = "UnlockingPanel2";
       uiPanel.opacity = 0.95f;
       _prefabPanel = uiPanel;
-      var uiLabel = uiPanel.AddUIComponent<UILabel>();
-      uiLabel.text = "Select types";
-      uiLabel.textAlignment = UIHorizontalAlignment.Center;
-      uiLabel.font = UIHelper.Font;
-      uiLabel.position = new Vector3((float) (uiPanel.width / 2.0 - uiLabel.width / 2.0), (float) (uiLabel.height / 2.0 - 20.0));
-      _headerLabel = uiLabel;
+      var uiDropDown = UIHelper.CreateDropDown(uiPanel);
+      uiDropDown.font = UIHelper.Font;
+      uiDropDown.relativePosition = new Vector3(3f, 3f);
+      _headerDropDown = uiDropDown;
+      _headerDropDown.width = uiPanel.width - 6f;
       var vehicleListBox = VehicleListBox.Create(uiPanel);
       vehicleListBox.name = "VehicleListBox";
       vehicleListBox.AlignTo(uiPanel, UIAlignAnchor.TopLeft);
@@ -204,10 +265,10 @@ namespace ServiceVehicleSelector2
       var building = Utils.GetPrivate<InstanceID>(_cityServiceWorldInfoPanel, "m_InstanceID").Building;
       if (building == 0)
         return;
-      if (!SerializableDataExtension.BuildingData().TryGetValue(building, out _))
-        SerializableDataExtension.BuildingData().Add(building, selectedItems);
+      if (!SerializableDataExtension.BuildingData(_headerDropDown.selectedIndex).TryGetValue(building, out _))
+        SerializableDataExtension.BuildingData(_headerDropDown.selectedIndex).Add(building, selectedItems);
       else
-        SerializableDataExtension.BuildingData()[building] = selectedItems;
+        SerializableDataExtension.BuildingData(_headerDropDown.selectedIndex)[building] = selectedItems;
       var info = BuildingManager.instance.m_buildings.m_buffer[building].Info;
       if (info == null)
       {
