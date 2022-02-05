@@ -28,7 +28,7 @@ namespace ServiceVehicleSelector2
         WriteString(DataVersion, data);
         foreach (var keyValuePair in BuildingData)
         {
-          if (!IsStationValid(keyValuePair.Key) || keyValuePair.Value.Count == 0)
+          if (keyValuePair.Value.Count == 0)
           {
             invalidBuildingIds.Add(keyValuePair.Key);
           }
@@ -68,7 +68,7 @@ namespace ServiceVehicleSelector2
         Utils.Log($"SVS2 - Found building data version: {dataVersion}");
         if (string.IsNullOrEmpty(dataVersion) || dataVersion.Length != 4)
         {
-          Utils.LogWarning("SVS2 - Found data version was in an unsupported format");
+          Utils.LogError("SVS2 - Found data version was in an unsupported format");
           return false;
         }
         while (index1 < serializedData.Length)
@@ -79,9 +79,7 @@ namespace ServiceVehicleSelector2
           for (var index2 = 0; index2 < num; ++index2)
           {
             var name = ReadString(serializedData, ref index1);
-            if (PrefabCollection<VehicleInfo>.FindLoaded(name) !=
-                null)
-              stringSet.Add(name);
+            stringSet.Add(name);
           }
 
           data.Add(key, stringSet);
@@ -162,13 +160,6 @@ namespace ServiceVehicleSelector2
     {
       foreach (var num in bytes)
         data.Add(num);
-    }
-
-    private static bool IsStationValid(ushort buildingID)
-    {
-      var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
-      return !(building.Info == null) &&
-             (building.m_flags & Building.Flags.Created) != Building.Flags.None;
     }
   }
 }
