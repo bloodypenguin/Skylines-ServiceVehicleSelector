@@ -40,6 +40,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BuildingExtension.cs" />
     <Compile Include="HarmonyPatches\CargoTruckAIChangeVehicleTypePatch.cs" />
     <Compile Include="HarmonyPatches\PlayerBuildingAIPatch\GetSelectedVehiclePatch.cs" />
     <Compile Include="HarmonyPatches\ServiceBuildingVehicleSelectorPatch\GetVehicleInfoPatch.cs" />
