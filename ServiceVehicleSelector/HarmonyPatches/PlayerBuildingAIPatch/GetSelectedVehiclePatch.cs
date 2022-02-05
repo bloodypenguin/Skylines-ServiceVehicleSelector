@@ -10,7 +10,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches.PlayerBuildingAIPatch
             PatchUtil.Patch(
                 new PatchUtil.MethodDefinition(typeof(PlayerBuildingAI),
                     nameof(PlayerBuildingAI.GetSelectedVehicle)),
-                new PatchUtil.MethodDefinition(typeof(PlayerBuildingAIPatch.GetSelectedVehiclePatch),
+                new PatchUtil.MethodDefinition(typeof(GetSelectedVehiclePatch),
                     nameof(Prefix))
             );
         }

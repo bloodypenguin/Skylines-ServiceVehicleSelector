@@ -39,9 +39,19 @@ namespace ServiceVehicleSelector2
         var buildingInfo = building.Info;
         var itemClass = buildingInfo.m_class;
         
-        if (itemClass.m_service == ItemClass.Service.PublicTransport && buildingInfo.m_buildingAI is CargoStationAI &&
-             (itemClass.m_level == ItemClass.Level.Level4 && itemClass.m_subService is ItemClass.SubService.PublicTransportTrain or ItemClass.SubService.PublicTransportPlane or ItemClass.SubService.PublicTransportShip ||
-             itemClass.m_level == ItemClass.Level.Level5 && itemClass.m_subService == ItemClass.SubService.PublicTransportShip)) //the last condition is for barges
+        if(itemClass.m_service == ItemClass.Service.Water && itemClass.m_level == ItemClass.Level.Level1 && buildingInfo.m_buildingAI is WaterFacilityAI wf && wf.m_pumpingVehicles > 0)
+        {
+          canSelectVehicle = true;
+          if (_cachedItemClass != itemClass)
+          {
+            _prefabPanel.relativePosition = new Vector3(_prefabPanel.parent.width + 1f, VerticalOffset);
+            _headerLabel.text = "Vehicle types";
+            PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
+            _cachedItemClass = itemClass;
+          }
+        } else  if (itemClass.m_service == ItemClass.Service.PublicTransport && buildingInfo.m_buildingAI is CargoStationAI &&
+                    (itemClass.m_level == ItemClass.Level.Level4 && itemClass.m_subService is ItemClass.SubService.PublicTransportTrain or ItemClass.SubService.PublicTransportPlane or ItemClass.SubService.PublicTransportShip ||
+                     itemClass.m_level == ItemClass.Level.Level5 && itemClass.m_subService == ItemClass.SubService.PublicTransportShip)) //the last condition is for barges
         {
           canSelectVehicle = true;
           if (_cachedItemClass != itemClass)
@@ -53,6 +63,7 @@ namespace ServiceVehicleSelector2
           }
         }
         else if (buildingInfo.m_buildingAI is PrivateAirportAI ||
+                 itemClass.m_service == ItemClass.Service.Beautification && itemClass.m_subService == ItemClass.SubService.BeautificationParks && itemClass.m_level == ItemClass.Level.Level2 && buildingInfo.m_buildingAI is MaintenanceDepotAI ||
                  itemClass.m_service == ItemClass.Service.HealthCare && buildingInfo.m_buildingAI is HospitalAI or HelicopterDepotAI or CemeteryAI ||
                  itemClass.m_service == ItemClass.Service.FireDepartment && buildingInfo.m_buildingAI is not (FirewatchTowerAI or HelicopterDepotAI) ||
                  itemClass.m_service == ItemClass.Service.Garbage && !buildingInfo.m_isFloating ||
@@ -134,8 +145,7 @@ namespace ServiceVehicleSelector2
         {
           if (_cachedBuildingID != buildingId)
           {
-            HashSet<string> stringSet;
-            if (SerializableDataExtension.BuildingData.TryGetValue(buildingId, out stringSet) && stringSet.Count > 0)
+            if (SerializableDataExtension.BuildingData.TryGetValue(buildingId, out var stringSet) && stringSet.Count > 0)
               _vehicleListBox.SelectedItems = stringSet;
             else
               _vehicleListBox.SetSelectionStateToAll(false);
@@ -193,8 +203,7 @@ namespace ServiceVehicleSelector2
       var building = Utils.GetPrivate<InstanceID>(_cityServiceWorldInfoPanel, "m_InstanceID").Building;
       if (building == 0)
         return;
-      HashSet<string> stringSet;
-      if (!SerializableDataExtension.BuildingData.TryGetValue(building, out stringSet))
+      if (!SerializableDataExtension.BuildingData.TryGetValue(building, out _))
         SerializableDataExtension.BuildingData.Add(building, selectedItems);
       else
         SerializableDataExtension.BuildingData[building] = selectedItems;

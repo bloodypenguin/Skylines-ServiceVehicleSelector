@@ -30,6 +30,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             Transpile(typeof(HelicopterDepotAI), nameof(HelicopterDepotAI.StartTransfer));
             Transpile(typeof(DisasterResponseBuildingAI), nameof(DisasterResponseBuildingAI.StartTransfer));
             Transpile(typeof(FishingHarborAI), nameof(FishingHarborAI.TrySpawnBoat));
+            Transpile(typeof(WaterFacilityAI), nameof(WaterFacilityAI.StartTransfer));
         }
 
         public static void Undo()
@@ -50,6 +51,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             Restore(typeof(HelicopterDepotAI), nameof(HelicopterDepotAI.StartTransfer));
             Restore(typeof(DisasterResponseBuildingAI), nameof(DisasterResponseBuildingAI.StartTransfer));
             Restore(typeof(FishingHarborAI), nameof(FishingHarborAI.TrySpawnBoat));
+            Restore(typeof(WaterFacilityAI), nameof(WaterFacilityAI.StartTransfer));
         }
 
 
@@ -177,6 +179,17 @@ namespace ServiceVehicleSelector2.HarmonyPatches
 
                 patchIndexOffset = 12;
                 methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+            }
+            else if (declaringType == typeof(WaterFacilityAI))
+            {
+                if (occurrences > 0)
+                {
+                    newCodes.Add(codeInstruction);
+                    return;
+                }
+
+                patchIndexOffset = 14;
+                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
             }
             else
             {
