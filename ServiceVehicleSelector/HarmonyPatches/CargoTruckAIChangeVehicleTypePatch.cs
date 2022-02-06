@@ -76,6 +76,9 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             {
                 level = ItemClass.Level.Level5;
             }
+            //if from station to station then source station settings are used
+            //TODO: using the provided service/subservice/level identify what is the primary and what is the secondary for a cargo station, and supply the index accordingly
+            //TODO: make sure that post is properly supported
             if (!SerializableDataExtension.BuildingData().TryGetValue(cargoStationId, out var source) ||
                 source.Count <= 0)
             {

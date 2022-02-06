@@ -130,13 +130,13 @@ namespace ServiceVehicleSelector2
 
             if (_cachedItemClass != itemClass)
             {
-              if (itemClass.m_level == ItemClass.Level.Level2)
+              if (itemClass.m_level == ItemClass.Level.Level5)
               {
-                _headerDropDown.items = new[] { "Van types" };
+                _headerDropDown.items = new[] { "Truck types" };
               }
               else
               {
-                _headerDropDown.items = new[] { "Truck types", "Van types" };
+                _headerDropDown.items = new[] { "Van types", "Truck types" };
               }
               _headerDropDown.selectedIndex = 0;
             }
@@ -144,9 +144,9 @@ namespace ServiceVehicleSelector2
             {
               PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None); 
             }
-            else //vans for sorting
+            else //trucks for sorting
             {
-              PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, ItemClass.Level.Level2, VehicleInfo.VehicleType.None);
+              PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, ItemClass.Level.Level5, VehicleInfo.VehicleType.None);
             }
             _cachedItemClass = itemClass;
           }
