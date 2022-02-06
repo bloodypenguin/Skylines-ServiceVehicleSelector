@@ -1,42 +1,35 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: ServiceVehicleSelector.VehicleListBox
-// Assembly: ServiceVehicleSelector, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: D0EBD243-0D3C-4ED4-95A5-A73C88972683
-// Assembly location: C:\Games\Steam\steamapps\workshop\content\255710\519691655\ServiceVehicleSelector.dll
-
-using ColossalFramework.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using ColossalFramework.UI;
 using UnityEngine;
 
 namespace ServiceVehicleSelector2
 {
   public class VehicleListBox : UIPanel
   {
-    protected int _itemHeight = 27;
-    protected float _nextKeyCombi = Time.time;
-    protected VehicleListBoxRow[] _items = new VehicleListBoxRow[0];
-    protected UIScrollablePanel _scrollablePanel;
-    protected UIScrollbar _scrollbar;
+    private float _nextKeyCombi = Time.time;
+    private UICheckBox[] _items = new UICheckBox[0];
+    private UIScrollablePanel _scrollablePanel;
+    private UIScrollbar _scrollbar;
+    
+    public event PropertyChangedEventHandler<HashSet<string>> eventSelectedItemsChanged;
 
     public UIFont Font { get; set; }
 
     public new float height
     {
-      get
-      {
-        return this.m_Size.y;
-      }
+      get => m_Size.y;
       set
       {
-        this.size = new Vector2(this.m_Size.x, value);
-        if ((UnityEngine.Object) this._scrollablePanel != (UnityEngine.Object) null)
-          this._scrollablePanel.height = value;
-        if (!((UnityEngine.Object) this._scrollbar != (UnityEngine.Object) null))
+        size = new Vector2(m_Size.x, value);
+        if (_scrollablePanel != null)
+          _scrollablePanel.height = value;
+        if (!(_scrollbar != null))
           return;
-        this._scrollbar.parent.height = value;
-        this._scrollbar.height = value;
-        this._scrollbar.trackObject.height = value;
+        _scrollbar.parent.height = value;
+        _scrollbar.height = value;
+        _scrollbar.trackObject.height = value;
       }
     }
 
@@ -44,14 +37,15 @@ namespace ServiceVehicleSelector2
     {
       get
       {
-        int num = -1;
-        for (int index = 0; index < this._items.Length; ++index)
+        var num = -1;
+        for (var index = 0; index < _items.Length; ++index)
         {
-          if (this._items[index].IsSelected)
+          if (!_items[index].isChecked)
           {
-            num = index;
-            break;
+            continue;
           }
+          num = index;
+          break;
         }
         return num;
       }
@@ -61,10 +55,10 @@ namespace ServiceVehicleSelector2
     {
       get
       {
-        List<int> intList = new List<int>();
-        for (int index = 0; index < this._items.Length; ++index)
+        var intList = new List<int>();
+        for (var index = 0; index < _items.Length; ++index)
         {
-          if (this._items[index].IsSelected)
+          if (_items[index].isChecked)
             intList.Add(index);
         }
         return intList.ToArray();
@@ -75,23 +69,23 @@ namespace ServiceVehicleSelector2
     {
       get
       {
-        HashSet<string> stringSet = new HashSet<string>();
-        for (int index = 0; index < this._items.Length; ++index)
+        var stringSet = new HashSet<string>();
+        foreach (var vehicleListBoxRow in _items)
         {
-          VehicleListBoxRow vehicleListBoxRow = this._items[index];
-          if (vehicleListBoxRow.IsSelected)
-            stringSet.Add(vehicleListBoxRow.Prefab.PrefabName);
+          if (vehicleListBoxRow.isChecked)
+            stringSet.Add(vehicleListBoxRow.tooltip); //tooltip contains the prefab name
         }
         return stringSet;
       }
       set
       {
-        if (value == null || this.SelectedItems == value)
+        if (value == null || SelectedItems == value)
           return;
-        for (int index = 0; index < this._items.Length; ++index)
+        foreach (var vehicleListBoxRow in _items)
         {
-          VehicleListBoxRow vehicleListBoxRow = this._items[index];
-          vehicleListBoxRow.IsSelected = value.Contains(vehicleListBoxRow.Prefab.PrefabName);
+          vehicleListBoxRow.eventCheckChanged -= OnCheckChanged;
+          vehicleListBoxRow.isChecked = value.Contains(vehicleListBoxRow.tooltip);
+          vehicleListBoxRow.eventCheckChanged += OnCheckChanged;
         }
       }
     }
@@ -100,88 +94,73 @@ namespace ServiceVehicleSelector2
     {
       get
       {
-        HashSet<string> stringSet = new HashSet<string>();
-        for (int index = 0; index < this._items.Length; ++index)
+        var stringSet = new HashSet<string>();
+        foreach (var vehicleListBoxRow in _items)
         {
-          VehicleListBoxRow vehicleListBoxRow = this._items[index];
-          stringSet.Add(vehicleListBoxRow.Prefab.PrefabName);
+          stringSet.Add(vehicleListBoxRow.tooltip);
         }
+
         return stringSet;
       }
     }
 
-    public event PropertyChangedEventHandler<HashSet<string>> eventSelectedItemsChanged;
-
     private bool AllSelected()
     {
-      for (int index = 0; index < this._items.Length; ++index)
-      {
-        if (!this._items[index].IsSelected)
-          return false;
-      }
-      return true;
+      return _items.All(item => item.isChecked);
     }
 
     public void SetSelectionStateToAll(bool state)
     {
-      for (int index = 0; index < this._items.Length; ++index)
-        this._items[index].IsSelected = state;
-      this.OnSelectedItemsChanged();
+      foreach (var item in _items)
+      {
+        item.eventCheckChanged -= OnCheckChanged;
+        item.isChecked = state;
+        item.eventCheckChanged += OnCheckChanged;
+      }
+
+      FireSelectedItemsChangedEvent();
     }
 
     public void ClearItems()
     {
-      if (this._items.Length == 0)
+      if (_items.Length == 0)
         return;
-      for (int index = 0; index < this._items.Length; ++index)
-        UnityEngine.Object.Destroy((UnityEngine.Object) this._items[index].gameObject);
-      this._items = new VehicleListBoxRow[0];
-      this._scrollablePanel.scrollPosition = new Vector2(0.0f, 0.0f);
+      foreach (var item in _items)
+        Destroy(item.gameObject);
+
+      _items = new UICheckBox[0];
+      _scrollablePanel.scrollPosition = new Vector2(0.0f, 0.0f);
     }
 
     public void AddItem(PrefabData data)
     {
-      VehicleListBoxRow[] vehicleListBoxRowArray = new VehicleListBoxRow[this._items.Length + 1];
-      Array.Copy((Array) this._items, (Array) vehicleListBoxRowArray, this._items.Length);
-      VehicleListBoxRow vehicleListBoxRow = this._scrollablePanel.AddUIComponent<VehicleListBoxRow>();
-      if ((UnityEngine.Object) this.Font != (UnityEngine.Object) null)
-        vehicleListBoxRow.Font = this.Font;
-      vehicleListBoxRow.Prefab = data;
-      vehicleListBoxRow.eventMouseDown += new MouseEventHandler(this.OnMouseDown);
-      vehicleListBoxRowArray[this._items.Length] = vehicleListBoxRow;
-      this._items = vehicleListBoxRowArray;
+      var vehicleListBoxRowArray = new UICheckBox[_items.Length + 1];
+      Array.Copy(_items, vehicleListBoxRowArray, _items.Length);
+      var vehicleListBoxRow =
+        UIHelper.CreateCheckBox(_scrollablePanel, data.PrefabName, data.DisplayName, false);
+      vehicleListBoxRow.tooltip = data.PrefabName; //important! it's used to later save data
+      vehicleListBoxRow.eventCheckChanged += OnCheckChanged;
+      vehicleListBoxRowArray[_items.Length] = vehicleListBoxRow;
+      _items = vehicleListBoxRowArray;
     }
 
-    private void OnMouseDown(UIComponent component, UIMouseEventParameter p)
+    private void OnCheckChanged(UIComponent component, bool value)
     {
-      VehicleListBoxRow vehicleListBoxRow = component as VehicleListBoxRow;
-      if (p.buttons != UIMouseButton.Left)
-        return;
-      vehicleListBoxRow.IsSelected = !vehicleListBoxRow.IsSelected;
-      this.OnSelectedItemsChanged();
+      FireSelectedItemsChangedEvent();
+    }
+
+    private void FireSelectedItemsChangedEvent()
+    {
+      eventSelectedItemsChanged?.Invoke(this, SelectedItems);
     }
 
     protected override void OnMouseHover(UIMouseEventParameter p)
     {
       base.OnMouseHover(p);
-      if (!((Input.GetKey(KeyCode.LeftControl) | Input.GetKey(KeyCode.RightControl)) & Input.GetKey(KeyCode.A)) || (double) this._nextKeyCombi >= (double) Time.time)
+      if (!((Input.GetKey(KeyCode.LeftControl) | Input.GetKey(KeyCode.RightControl)) & Input.GetKey(KeyCode.A)) || _nextKeyCombi >= (double) Time.time)
         return;
-      this._nextKeyCombi = Time.time + 0.25f;
-      if (this.AllSelected())
-        this.SetSelectionStateToAll(false);
-      else
-        this.SetSelectionStateToAll(true);
-    }
-
-    protected internal virtual void OnSelectedItemsChanged()
-    {
-      // ISSUE: reference to a compiler-generated field
-      if (this.eventSelectedItemsChanged != null)
-      {
-        // ISSUE: reference to a compiler-generated field
-        this.eventSelectedItemsChanged((UIComponent) this, this.SelectedItems);
-      }
-      this.InvokeUpward("OnSelectedItemsChanged", (object) this.SelectedItems);
+      _nextKeyCombi = Time.time + 0.25f;
+      SetSelectionStateToAll(!AllSelected());
     }
 
     public static VehicleListBox Create(UIComponent parent)
@@ -192,53 +171,53 @@ namespace ServiceVehicleSelector2
     public override void Start()
     {
       base.Start();
-      this.autoLayoutDirection = LayoutDirection.Horizontal;
-      this.autoLayoutStart = LayoutStart.TopLeft;
-      this.autoLayoutPadding = new RectOffset(0, 0, 0, 0);
-      this.autoLayout = true;
-      this._scrollablePanel = this.AddUIComponent<UIScrollablePanel>();
-      this._scrollablePanel.width = this.width - 10f;
-      this._scrollablePanel.height = this.height;
-      this._scrollablePanel.autoLayoutDirection = LayoutDirection.Vertical;
-      this._scrollablePanel.autoLayoutStart = LayoutStart.TopLeft;
-      this._scrollablePanel.autoLayoutPadding = new RectOffset(0, 0, 0, 0);
-      this._scrollablePanel.autoLayout = true;
-      this._scrollablePanel.clipChildren = true;
-      this._scrollablePanel.backgroundSprite = "UnlockingPanel";
-      this._scrollablePanel.color = (Color32) Color.black;
-      UIPanel uiPanel = this.AddUIComponent<UIPanel>();
+      autoLayoutDirection = LayoutDirection.Horizontal;
+      autoLayoutStart = LayoutStart.TopLeft;
+      autoLayoutPadding = new RectOffset(0, 0, 0, 0);
+      autoLayout = true;
+      _scrollablePanel = AddUIComponent<UIScrollablePanel>();
+      _scrollablePanel.width = width - 10f;
+      _scrollablePanel.height = height;
+      _scrollablePanel.autoLayoutDirection = LayoutDirection.Vertical;
+      _scrollablePanel.autoLayoutStart = LayoutStart.TopLeft;
+      _scrollablePanel.autoLayoutPadding = new RectOffset(0, 0, 0, 0);
+      _scrollablePanel.autoLayout = true;
+      _scrollablePanel.clipChildren = true;
+      _scrollablePanel.backgroundSprite = "UnlockingPanel";
+      _scrollablePanel.color = Color.black;
+      var uiPanel = AddUIComponent<UIPanel>();
       uiPanel.width = 10f;
-      uiPanel.height = this.height;
+      uiPanel.height = height;
       uiPanel.autoLayoutDirection = LayoutDirection.Horizontal;
       uiPanel.autoLayoutStart = LayoutStart.TopLeft;
       uiPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 0);
       uiPanel.autoLayout = true;
-      UIScrollbar scrollbar = uiPanel.AddUIComponent<UIScrollbar>();
+      var scrollbar = uiPanel.AddUIComponent<UIScrollbar>();
       scrollbar.width = 10f;
       scrollbar.height = scrollbar.parent.height;
       scrollbar.orientation = UIOrientation.Vertical;
       scrollbar.pivot = UIPivotPoint.BottomLeft;
-      scrollbar.AlignTo((UIComponent) uiPanel, UIAlignAnchor.TopRight);
+      scrollbar.AlignTo(uiPanel, UIAlignAnchor.TopRight);
       scrollbar.minValue = 0.0f;
       scrollbar.value = 0.0f;
       scrollbar.incrementAmount = 27f;
-      this._scrollbar = scrollbar;
-      UISlicedSprite uiSlicedSprite1 = scrollbar.AddUIComponent<UISlicedSprite>();
-      uiSlicedSprite1.relativePosition = (Vector3) Vector2.zero;
+      _scrollbar = scrollbar;
+      var uiSlicedSprite1 = scrollbar.AddUIComponent<UISlicedSprite>();
+      uiSlicedSprite1.relativePosition = Vector2.zero;
       uiSlicedSprite1.autoSize = true;
       uiSlicedSprite1.size = uiSlicedSprite1.parent.size;
       uiSlicedSprite1.fillDirection = UIFillDirection.Vertical;
       uiSlicedSprite1.spriteName = "ScrollbarTrack";
-      scrollbar.trackObject = (UIComponent) uiSlicedSprite1;
-      UISlicedSprite uiSlicedSprite2 = uiSlicedSprite1.AddUIComponent<UISlicedSprite>();
-      uiSlicedSprite2.relativePosition = (Vector3) Vector2.zero;
+      scrollbar.trackObject = uiSlicedSprite1;
+      var uiSlicedSprite2 = uiSlicedSprite1.AddUIComponent<UISlicedSprite>();
+      uiSlicedSprite2.relativePosition = Vector2.zero;
       uiSlicedSprite2.fillDirection = UIFillDirection.Vertical;
       uiSlicedSprite2.autoSize = true;
       uiSlicedSprite2.width = uiSlicedSprite2.parent.width - 4f;
       uiSlicedSprite2.spriteName = "ScrollbarThumb";
-      scrollbar.thumbObject = (UIComponent) uiSlicedSprite2;
-      this._scrollablePanel.verticalScrollbar = scrollbar;
-      this._scrollablePanel.eventMouseWheel += (MouseEventHandler) ((component, param) => this._scrollablePanel.scrollPosition += new Vector2(0.0f, Mathf.Sign(param.wheelDelta) * -1f * scrollbar.incrementAmount));
+      scrollbar.thumbObject = uiSlicedSprite2;
+      _scrollablePanel.verticalScrollbar = scrollbar;
+      _scrollablePanel.eventMouseWheel += (_, param) => _scrollablePanel.scrollPosition += new Vector2(0.0f, Mathf.Sign(param.wheelDelta) * -1f * scrollbar.incrementAmount);
     }
   }
 }

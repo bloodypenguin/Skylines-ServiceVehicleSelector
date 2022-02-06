@@ -56,7 +56,6 @@
     <Compile Include="Util\PatchUtil.cs" />
     <Compile Include="Util\Utils.cs" />
     <Compile Include="VehicleListBox.cs" />
-    <Compile Include="VehicleListBoxRow.cs" />
     <Compile Include="VehicleProvider.cs" />
     <Compile Include="VehiclePrefabs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
