@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ColossalFramework;
 using ColossalFramework.UI;
+using ServiceVehicleSelector2.HarmonyPatches;
 using UnityEngine;
 
 namespace ServiceVehicleSelector2
@@ -52,27 +53,15 @@ namespace ServiceVehicleSelector2
             PopulateVehicleListBox(itemClass.m_service, itemClass.m_subService, itemClass.m_level, VehicleInfo.VehicleType.None);
             _cachedItemClass = itemClass;
           }
-        } else  if (itemClass.m_service == ItemClass.Service.PublicTransport && buildingInfo.m_buildingAI is CargoStationAI cargoStationAI &&
+        } else  if (itemClass.m_service == ItemClass.Service.PublicTransport && buildingInfo.m_buildingAI is CargoStationAI &&
                     (itemClass.m_level == ItemClass.Level.Level4 && itemClass.m_subService is ItemClass.SubService.PublicTransportTrain or ItemClass.SubService.PublicTransportPlane or ItemClass.SubService.PublicTransportShip ||
                      itemClass.m_level == ItemClass.Level.Level5 && itemClass.m_subService == ItemClass.SubService.PublicTransportShip)) //the last condition is for barges
         {
-          VehicleInfo.VehicleType primaryVehicle;
-          VehicleInfo.VehicleType secondaryVehicle;
-          ItemClass secondaryClass;
-          //we cannot check for item class equality as cargo airport item class has different level than its primary transport info's class
-          //TODO: support case when just level differs. Ex: cargo plane to cargo helicopter hub
-          if (cargoStationAI.m_transportInfo2 == null || cargoStationAI.m_transportInfo?.m_class.m_service == itemClass.m_service && cargoStationAI.m_transportInfo?.m_class.m_subService == itemClass.m_subService)
-          {
-            primaryVehicle = cargoStationAI.m_transportInfo?.m_vehicleType ?? VehicleInfo.VehicleType.None;
-            secondaryVehicle = cargoStationAI.m_transportInfo2?.m_vehicleType ?? VehicleInfo.VehicleType.None;
-            secondaryClass = cargoStationAI.m_transportInfo2?.m_class;
-          }
-          else
-          {
-            primaryVehicle = cargoStationAI.m_transportInfo2?.m_vehicleType ?? VehicleInfo.VehicleType.None;
-            secondaryVehicle = cargoStationAI.m_transportInfo?.m_vehicleType ?? VehicleInfo.VehicleType.None;
-            secondaryClass = cargoStationAI.m_transportInfo?.m_class;
-          }
+          var cargoStationTransportInfos = CargoTruckAIChangeVehicleTypePatch.GetCargoStationTransportInfos(buildingInfo);
+          var primaryVehicle = cargoStationTransportInfos.Primary?.m_vehicleType ?? VehicleInfo.VehicleType.None;
+          var secondaryVehicle = cargoStationTransportInfos.Secondary?.m_vehicleType ?? VehicleInfo.VehicleType.None;;
+          var secondaryClass = cargoStationTransportInfos.Secondary?.m_class;
+
           var isHub = primaryVehicle != VehicleInfo.VehicleType.None && secondaryVehicle != VehicleInfo.VehicleType.None && primaryVehicle != secondaryVehicle;
           canSelectVehicle = true;
           if (_cachedItemClass != itemClass || _cachedSecondaryVehicleClass != secondaryClass || _cachedIndex != _headerDropDown.selectedIndex)

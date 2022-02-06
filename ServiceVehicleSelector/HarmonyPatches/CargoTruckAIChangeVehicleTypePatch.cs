@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -63,23 +64,20 @@ namespace ServiceVehicleSelector2.HarmonyPatches
 
         private static VehicleInfo GetCargoVehicleInfo(
             VehicleManager instance,
-            ushort cargoStation1, ushort cargoStation2,
+            ushort fromBuilding, ushort toBuilding,
             ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level)
         {
-            var infoFrom = BuildingManager.instance.m_buildings.m_buffer[cargoStation1].Info;
-            var infoTo = BuildingManager.instance.m_buildings.m_buffer[cargoStation2].Info;
+            var infoFrom = BuildingManager.instance.m_buildings.m_buffer[fromBuilding].Info;
 
-            var fromOutsideToStation = infoFrom?.m_buildingAI is OutsideConnectionAI &&
-                                       infoFrom?.m_class?.m_subService == infoTo?.m_class?.m_subService;
-            var cargoStationId = fromOutsideToStation ? cargoStation2 : cargoStation1;
+            var fromOutsideToStation = infoFrom?.m_buildingAI is OutsideConnectionAI;
+            var buildingDataId = fromOutsideToStation ? toBuilding : fromBuilding; //if from station to station then source station settings are used
             if (infoFrom?.m_class?.name == "Ferry Cargo Facility") //to support Cargo Ferries
             {
                 level = ItemClass.Level.Level5;
             }
-            //if from station to station then source station settings are used
-            //TODO: using the provided service/subservice/level identify what is the primary and what is the secondary for a cargo station, and supply the index accordingly
-            //TODO: make sure that post is properly supported
-            if (!SerializableDataExtension.BuildingData().TryGetValue(cargoStationId, out var source) ||
+            
+            if (!SerializableDataExtension.BuildingData(GetBuildingDataIndex(buildingDataId, service, subService, level))
+                    .TryGetValue(buildingDataId, out var source) ||
                 source.Count <= 0)
             {
                 return instance.GetRandomVehicleInfo(
@@ -96,6 +94,66 @@ namespace ServiceVehicleSelector2.HarmonyPatches
         {
             return VehicleProvider.GetVehicleInfo(ref r, service, subService, level,
                 array[r.Int32((uint) array.Count)]);
+        }
+        
+        private static int GetBuildingDataIndex(ushort buildingId,
+            ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level)
+        {
+            var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
+            var buildingAi = buildingInfo?.m_buildingAI;
+            if (buildingAi == null)
+            {
+                return 0;
+            }
+            
+            if (buildingAi is CargoStationAI)
+            {
+                var cargoStationTransportInfos = GetCargoStationTransportInfos(buildingInfo);
+                //TODO: take levels into account
+                if (cargoStationTransportInfos.Secondary != null && cargoStationTransportInfos.Secondary?.m_class
+                                                                     .m_service == service
+                                                                 && cargoStationTransportInfos.Secondary?.m_class
+                                                                     .m_subService == subService)
+                {
+                    return 1;
+                }
+
+                return 0;
+            }
+            
+            //TODO: add support for post office 
+            return 0;
+        }
+
+        public static TransportInfos GetCargoStationTransportInfos(BuildingInfo buildingInfo)
+        {
+            var cargoStationAI = buildingInfo?.m_buildingAI as CargoStationAI;
+            if (cargoStationAI == null)
+            {
+                throw new Exception($"The AI of {buildingInfo.name} is not a CargoStationAI");
+            }
+            var itemClass = buildingInfo.m_class;
+            //we cannot check for item class equality as cargo airport item class has different level than its primary transport info's class
+            //TODO: support case when just level differs. Ex: cargo plane to cargo helicopter hub
+            if (cargoStationAI.m_transportInfo2 == null || cargoStationAI.m_transportInfo?.m_class.m_service == itemClass.m_service && cargoStationAI.m_transportInfo?.m_class.m_subService == itemClass.m_subService)
+            {
+                return new TransportInfos(cargoStationAI.m_transportInfo, cargoStationAI.m_transportInfo2);
+            }
+
+            return new TransportInfos(cargoStationAI.m_transportInfo2, cargoStationAI.m_transportInfo);
+        }
+        
+        
+        public struct TransportInfos
+        {
+            public TransportInfos(TransportInfo primary, TransportInfo secondary)
+            {
+                Primary = primary;
+                Secondary = secondary;
+            }
+
+            public TransportInfo Primary { get;  }
+            public TransportInfo Secondary { get;  }
         }
     }
 }
