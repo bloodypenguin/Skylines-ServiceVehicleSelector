@@ -14,7 +14,6 @@ namespace ServiceVehicleSelector2.HarmonyPatches
     {
         public static void Apply()
         {
-            Transpile(typeof(DepotAI), nameof(DepotAI.StartTransfer));
             Transpile(typeof(TransportStationAI), "CreateOutgoingVehicle");
             Transpile(typeof(TransportStationAI), "CreateIncomingVehicle");
             Transpile(typeof(PrivateAirportAI), "CheckVehicles");
@@ -36,7 +35,6 @@ namespace ServiceVehicleSelector2.HarmonyPatches
 
         public static void Undo()
         {
-            Restore(typeof(DepotAI), nameof(DepotAI.StartTransfer));
             Restore(typeof(TransportStationAI), "CreateOutgoingVehicle");
             Restore(typeof(TransportStationAI), "CreateIncomingVehicle");
             Restore(typeof(PrivateAirportAI), "CheckVehicles");
@@ -123,21 +121,6 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 }
 
                 patchIndexOffset = 14;
-            }
-            else if (declaringType == typeof(DepotAI))
-            {
-                if (occurrences == 0)
-                {
-                    patchIndexOffset = 11;
-                } else if (occurrences == 1)
-                {
-                    patchIndexOffset = 14;
-                } else {
-                    newCodes.Add(codeInstruction);
-                    return;
-                }
-
-                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoForDepot));
             }
             else if (declaringType == typeof(PostOfficeAI))
             {
@@ -253,28 +236,6 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 vehicleType,
                 source.ToArray());
         }
-
-        private static VehicleInfo GetVehicleInfoForDepot( //only for taxi and cable cars - and only for 1 of 4 cases
-            VehicleManager instance,
-            ushort buildingID,
-            ItemClass.Service service,
-            ItemClass.SubService subService,
-            ItemClass.Level level)
-        {
-            if (
-                service != ItemClass.Service.PublicTransport ||
-                subService != ItemClass.SubService.PublicTransportTaxi &&
-                subService != ItemClass.SubService.PublicTransportCableCar ||
-                !SerializableDataExtension.BuildingData().TryGetValue(buildingID, out var source) || source.Count <= 0)
-            {
-                return instance.GetRandomVehicleInfo(ref SimulationManager.instance.m_randomizer, service, subService,
-                    level);
-            }
-
-            return GetRandomVehicleInfoOverride(ref SimulationManager.instance.m_randomizer, service, subService, level,
-                source.ToArray());
-        }
-
 
         private static VehicleInfo GetRandomVehicleInfoOverride(ref Randomizer r,
             ItemClass.Service service,
