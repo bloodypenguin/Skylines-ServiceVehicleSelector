@@ -10,7 +10,6 @@ namespace ServiceVehicleSelector2
     {
         private const string DataID = "CTS_BuildingData";
         private const string DataVersion = "v001";
-        private static bool _validated;
 
         private static Dictionary<ushort, HashSet<string>> _primaryBuildingData = new();
         private static Dictionary<ushort, HashSet<string>> _secondaryBuildingData = new();
@@ -19,23 +18,22 @@ namespace ServiceVehicleSelector2
         {
             return BuildingData(true);
         }
+
+        public static void ValidateBuildingData()
+        {
+            Utils.Log("SVS2 - Validating primary building data.");
+            ValidateBuildingData(_primaryBuildingData);
+            Utils.Log("SVS2 - Validating secondary building data.");
+            ValidateBuildingData(_secondaryBuildingData);
+        }
         
         public static Dictionary<ushort, HashSet<string>> BuildingData(bool primary)
         {
-            if (!_validated)
-            {
-                Utils.Log("SVS2 - Validating primary building data.");
-                ValidateBuildingData(_primaryBuildingData);
-                Utils.Log("SVS2 - Validating secondary building data.");
-                ValidateBuildingData(_secondaryBuildingData);
-                _validated = true;
-            }
-            return _primaryBuildingData;
+            return primary ? _primaryBuildingData : _secondaryBuildingData;
         }
 
         public override void OnLoadData()
         {
-            _validated = false;
             _secondaryBuildingData = new Dictionary<ushort, HashSet<string>>();
             if (!TryLoadData(out _primaryBuildingData))
                 Utils.Log("SVS2 - No data was found in the save file. Default building data was used.");

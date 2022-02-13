@@ -44,6 +44,8 @@ namespace ServiceVehicleSelector2
             CargoTruckAIChangeVehicleTypePatch.Apply();
             GetVehicleInfoPatch.Apply();
             GetSelectedVehiclePatch.Apply();
+
+            SimulationManager.instance.AddAction(SerializableDataExtension.ValidateBuildingData);
         }
 
         public override void OnLevelUnloading()
