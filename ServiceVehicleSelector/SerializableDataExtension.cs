@@ -12,8 +12,8 @@ namespace ServiceVehicleSelector2
         private const string DataVersion = "v001";
         private static bool _validated;
 
-        private static Dictionary<ushort, HashSet<string>> _primaryBuildingData;
-        private static Dictionary<ushort, HashSet<string>> _secondaryBuildingData;
+        private static Dictionary<ushort, HashSet<string>> _primaryBuildingData = new();
+        private static Dictionary<ushort, HashSet<string>> _secondaryBuildingData = new();
 
         public static Dictionary<ushort, HashSet<string>> BuildingData()
         {
