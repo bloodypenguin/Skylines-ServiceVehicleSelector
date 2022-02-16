@@ -5,7 +5,7 @@ namespace ServiceVehicleSelector2
 {
     public class ServiceVehicleSelectorMod : LoadingExtensionBase, IUserMod
     {
-        private const string _version = "5.3.1";
+        private const string _version = "5.4.0";
 
         public string Name => "Service Vehicle Selector 2 (r" + _version + ")";
 
