@@ -2,6 +2,7 @@ using CitiesHarmony.API;
 using ColossalFramework.UI;
 using ICities;
 using ServiceVehicleSelector2.HarmonyPatches;
+using ServiceVehicleSelector2.HarmonyPatches.DepotAIPatches;
 using ServiceVehicleSelector2.HarmonyPatches.PlayerBuildingAIPatch;
 using ServiceVehicleSelector2.HarmonyPatches.ServiceBuildingVehicleSelectorPatch;
 using UnityEngine;
@@ -40,10 +41,11 @@ namespace ServiceVehicleSelector2
             VehiclePrefabs.Init();
 
             PanelExtenderCityServicePatch.Apply(); //needed for reverse redirect
-            ServiceBuildingAIPatch.Apply();
+            XYZBuildingAIPatch.Apply();
             CargoTruckAIChangeVehicleTypePatch.Apply();
             GetVehicleInfoPatch.Apply();
             GetSelectedVehiclePatch.Apply();
+            CreateVehiclePatch.Apply();
 
             SimulationManager.instance.AddAction(SerializableDataExtension.ValidateBuildingData);
         }
@@ -58,11 +60,13 @@ namespace ServiceVehicleSelector2
                 _loadMode != LoadMode.NewGameFromScenario)
                 return;
 
-            ServiceBuildingAIPatch.Undo();
+            XYZBuildingAIPatch.Undo();
             CargoTruckAIChangeVehicleTypePatch.Undo();
             PanelExtenderCityServicePatch.Undo();
             GetVehicleInfoPatch.Undo();
             GetSelectedVehiclePatch.Undo();
+            CreateVehiclePatch.Undo();
+            
             VehiclePrefabs.Deinit();
  
             if (!(_gameObject != null))

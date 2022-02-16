@@ -42,9 +42,10 @@
   <ItemGroup>
     <Compile Include="BuildingExtension.cs" />
     <Compile Include="HarmonyPatches\CargoTruckAIChangeVehicleTypePatch.cs" />
-    <Compile Include="HarmonyPatches\PlayerBuildingAIPatch\GetSelectedVehiclePatch.cs" />
-    <Compile Include="HarmonyPatches\ServiceBuildingVehicleSelectorPatch\GetVehicleInfoPatch.cs" />
-    <Compile Include="HarmonyPatches\ServiceBuildingAIPatch.cs" />
+    <Compile Include="HarmonyPatches\DepotAIPatches\CreateVehiclePatch.cs" />
+    <Compile Include="HarmonyPatches\PlayerBuildingAIPatches\GetSelectedVehiclePatch.cs" />
+    <Compile Include="HarmonyPatches\ServiceBuildingVehicleSelectorPatches\GetVehicleInfoPatch.cs" />
+    <Compile Include="HarmonyPatches\XYZBuildingAIPatch.cs" />
     <Compile Include="HarmonyPatches\PanelExtenderCityServicePatch.cs" />
     <Compile Include="LoadingExtension.cs" />
     <Compile Include="SerializableDataExtension.cs" />

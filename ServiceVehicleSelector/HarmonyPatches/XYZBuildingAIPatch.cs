@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace ServiceVehicleSelector2.HarmonyPatches
 {
-    public class ServiceBuildingAIPatch
+    public class XYZBuildingAIPatch
     {
         public static void Apply()
         {
@@ -89,7 +89,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
             CodeInstruction codeInstruction)
         {
             var methodToCall =
-                AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
+                AccessTools.Method(typeof(XYZBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
             int patchIndexOffset; //how many instructions the randomization code includes
             if (declaringType == typeof(TransportStationAI))
             {
@@ -103,7 +103,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                     newCodes.Add(codeInstruction);
                     return;
                 }
-                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+                methodToCall = AccessTools.Method(typeof(XYZBuildingAIPatch), nameof(GetVehicleInfoWithType));
             } else if (declaringType == typeof(CableCarStationAI) ||
                 declaringType == typeof(LandfillSiteAI) ||
                 declaringType == typeof(CemeteryAI) ||
@@ -141,7 +141,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 }
 
                 patchIndexOffset = 15;
-                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+                methodToCall = AccessTools.Method(typeof(XYZBuildingAIPatch), nameof(GetVehicleInfoWithType));
             }
             else if (declaringType == typeof(DisasterResponseBuildingAI))
             {
@@ -152,7 +152,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 }
 
                 patchIndexOffset = 15;
-                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+                methodToCall = AccessTools.Method(typeof(XYZBuildingAIPatch), nameof(GetVehicleInfoWithType));
             }
             else if (declaringType == typeof(FishingHarborAI))
             {
@@ -163,7 +163,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 }
 
                 patchIndexOffset = 12;
-                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithType));
+                methodToCall = AccessTools.Method(typeof(XYZBuildingAIPatch), nameof(GetVehicleInfoWithType));
             }
             else if (declaringType == typeof(WaterFacilityAI) || declaringType == typeof(TourBuildingAI))
             {
@@ -174,7 +174,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
                 }
 
                 patchIndexOffset = 14;
-                methodToCall = AccessTools.Method(typeof(ServiceBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
+                methodToCall = AccessTools.Method(typeof(XYZBuildingAIPatch), nameof(GetVehicleInfoWithoutType));
             }
             else
             {
@@ -262,7 +262,7 @@ namespace ServiceVehicleSelector2.HarmonyPatches
         {
             PatchUtil.Patch(new PatchUtil.MethodDefinition(type, methodName),
                 null, null,
-                new PatchUtil.MethodDefinition(typeof(ServiceBuildingAIPatch), nameof(TranspileMethod)));
+                new PatchUtil.MethodDefinition(typeof(XYZBuildingAIPatch), nameof(TranspileMethod)));
         }
 
         private static void Restore(Type type, string methodName)
